@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String       @id @default(uuid())
+  name          String
+  email         String       @unique
+  password_hash String
+  role          String
+  active        Boolean      @default(true)
+  created_at    DateTime     @default(now())
+  lesson_plans  LessonPlan[]
+  messages_recv Message[]    @relation("ReceivedMessages")
+  messages_sent Message[]    @relation("SentMessages")
+  children      Student[]    @relation("ParentStudents")
+
+  @@map("users")
+}
+
+model Student {
+  id              String       @id @default(uuid())
+  name            String
+  registration_id String       @unique
+  education_level String
+  grade_name      String
+  
+  // Novos Campos
+  address         String?
+  phone           String?
+  document        String?      // RG ou Certidão
+  birth_date      String?      // Usaremos string para facilitar o input HTML date mas pode ser DateTime
+  naturalness     String?      // Cidade/UF
+  cpf             String?
+  nis             String?
+  father_name     String?
+  mother_name     String?
+  scholarship     Boolean      @default(false)
+
+  class_id        String?
+  parent_id       String?
+  attendances     Attendance[]
+  grades          Grade[]
+  class           Class?       @relation(fields: [class_id], references: [id])
+  parent          User?        @relation("ParentStudents", fields: [parent_id], references: [id])
+
+  @@map("students")
+}
+
+model AcademicLevel {
+  id          String   @id @default(uuid())
+  name        String   @unique // ex: Ensino Fundamental I
+  grades      AcademicGrade[]
+  @@map("academic_levels")
+}
+
+model AcademicGrade {
+  id          String   @id @default(uuid())
+  name        String   // ex: 1º Ano
+  level_id    String
+  level       AcademicLevel @relation(fields: [level_id], references: [id])
+  classes     Class[]
+  @@map("academic_grades")
+}
+
+model AcademicTurn {
+  id          String   @id @default(uuid())
+  name        String   @unique // ex: Matutino, Vespertino, Integral
+  classes     Class[]
+  @@map("academic_turns")
+}
+
+model Class {
+  id              String       @id @default(uuid())
+  name            String       // ex: Turma A
+  grade_id        String
+  grade           AcademicGrade @relation(fields: [grade_id], references: [id])
+  turn_id         String
+  turn            AcademicTurn  @relation(fields: [turn_id], references: [id])
+  
+  homeworks       Homework[]
+  lesson_plans    LessonPlan[]
+  schedules       Schedule[]
+  students        Student[]
+
+  @@map("classes")
+}
+
+model Schedule {
+  id          String @id @default(uuid())
+  day_of_week Int
+  time_start  String
+  time_end    String
+  subject     String
+  class_id    String
+  class       Class  @relation(fields: [class_id], references: [id])
+
+  @@map("schedules")
+}
+
+model LessonPlan {
+  id         String   @id @default(uuid())
+  date       DateTime
+  content    String
+  status     String   @default("PENDING")
+  type       String
+  teacher_id String
+  class_id   String
+  class      Class    @relation(fields: [class_id], references: [id])
+  teacher    User     @relation(fields: [teacher_id], references: [id])
+
+  @@map("lesson_plans")
+}
+
+model Attendance {
+  id         String   @id @default(uuid())
+  date       DateTime
+  present    Boolean
+  student_id String
+  class_id   String
+  student    Student  @relation(fields: [student_id], references: [id])
+
+  @@map("attendances")
+}
+
+model Grade {
+  id               String  @id @default(uuid())
+  bimester         Int
+  subject          String?
+  value            Float?
+  qualitative_text String?
+  student_id       String
+  student          Student @relation(fields: [student_id], references: [id])
+
+  @@map("grades")
+}
+
+model Homework {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  due_date    DateTime
+  class_id    String
+  class       Class    @relation(fields: [class_id], references: [id])
+
+  @@map("homeworks")
+}
+
+model Notice {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  target_role String?
+  class_id    String?
+  created_at  DateTime @default(now())
+
+  @@map("notices")
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  content     String
+  read        Boolean  @default(false)
+  created_at  DateTime @default(now())
+  sender_id   String
+  receiver_id String
+  receiver    User     @relation("ReceivedMessages", fields: [receiver_id], references: [id], onDelete: Cascade)
+  sender      User     @relation("SentMessages", fields: [sender_id], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
