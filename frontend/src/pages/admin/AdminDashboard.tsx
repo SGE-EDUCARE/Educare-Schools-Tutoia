@@ -13,7 +13,6 @@ export const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null)
   const [performance, setPerformance] = useState<{ levels: any[], grades: any[], classes: any[] } | null>(null)
   const [activeTab, setActiveTab] = useState<'levels' | 'grades' | 'classes'>('levels')
-  const [loading, setLoading] = useState(true)
 
   // Cores institucionais do Horizon UI
   const brandColor = '#4318FF'
@@ -38,7 +37,7 @@ export const AdminDashboard: React.FC = () => {
           dropoutRate: 1.2
         })
       } finally {
-        setLoading(false)
+        // Fetch concluído
       }
     }
     fetchData()
