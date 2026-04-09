@@ -12,6 +12,7 @@ import { AcademicLevels } from './pages/admin/AcademicLevels'
 import { AcademicGrades } from './pages/admin/AcademicGrades'
 import { AcademicTurns } from './pages/admin/AcademicTurns'
 import { AcademicClasses } from './pages/admin/AcademicClasses'
+import { StudentEdit } from './pages/admin/StudentEdit'
 import { Toaster } from 'react-hot-toast'
 import { TeacherDashboard } from './pages/teacher/TeacherDashboard'
 import { ParentDashboard } from './pages/parent/ParentDashboard'
@@ -52,6 +53,7 @@ function App() {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/students" element={<StudentsList />} />
             <Route path="/admin/students/new" element={<StudentCreate />} />
+            <Route path="/admin/students/edit/:id" element={<StudentEdit />} />
             <Route path="/admin/teachers" element={<TeachersList />} />
             <Route path="/admin/teachers/new" element={<TeacherCreate />} />
             

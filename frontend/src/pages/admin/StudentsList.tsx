@@ -18,6 +18,7 @@ interface Student {
     turn?: { name: string };
   };
   status: string; 
+  photo_url?: string;
 }
 
 
@@ -110,8 +111,20 @@ export const StudentsList: React.FC = () => {
                   <tr key={student.id}>
                     <td>
                       <div className="flex items-center gap-4">
-                        <div className="icon-box" style={{ width: '44px', height: '44px', backgroundColor: 'hsl(var(--secondary))', color: 'hsl(var(--primary))', fontWeight: 700 }}>
-                          {student.name.charAt(0)}
+                        <div className="icon-box" style={{ 
+                          width: '44px', 
+                          height: '44px', 
+                          backgroundColor: 'hsl(var(--primary-light))', 
+                          color: 'hsl(var(--primary))', 
+                          fontWeight: 700,
+                          overflow: 'hidden',
+                          borderRadius: '12px'
+                        }}>
+                          {student.photo_url ? (
+                            <img src={student.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            student.name.charAt(0)
+                          )}
                         </div>
                         <span style={{ fontWeight: 700, color: 'hsl(var(--text))' }}>{student.name}</span>
                       </div>
@@ -148,8 +161,16 @@ export const StudentsList: React.FC = () => {
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <div className="flex justify-end gap-2">
-                        <button className="btn-ghost"><Edit2 size={18} /></button>
-                        <button className="btn-ghost" style={{ color: 'hsl(var(--error))' }}><Trash2 size={18} /></button>
+                        <button 
+                          onClick={() => navigate(`/admin/students/edit/${student.id}`)}
+                          className="btn-ghost" 
+                          style={{ color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.05)' }}
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button className="btn-ghost" style={{ color: 'hsl(var(--error))', backgroundColor: 'hsl(var(--error) / 0.05)' }}>
+                           <Trash2 size={18} />
+                        </button>
                       </div>
                     </td>
                   </tr>

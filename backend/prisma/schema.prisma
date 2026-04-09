@@ -31,6 +31,7 @@ model Student {
   registration_id String       @unique
   education_level String
   grade_name      String
+  photo_url       String?
   
   // Novos Campos
   address         String?

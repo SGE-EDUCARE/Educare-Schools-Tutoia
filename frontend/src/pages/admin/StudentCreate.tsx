@@ -35,7 +35,8 @@ export const StudentCreate: React.FC = () => {
     nis: '',
     father_name: '',
     mother_name: '',
-    scholarship: false
+    scholarship: false,
+    photo_url: ''
   })
 
   useEffect(() => {
@@ -194,6 +195,59 @@ export const StudentCreate: React.FC = () => {
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         
+        {/* SEÇÃO 0: FOTO DO ALUNO */}
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '2.5rem', padding: '2rem' }}>
+          <div style={{ position: 'relative' }}>
+            <div className="icon-box" style={{ 
+              width: '140px', 
+              height: '140px', 
+              backgroundColor: 'hsl(var(--background))', 
+              border: '2px dashed hsl(var(--border))',
+              borderRadius: 'var(--radius-lg)',
+              overflow: 'hidden',
+              cursor: 'pointer'
+            }} onClick={() => document.getElementById('photo-upload')?.click()}>
+              {formData.photo_url ? (
+                <img src={formData.photo_url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ textAlign: 'center', padding: '1rem' }}>
+                  <User size={48} opacity={0.2} />
+                  <p style={{ fontSize: '0.7rem', fontWeight: 700, marginTop: '0.5rem', color: 'hsl(var(--text-light))' }}>CLIQUE PARA <br/>ANEXAR FOTO</p>
+                </div>
+              )}
+            </div>
+            <input 
+              id="photo-upload" 
+              type="file" 
+              accept="image/*" 
+              style={{ display: 'none' }} 
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) {
+                  const reader = new FileReader()
+                  reader.onloadend = () => setFormData({ ...formData, photo_url: reader.result as string })
+                  reader.readAsDataURL(file)
+                }
+              }} 
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem' }}>Foto do Estudante</h3>
+            <p style={{ color: 'hsl(var(--text-light))', fontSize: '0.9rem' }}>
+              Anexe uma foto nítida do aluno para identificação no sistema e documentos escolares. 
+              Arquivos suportados: JPG, PNG. Máx 2MB.
+            </p>
+            {formData.photo_url && (
+              <button 
+                type="button" 
+                onClick={() => setFormData({ ...formData, photo_url: '' })}
+                style={{ marginTop: '1rem', fontSize: '0.85rem', fontWeight: 700, color: 'hsl(var(--error))' }}
+              >
+                Remover Foto
+              </button>
+            )}
+          </div>
+        </div>
         {/* SEÇÃO 1: DADOS PESSOAIS */}
         <div className="card" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <div className="flex items-center gap-3">

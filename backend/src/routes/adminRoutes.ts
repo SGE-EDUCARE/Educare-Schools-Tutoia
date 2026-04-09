@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import { 
-  getStudents, 
+  getStudents,
+  getStudent,
+  updateStudent,
   getTeachers, 
   getStats, 
   createStudent, 
@@ -28,7 +30,9 @@ const router = Router()
 
 // Alunos
 router.get('/students', getStudents)
+router.get('/students/:id', getStudent)
 router.post('/students', createStudent)
+router.put('/students/:id', updateStudent)
 router.get('/next-ra', getNextRa)
 
 // Professores

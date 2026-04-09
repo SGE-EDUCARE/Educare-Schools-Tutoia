@@ -24,6 +24,22 @@ export const getStudents = async (req: Request, res: Response) => {
   }
 }
 
+export const getStudent = async (req: Request, res: Response) => {
+  try {
+    const student = await prisma.student.findUnique({
+      where: { id: req.params.id },
+      include: {
+        class: true,
+        parent: { select: { id: true, name: true, email: true } }
+      }
+    })
+    if (!student) return res.status(404).json({ error: 'Aluno não encontrado' })
+    res.json(student)
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar aluno' })
+  }
+}
+
 export const getTeachers = async (req: Request, res: Response) => {
   try {
     const teachers = await prisma.user.findMany({
@@ -76,7 +92,7 @@ export const createStudent = async (req: Request, res: Response) => {
     const { 
       name, registration_id, education_level, grade_name, class_id, parent_id,
       address, phone, document, birth_date, naturalness, cpf, nis,
-      father_name, mother_name, scholarship
+      father_name, mother_name, scholarship, photo_url
     } = req.body
 
     const student = await prisma.student.create({
@@ -97,6 +113,7 @@ export const createStudent = async (req: Request, res: Response) => {
         father_name,
         mother_name,
         scholarship: scholarship || false,
+        photo_url
       },
     })
     res.status(201).json(student)
@@ -106,6 +123,25 @@ export const createStudent = async (req: Request, res: Response) => {
     }
     console.error(error)
     res.status(500).json({ error: 'Erro ao cadastrar aluno' })
+  }
+}
+
+export const updateStudent = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+    const data = req.body
+
+    const updated = await prisma.student.update({
+      where: { id },
+      data: {
+        ...data,
+        updated_at: undefined // Remover campos que não fazem parte do schema se existirem no body
+      }
+    })
+    res.json(updated)
+  } catch (error) {
+    console.error('Erro ao atualizar aluno:', error)
+    res.status(500).json({ error: 'Erro ao atualizar aluno' })
   }
 }
 
