@@ -36,6 +36,7 @@ export const getStudent = async (req: Request, res: Response) => {
     if (!student) return res.status(404).json({ error: 'Aluno não encontrado' })
     res.json(student)
   } catch (error) {
+    console.error(`Erro ao buscar aluno com ID ${req.params.id}:`, error)
     res.status(500).json({ error: 'Erro ao buscar aluno' })
   }
 }

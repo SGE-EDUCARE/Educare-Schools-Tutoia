@@ -86,6 +86,7 @@ export const StudentEdit: React.FC = () => {
       }
 
     } catch (e) {
+      console.error("DEBUG: Falha integral no loadData do Aluno:", e)
       toast.error("Erro ao carregar dados do aluno")
       navigate('/admin/students')
     } finally {
