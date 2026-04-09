@@ -70,7 +70,7 @@ export const AcademicLevels: React.FC = () => {
         </div>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '3rem', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(350px, 1fr) 2fr', gap: '2.5rem', alignItems: 'start' }}>
         {/* Formulário Refinado */}
         <section className="flex flex-col gap-6">
           <div className="card" style={{ padding: '2.5rem' }}>
@@ -112,7 +112,7 @@ export const AcademicLevels: React.FC = () => {
           <div style={{ padding: '2rem 2.5rem', borderBottom: '1px solid hsl(var(--border) / 0.5)', backgroundColor: 'hsl(var(--background) / 0.2)' }}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Níveis Registrados</h3>
           </div>
-          <div style={{ margin: 0, padding: '0 2.5rem 2.5rem' }}>
+          <div className="table-container no-scrollbar" style={{ margin: 0 }}>
             <table style={{ width: '100%' }}>
               <thead>
                 <tr>
