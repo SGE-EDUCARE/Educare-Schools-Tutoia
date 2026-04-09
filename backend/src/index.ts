@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import * as dotenv from 'dotenv'
 import adminRoutes from './routes/adminRoutes'
+import authRoutes from './routes/authRoutes'
 
 dotenv.config()
 
@@ -14,6 +15,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Educare Backend is running' })
 })
 
+app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 
 const PORT = process.env.PORT || 3001
