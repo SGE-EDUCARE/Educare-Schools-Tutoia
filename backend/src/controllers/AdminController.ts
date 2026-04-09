@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import prisma from '../lib/prisma'
+import bcrypt from 'bcryptjs'
 
 export const getStudents = async (req: Request, res: Response) => {
   try {
@@ -31,6 +32,20 @@ export const getTeachers = async (req: Request, res: Response) => {
       },
       include: {
         lesson_plans: true,
+        allocations: {
+          include: {
+            class: {
+              include: {
+                grade: {
+                  include: {
+                    level: true
+                  }
+                },
+                turn: true
+              }
+            }
+          }
+        }
       }
     })
     res.json(teachers)
@@ -142,5 +157,50 @@ export const getNextRa = async (req: Request, res: Response) => {
     res.json({ nextRa })
   } catch (error) {
     res.status(500).json({ error: 'Erro ao gerar RA' })
+  }
+}
+
+export const admitTeacher = async (req: Request, res: Response) => {
+  try {
+    const { name, email, password, allocations } = req.body
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Campos obrigatórios ausentes' })
+    }
+
+    const password_hash = await bcrypt.hash(password, 10)
+
+    // Usamos transação para garantir que o professor e suas alocações sejam criados juntos
+    const teacher = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          name,
+          email,
+          password_hash,
+          role: 'TEACHER',
+          must_reset_password: true
+        }
+      })
+
+      if (allocations && allocations.length > 0) {
+        await tx.teacherAllocation.createMany({
+          data: allocations.map((a: any) => ({
+            teacher_id: newUser.id,
+            class_id: a.class_id,
+            subject: a.subject || null
+          }))
+        })
+      }
+
+      return newUser
+    })
+
+    res.status(201).json(teacher)
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      return res.status(400).json({ error: 'Este e-mail já está em uso.' })
+    }
+    console.error('Erro ao admitir professor:', error)
+    res.status(500).json({ error: 'Falha ao admitir professor' })
   }
 }

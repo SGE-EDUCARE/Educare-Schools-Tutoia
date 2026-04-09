@@ -16,6 +16,7 @@ import {
   Clock,
   School
 } from 'lucide-react'
+import { PasswordResetModal } from './PasswordResetModal'
 
 export const Layout: React.FC = () => {
   const { user, logout } = useAuthStore()
@@ -160,6 +161,9 @@ export const Layout: React.FC = () => {
         <main className="page-content animate-fade-in">
           <Outlet />
         </main>
+        
+        {/* Modal Global de Segurança */}
+        <PasswordResetModal />
       </div>
     </div>
   )

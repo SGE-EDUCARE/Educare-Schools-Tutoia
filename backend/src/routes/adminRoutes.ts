@@ -6,7 +6,8 @@ import {
   createStudent, 
   getClasses, 
   getParents,
-  getNextRa
+  getNextRa,
+  admitTeacher
 } from '../controllers/AdminController'
 import {
   getLevels,
@@ -32,6 +33,7 @@ router.get('/next-ra', getNextRa)
 
 // Professores
 router.get('/teachers', getTeachers)
+router.post('/teachers', admitTeacher)
 
 // Estatísticas
 router.get('/stats', getStats)

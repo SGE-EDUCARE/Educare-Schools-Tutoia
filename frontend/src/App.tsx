@@ -7,6 +7,7 @@ import { AdminDashboard } from './pages/admin/AdminDashboard'
 import { StudentsList } from './pages/admin/StudentsList'
 import { TeachersList } from './pages/admin/TeachersList'
 import { StudentCreate } from './pages/admin/StudentCreate'
+import { TeacherCreate } from './pages/admin/TeacherCreate'
 import { AcademicLevels } from './pages/admin/AcademicLevels'
 import { AcademicGrades } from './pages/admin/AcademicGrades'
 import { AcademicTurns } from './pages/admin/AcademicTurns'
@@ -52,6 +53,7 @@ function App() {
             <Route path="/admin/students" element={<StudentsList />} />
             <Route path="/admin/students/new" element={<StudentCreate />} />
             <Route path="/admin/teachers" element={<TeachersList />} />
+            <Route path="/admin/teachers/new" element={<TeacherCreate />} />
             
             {/* Gestão Acadêmica */}
             <Route path="/admin/levels" element={<AcademicLevels />} />

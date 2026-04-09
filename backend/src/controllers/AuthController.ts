@@ -44,12 +44,36 @@ export const login = async (req: Request, res: Response) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        mustResetPassword: (user as any).must_reset_password
       },
       token
     })
   } catch (error) {
     console.error('Erro no login:', error)
     res.status(500).json({ error: 'Erro interno ao processar login' })
+  }
+}
+
+export const resetFirstPassword = async (req: Request, res: Response) => {
+  try {
+    const { email, newPassword } = req.body
+
+    const user = await prisma.user.findUnique({ where: { email } })
+    if (!user) return res.status(404).json({ error: 'Usuário não encontrado' })
+
+    const password_hash = await bcrypt.hash(newPassword, 10)
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password_hash,
+        must_reset_password: false
+      }
+    })
+
+    res.json({ message: 'Senha redefinida com sucesso' })
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao redefinir senha' })
   }
 }

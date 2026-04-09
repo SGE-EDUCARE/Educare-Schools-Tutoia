@@ -13,10 +13,12 @@ model User {
   email         String       @unique
   password_hash String
   role          String
-  active        Boolean      @default(true)
-  created_at    DateTime     @default(now())
-  lesson_plans  LessonPlan[]
-  messages_recv Message[]    @relation("ReceivedMessages")
+  active              Boolean      @default(true)
+  must_reset_password Boolean      @default(true)
+  created_at          DateTime     @default(now())
+  lesson_plans        LessonPlan[]
+  allocations         TeacherAllocation[] @relation("TeacherAllocations")
+  messages_recv       Message[]    @relation("ReceivedMessages")
   messages_sent Message[]    @relation("SentMessages")
   children      Student[]    @relation("ParentStudents")
 
@@ -87,6 +89,7 @@ model Class {
   lesson_plans    LessonPlan[]
   schedules       Schedule[]
   students        Student[]
+  allocations     TeacherAllocation[]
 
   @@map("classes")
 }
@@ -173,4 +176,15 @@ model Message {
   sender      User     @relation("SentMessages", fields: [sender_id], references: [id], onDelete: Cascade)
 
   @@map("messages")
+}
+
+model TeacherAllocation {
+  id         String   @id @default(uuid())
+  teacher_id String
+  class_id   String
+  subject    String?  // Nulo para polivalentes (Infantil/Fund I)
+  teacher    User     @relation("TeacherAllocations", fields: [teacher_id], references: [id], onDelete: Cascade)
+  class      Class    @relation(fields: [class_id], references: [id], onDelete: Cascade)
+
+  @@map("teacher_allocations")
 }

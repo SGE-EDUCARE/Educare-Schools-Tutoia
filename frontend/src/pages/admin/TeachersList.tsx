@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Plus, Search, Edit2, Mail, MoreVertical, ShieldCheck, UserSquare2 } from 'lucide-react'
 import { api } from '../../utils/api'
+import { useNavigate } from 'react-router-dom'
 
 interface Teacher {
   id: string;
@@ -11,6 +12,7 @@ interface Teacher {
 }
 
 export const TeachersList: React.FC = () => {
+  const navigate = useNavigate()
   const [teachers, setTeachers] = useState<Teacher[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -44,7 +46,7 @@ export const TeachersList: React.FC = () => {
             <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.1rem', fontWeight: 500 }}>Gestão de equipe, atribuições e planos pedagógicos.</p>
           </div>
         </div>
-        <button className="btn btn-primary">
+        <button className="btn btn-primary" onClick={() => navigate('/admin/teachers/new')}>
           <Plus size={20} /> Admitir Professor
         </button>
       </header>
@@ -101,10 +103,14 @@ export const TeachersList: React.FC = () => {
                       </div>
                     </td>
                     <td>
-                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', minWidth: '180px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', minWidth: '180px' }}>
                           <div className="flex justify-between items-center">
-                            <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>{teacher.lesson_plans?.length || 0} Planos</span>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'hsl(var(--text-light))' }}>{Math.min((teacher.lesson_plans?.length || 0) * 10, 100)}%</span>
+                            <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>
+                              {(teacher as any).allocations?.length || 0} Atribuições
+                            </span>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'hsl(var(--text-light))' }}>
+                              {(teacher as any).allocations?.map((a: any) => a.subject).filter(Boolean).slice(0, 2).join(', ') || 'Geral'}
+                            </span>
                           </div>
                           <div style={{ width: '100%', height: '8px', backgroundColor: 'hsl(var(--secondary))', borderRadius: '4px', overflow: 'hidden' }}>
                              <div style={{ 
