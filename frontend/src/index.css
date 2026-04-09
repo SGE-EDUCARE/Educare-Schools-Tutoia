@@ -198,6 +198,8 @@ button {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-width: 0; /* Important for flex child to not overflow parent */
+  overflow-x: hidden;
 }
 
 .topbar {
@@ -215,8 +217,11 @@ button {
 }
 
 .page-content {
-  padding: 3rem; /* More whitespace */
+  padding: 3rem;
   flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 /* Modern Card System */
