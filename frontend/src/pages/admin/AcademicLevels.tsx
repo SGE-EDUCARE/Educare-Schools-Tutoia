@@ -116,9 +116,9 @@ export const AcademicLevels: React.FC = () => {
             <table style={{ width: '100%' }}>
               <thead>
                 <tr>
-                  <th style={{ textAlign: 'left' }}>Nível de Ensino</th>
-                  <th style={{ textAlign: 'center' }}>Capacidade</th>
-                  <th style={{ textAlign: 'right' }}>Gerenciar</th>
+                  <th style={{ textAlign: 'left', whiteSpace: 'nowrap' }}>Nível de Ensino</th>
+                  <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Séries / Capacidade</th>
+                  <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Gerenciar</th>
                 </tr>
               </thead>
               <tbody>
@@ -132,9 +132,11 @@ export const AcademicLevels: React.FC = () => {
                   </tr>
                 ) : levels.map(level => (
                   <tr key={level.id}>
-                    <td style={{ fontWeight: 800, fontSize: '1.1rem', color: 'hsl(var(--primary))' }}>{level.name}</td>
-                    <td style={{ textAlign: 'center' }}>
-                      <span className="badge" style={{ backgroundColor: 'hsl(var(--primary-light))', color: 'hsl(var(--primary))', padding: '0.5rem 1.25rem' }}>
+                    <td style={{ fontWeight: 800, fontSize: '1.1rem', color: 'hsl(var(--primary))', whiteSpace: 'nowrap', minWidth: '220px' }}>
+                      {level.name}
+                    </td>
+                    <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                      <span className="badge" style={{ backgroundColor: 'hsl(var(--primary-light))', color: 'hsl(var(--primary))', padding: '0.6rem 1.5rem', display: 'inline-block' }}>
                         {level.grades?.length || 0} Séries vinculadas
                       </span>
                     </td>
