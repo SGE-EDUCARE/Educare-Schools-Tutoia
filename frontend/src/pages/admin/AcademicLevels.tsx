@@ -70,7 +70,7 @@ export const AcademicLevels: React.FC = () => {
         </div>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(350px, 1fr) 2fr', gap: '2.5rem', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(330px, 0.4fr) 1fr', gap: '1.5rem', alignItems: 'start' }}>
         {/* Formulário Refinado */}
         <section className="flex flex-col gap-6">
           <div className="card" style={{ padding: '2.5rem' }}>
