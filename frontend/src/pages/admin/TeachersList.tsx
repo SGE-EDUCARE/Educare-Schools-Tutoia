@@ -103,21 +103,32 @@ export const TeachersList: React.FC = () => {
                       </div>
                     </td>
                     <td>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', minWidth: '180px' }}>
-                          <div className="flex justify-between items-center">
-                            <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', minWidth: '180px', padding: '0.5rem 0' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+                            <span style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))' }}>
                               {(teacher as any).allocations?.length || 0} Atribuições
                             </span>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'hsl(var(--text-light))' }}>
-                              {(teacher as any).allocations?.map((a: any) => a.subject).filter(Boolean).slice(0, 2).join(', ') || 'Geral'}
+                            <span style={{ 
+                              fontSize: '0.8rem', 
+                              fontWeight: 600, 
+                              color: 'hsl(var(--primary))',
+                              marginTop: '2px',
+                              display: 'block',
+                              maxWidth: '220px',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }} title={(teacher as any).allocations?.map((a: any) => a.subject).filter(Boolean).join(', ')}>
+                              {(teacher as any).allocations?.map((a: any) => a.subject).filter(Boolean).join(', ') || 'Professor Polivalente'}
                             </span>
                           </div>
-                          <div style={{ width: '100%', height: '8px', backgroundColor: 'hsl(var(--secondary))', borderRadius: '4px', overflow: 'hidden' }}>
+                          
+                          <div style={{ width: '100%', height: '6px', backgroundColor: 'hsl(var(--secondary))', borderRadius: '3px', overflow: 'hidden', marginTop: '4px' }}>
                              <div style={{ 
-                               width: `${Math.min((teacher.lesson_plans?.length || 0) * 10, 100)}%`, 
+                               width: `${Math.min(((teacher as any).allocations?.length || 0) * 20, 100)}%`, 
                                height: '100%', 
                                backgroundColor: teacher.active ? 'hsl(var(--primary))' : 'hsl(var(--text-light))',
-                               borderRadius: '4px'
+                               borderRadius: '3px'
                              }}></div>
                           </div>
                        </div>

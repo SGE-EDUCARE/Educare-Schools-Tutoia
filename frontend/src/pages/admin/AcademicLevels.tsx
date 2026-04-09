@@ -117,8 +117,8 @@ export const AcademicLevels: React.FC = () => {
               <thead>
                 <tr>
                   <th style={{ textAlign: 'left', whiteSpace: 'nowrap' }}>Nível de Ensino</th>
-                  <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Séries / Capacidade</th>
-                  <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Gerenciar</th>
+                  <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Vínculos</th>
+                  <th style={{ textAlign: 'center', whiteSpace: 'nowrap', width: '100px' }}>Gerenciar</th>
                 </tr>
               </thead>
               <tbody>
@@ -132,16 +132,21 @@ export const AcademicLevels: React.FC = () => {
                   </tr>
                 ) : levels.map(level => (
                   <tr key={level.id}>
-                    <td style={{ fontWeight: 800, fontSize: '1.1rem', color: 'hsl(var(--primary))', whiteSpace: 'nowrap', minWidth: '220px' }}>
+                    <td style={{ fontWeight: 800, fontSize: '1.1rem', color: 'hsl(var(--primary))', whiteSpace: 'nowrap' }}>
                       {level.name}
                     </td>
                     <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
-                      <span className="badge" style={{ backgroundColor: 'hsl(var(--primary-light))', color: 'hsl(var(--primary))', padding: '0.6rem 1.5rem', display: 'inline-block' }}>
-                        {level.grades?.length || 0} Séries vinculadas
+                      <span className="badge" style={{ backgroundColor: 'hsl(var(--primary-light))', color: 'hsl(var(--primary))', padding: '0.6rem 1.25rem' }}>
+                        {level.grades?.length || 0} Séries
                       </span>
                     </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <button onClick={() => handleDelete(level.id)} className="btn-ghost" style={{ color: 'hsl(var(--error))', backgroundColor: 'hsl(var(--error) / 0.05)' }}>
+                    <td style={{ textAlign: 'center' }}>
+                      <button onClick={() => handleDelete(level.id)} className="btn-ghost" style={{ 
+                        color: 'hsl(var(--error))', 
+                        backgroundColor: 'hsl(var(--error) / 0.05)',
+                        marginLeft: 'auto',
+                        marginRight: 'auto'
+                      }}>
                         <Trash2 size={20} />
                       </button>
                     </td>

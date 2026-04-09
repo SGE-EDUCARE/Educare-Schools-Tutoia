@@ -91,8 +91,8 @@ export const AcademicTurns: React.FC = () => {
             <table style={{ width: '100%' }}>
               <thead>
                 <tr>
-                  <th style={{ textAlign: 'left' }}>Nome do Turno</th>
-                  <th style={{ textAlign: 'right' }}>Ações</th>
+                  <th style={{ textAlign: 'left', whiteSpace: 'nowrap' }}>Nome do Turno</th>
+                  <th style={{ textAlign: 'center', whiteSpace: 'nowrap', width: '100px' }}>Gerenciar</th>
                 </tr>
               </thead>
               <tbody>
@@ -102,9 +102,14 @@ export const AcademicTurns: React.FC = () => {
                   <tr><td colSpan={2} style={{ textAlign: 'center', padding: '6rem' }}>Nenhum turno cadastrado.</td></tr>
                 ) : turns.map(turn => (
                   <tr key={turn.id}>
-                    <td style={{ fontWeight: 800, fontSize: '1.1rem' }}>{turn.name}</td>
-                    <td style={{ textAlign: 'right' }}>
-                      <button onClick={() => handleDelete(turn.id)} className="btn-ghost" style={{ color: 'hsl(var(--error))', backgroundColor: 'hsl(var(--error) / 0.05)' }}>
+                    <td style={{ fontWeight: 800, fontSize: '1.1rem', color: 'hsl(var(--text))' }}>{turn.name}</td>
+                    <td style={{ textAlign: 'center' }}>
+                      <button onClick={() => handleDelete(turn.id)} className="btn-ghost" style={{ 
+                        color: 'hsl(var(--error))', 
+                        backgroundColor: 'hsl(var(--error) / 0.05)',
+                        marginLeft: 'auto',
+                        marginRight: 'auto'
+                      }}>
                         <Trash2 size={20} />
                       </button>
                     </td>

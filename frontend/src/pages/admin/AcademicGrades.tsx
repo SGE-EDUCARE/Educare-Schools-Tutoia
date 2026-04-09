@@ -104,9 +104,9 @@ export const AcademicGrades: React.FC = () => {
             <table style={{ width: '100%' }}>
               <thead>
                 <tr>
-                  <th style={{ textAlign: 'left' }}>Série / Ano</th>
-                  <th style={{ textAlign: 'left' }}>Nível Relacionado</th>
-                  <th style={{ textAlign: 'right' }}>Ações</th>
+                  <th style={{ textAlign: 'left', whiteSpace: 'nowrap' }}>Série / Ano</th>
+                  <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Nível</th>
+                  <th style={{ textAlign: 'center', whiteSpace: 'nowrap', width: '100px' }}>Gerenciar</th>
                 </tr>
               </thead>
               <tbody>
@@ -116,14 +116,19 @@ export const AcademicGrades: React.FC = () => {
                   <tr><td colSpan={3} style={{ textAlign: 'center', padding: '6rem' }}>Nenhuma série encontrada.</td></tr>
                 ) : grades.map(grade => (
                   <tr key={grade.id}>
-                    <td style={{ fontWeight: 800, fontSize: '1.1rem' }}>{grade.name}</td>
-                    <td>
-                      <span className="badge" style={{ backgroundColor: 'hsl(var(--secondary))', color: 'hsl(var(--text-light))' }}>
+                    <td style={{ fontWeight: 800, fontSize: '1.1rem', color: 'hsl(var(--text))' }}>{grade.name}</td>
+                    <td style={{ textAlign: 'center' }}>
+                      <span className="badge" style={{ backgroundColor: 'hsl(var(--secondary))', color: 'hsl(var(--text-light))', padding: '0.5rem 1rem' }}>
                         {grade.level?.name}
                       </span>
                     </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <button onClick={() => handleDelete(grade.id)} className="btn-ghost" style={{ color: 'hsl(var(--error))', backgroundColor: 'hsl(var(--error) / 0.05)' }}>
+                    <td style={{ textAlign: 'center' }}>
+                      <button onClick={() => handleDelete(grade.id)} className="btn-ghost" style={{ 
+                        color: 'hsl(var(--error))', 
+                        backgroundColor: 'hsl(var(--error) / 0.05)',
+                        marginLeft: 'auto',
+                        marginRight: 'auto'
+                      }}>
                         <Trash2 size={20} />
                       </button>
                     </td>

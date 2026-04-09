@@ -120,10 +120,10 @@ export const AcademicClasses: React.FC = () => {
             <table style={{ width: '100%' }}>
               <thead>
                 <tr>
-                  <th style={{ textAlign: 'left' }}>Turma</th>
-                  <th>Série / Nível</th>
-                  <th>Turno</th>
-                  <th style={{ textAlign: 'right' }}>Ações</th>
+                  <th style={{ textAlign: 'left', whiteSpace: 'nowrap' }}>Turma</th>
+                  <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Série / Nível</th>
+                  <th style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>Turno</th>
+                  <th style={{ textAlign: 'center', whiteSpace: 'nowrap', width: '100px' }}>Gerenciar</th>
                 </tr>
               </thead>
               <tbody>
@@ -133,20 +133,27 @@ export const AcademicClasses: React.FC = () => {
                   <tr><td colSpan={4} style={{ textAlign: 'center', padding: '6rem' }}>Nenhuma turma encontrada.</td></tr>
                 ) : classes.map(c => (
                   <tr key={c.id}>
-                    <td style={{ fontWeight: 800, fontSize: '1.1rem' }}>{c.name}</td>
-                    <td>
-                      <div className="flex flex-col">
-                        <span style={{ fontWeight: 600 }}>{c.grade?.name}</span>
-                        <span style={{ fontSize: '0.8rem', color: 'hsl(var(--text-light))' }}>{c.grade?.level?.name}</span>
+                    <td style={{ fontWeight: 800, fontSize: '1.1rem', color: 'hsl(var(--text))' }}>{c.name}</td>
+                    <td style={{ textAlign: 'center' }}>
+                      <div className="flex flex-col items-center">
+                        <span style={{ fontWeight: 800, color: 'hsl(var(--primary))' }}>{c.grade?.name}</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'hsl(var(--text-light))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          {c.grade?.level?.name}
+                        </span>
                       </div>
                     </td>
-                    <td>
-                      <span className="badge" style={{ backgroundColor: 'hsl(var(--success-light))', color: 'hsl(var(--success))' }}>
+                    <td style={{ textAlign: 'center' }}>
+                      <span className="badge" style={{ backgroundColor: 'hsl(var(--secondary))', color: 'hsl(var(--text-light))', border: '1px solid hsl(var(--border) / 0.5)' }}>
                         {c.turn?.name}
                       </span>
                     </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <button onClick={() => handleDelete(c.id)} className="btn-ghost" style={{ color: 'hsl(var(--error))', backgroundColor: 'hsl(var(--error) / 0.05)' }}>
+                    <td style={{ textAlign: 'center' }}>
+                      <button onClick={() => handleDelete(c.id)} className="btn-ghost" style={{ 
+                        color: 'hsl(var(--error))', 
+                        backgroundColor: 'hsl(var(--error) / 0.05)',
+                        marginLeft: 'auto',
+                        marginRight: 'auto'
+                      }}>
                         <Trash2 size={20} />
                       </button>
                     </td>
