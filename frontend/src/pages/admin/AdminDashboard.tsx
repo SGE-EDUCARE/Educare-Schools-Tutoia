@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Users, UserSquare2, ClipboardList, TrendingDown, ArrowUpRight, ArrowRight } from 'lucide-react'
+import { Users, UserSquare2, ClipboardList, TrendingDown, ArrowUpRight, ArrowRight, GraduationCap } from 'lucide-react'
 import { api } from '../../utils/api'
 
 interface Stats {
@@ -33,10 +33,33 @@ export const AdminDashboard: React.FC = () => {
   }, [])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-      <header>
-        <h1 style={{ fontSize: '2.25rem', fontWeight: 800, letterSpacing: '-0.04em', color: 'hsl(var(--text))' }}>Painel Executivo</h1>
-        <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.1rem', fontWeight: 500 }}>Resumo operacional e métricas de desempenho da rede Educare.</p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem', position: 'relative' }}>
+      <div className="bg-gradient-top"></div>
+      
+      <header className="animate-fade-in" style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        backgroundColor: 'hsl(var(--primary-light) / 0.3)',
+        padding: '2.5rem',
+        borderRadius: 'var(--radius-xl)',
+        border: '1px solid hsl(var(--primary) / 0.1)',
+        overflow: 'hidden',
+        position: 'relative'
+      }}>
+        <div style={{ zIndex: 2 }}>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-0.05em', color: 'hsl(var(--text))', marginBottom: '0.5rem' }}>
+            Olá, <span style={{ color: 'hsl(var(--primary))' }}>Ezequiel</span> 👋
+          </h1>
+          <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.15rem', fontWeight: 500, maxWidth: '500px' }}>
+            Seu portal administrativo está pronto. Veja o que mudou na rede Educare hoje.
+          </p>
+        </div>
+        <div style={{ 
+          position: 'absolute', right: '-20px', bottom: '-20px', opacity: 0.1, pointerEvents: 'none'
+        }}>
+          <GraduationCap size={240} />
+        </div>
       </header>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
@@ -75,39 +98,29 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '3rem' }}>
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div className="card glass animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', animationDelay: '0.2s' }}>
           <div className="flex items-center justify-between">
-            <h3 className="card-title" style={{ marginBottom: 0 }}>Distribuição de Desempenho</h3>
+            <div>
+              <h3 className="card-title" style={{ marginBottom: '0.25rem' }}>Status de Desempenho</h3>
+              <p style={{ fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 500 }}>Distribuição de rendimento por nível de ensino.</p>
+            </div>
             <button className="btn btn-secondary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.85rem' }}>
               Relatórios <ArrowRight size={16} />
             </button>
           </div>
-          <div style={{ 
-            flex: 1, 
-            minHeight: '320px', 
-            backgroundColor: 'hsl(var(--background))', 
-            borderRadius: 'var(--radius-lg)', 
-            display: 'flex', 
-            flexDirection: 'column',
-            alignItems: 'center', 
-            justifyContent: 'center',
-            border: '2px solid hsl(var(--border) / 0.5)',
-            gap: '1.5rem'
-          }}>
-            <div className="icon-box" style={{ padding: '1.5rem', backgroundColor: 'white', boxShadow: 'var(--shadow-md)' }}>
-               <ArrowUpRight size={32} color="hsl(var(--primary))" />
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <p style={{ color: 'hsl(var(--text))', fontSize: '1.1rem', fontWeight: 700 }}>Processando Métricas</p>
-              <p style={{ color: 'hsl(var(--text-light))', fontSize: '0.9rem', fontWeight: 500, maxWidth: '240px' }}>Sincronizando dados acadêmicos do servidor local...</p>
-            </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+            <PowerBar label="Educação Infantil" percent={92} color="primary" />
+            <PowerBar label="Ensino Fundamental I" percent={78} color="success" />
+            <PowerBar label="Ensino Fundamental II" percent={64} color="warning" />
+            <PowerBar label="Ensino Médio" percent={45} color="error" />
           </div>
         </div>
 
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div className="card glass animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', animationDelay: '0.3s' }}>
           <div className="flex items-center justify-between">
             <h3 className="card-title" style={{ marginBottom: 0 }}>Central de Avisos</h3>
-            <div className="badge" style={{ backgroundColor: 'hsl(var(--error) / 0.1)', color: 'hsl(var(--error))' }}>LIVE</div>
+            <div className="badge animate-float" style={{ backgroundColor: 'hsl(var(--error) / 0.1)', color: 'hsl(var(--error))', border: '1px solid hsl(var(--error) / 0.2)' }}>LIVE</div>
           </div>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -131,7 +144,7 @@ export const AdminDashboard: React.FC = () => {
             />
           </div>
 
-          <button className="btn btn-primary" style={{ width: '100%', marginTop: 'auto' }}>
+          <button className="btn btn-primary glow-primary" style={{ width: '100%', marginTop: 'auto' }}>
             Novo Comunicado
           </button>
         </div>
@@ -149,13 +162,17 @@ const StatCard = ({ icon, label, value, trend, color, loading }: any) => {
   }
 
   return (
-    <div className="card">
+    <div className={`card glass glow-${color} animate-scale-in`} style={{ 
+      borderLeft: `5px solid hsl(${colorMap[color]})`,
+      transition: 'var(--transition-all)'
+    }}>
       <div className="flex items-center justify-between mb-6">
         <div className="icon-box" style={{ 
           width: '56px', 
           height: '56px', 
           backgroundColor: `hsl(${colorMap[color]} / 0.1)`, 
           color: `hsl(${colorMap[color]})`,
+          borderRadius: '16px',
         }}>
           {icon}
         </div>
@@ -197,23 +214,58 @@ const NoticeItem = ({ title, time, type, description }: any) => {
   }
 
   return (
-    <div className="flex gap-4 p-4" style={{ 
+    <div className="flex gap-4 p-4 glass animate-scale-in" style={{ 
       borderRadius: 'var(--radius-md)', 
       border: '1px solid hsl(var(--border) / 0.4)',
-      backgroundColor: 'hsl(var(--background) / 0.5)',
       cursor: 'pointer',
       transition: 'var(--transition-all)'
     }}
-    onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateX(8px)')}
-    onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateX(0)')}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateX(8px)'
+      e.currentTarget.style.backgroundColor = `hsl(${colorMap[type]} / 0.05)`
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'translateX(0)'
+      e.currentTarget.style.backgroundColor = 'transparent'
+    }}
     >
       <div style={{ width: '4px', borderRadius: '2px', backgroundColor: `hsl(${colorMap[type]})` }}></div>
       <div style={{ flex: 1 }}>
         <div className="flex items-center justify-between mb-1">
-          <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'hsl(var(--text))' }}>{title}</h4>
-          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: `hsl(${colorMap[type]})` }}>{time}</span>
+          <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>{title}</h4>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: `hsl(${colorMap[type]})`, textTransform: 'uppercase' }}>{time}</span>
         </div>
-        <p style={{ fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 500 }}>{description}</p>
+        <p style={{ fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 500, lineHeight: 1.4 }}>{description}</p>
+      </div>
+    </div>
+  )
+}
+
+const PowerBar = ({ label, percent, color }: any) => {
+  const colorMap: any = {
+    primary: 'var(--primary)',
+    success: 'var(--success)',
+    warning: 'var(--warning)',
+    error: 'var(--error)'
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+      <div className="flex items-center justify-between">
+        <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'hsl(var(--text))' }}>{label}</span>
+        <span style={{ fontSize: '0.85rem', fontWeight: 800, color: `hsl(${colorMap[color]})` }}>{percent}%</span>
+      </div>
+      <div style={{ 
+        height: '10px', width: '100%', backgroundColor: 'hsl(var(--background))', 
+        borderRadius: 'var(--radius-full)', overflow: 'hidden', border: '1px solid hsl(var(--border) / 0.5)'
+      }}>
+        <div style={{ 
+          height: '100%', width: `${percent}%`, 
+          background: `linear-gradient(90deg, hsl(${colorMap[color]}), hsl(${colorMap[color]} / 0.6))`,
+          borderRadius: 'var(--radius-full)',
+          boxShadow: `0 0 10px hsl(${colorMap[color]} / 0.3)`,
+          transition: 'width 1s cubic-bezier(0.34, 1.56, 0.64, 1)'
+        }}></div>
       </div>
     </div>
   )
