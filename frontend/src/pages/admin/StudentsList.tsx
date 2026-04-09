@@ -80,7 +80,7 @@ export const StudentsList: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
       <header className="flex items-center justify-between">
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <div className="icon-box" style={{ width: '60px', height: '60px', backgroundColor: 'hsl(var(--primary) / 0.1)', color: 'hsl(var(--primary))' }}>
+          <div className="icon-box" style={{ width: '60px', height: '60px', backgroundColor: 'hsl(var(--primary) / 0.1)', color: 'hsl(var(--primary))', borderRadius: 'var(--radius-xl)' }}>
             <GraduationCap size={32} />
           </div>
           <div>
@@ -146,7 +146,7 @@ export const StudentsList: React.FC = () => {
                           color: 'hsl(var(--primary))', 
                           fontWeight: 700,
                           overflow: 'hidden',
-                          borderRadius: '12px'
+                          borderRadius: 'var(--radius-md)'
                         }}>
                           {student.photo_url ? (
                             <img src={student.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -192,14 +192,14 @@ export const StudentsList: React.FC = () => {
                         <button 
                           onClick={() => navigate(`/admin/students/edit/${student.id}`)}
                           className="btn-ghost" 
-                          style={{ color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.05)' }}
+                          style={{ color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.05)', borderRadius: '10px' }}
                         >
                           <Edit2 size={18} />
                         </button>
                         <button 
                           onClick={() => setDeleteModal({ show: true, id: student.id, name: student.name })}
                           className="btn-ghost" 
-                          style={{ color: 'hsl(var(--error))', backgroundColor: 'hsl(var(--error) / 0.05)' }}
+                          style={{ color: 'hsl(var(--error))', backgroundColor: 'hsl(var(--error) / 0.05)', borderRadius: '10px' }}
                         >
                            <Trash2 size={18} />
                         </button>
@@ -222,7 +222,7 @@ export const StudentsList: React.FC = () => {
           <div className="card" style={{ maxWidth: '450px', width: '100%', padding: '2.5rem', textAlign: 'center', animation: 'scaleIn 0.2s ease-out' }}>
             <div className="icon-box" style={{ 
               width: '80px', height: '80px', backgroundColor: 'hsl(var(--error) / 0.1)', color: 'hsl(var(--error))',
-              margin: '0 auto 1.5rem'
+              margin: '0 auto 1.5rem', borderRadius: 'var(--radius-xl)'
             }}>
               <Trash2 size={40} />
             </div>
@@ -241,7 +241,7 @@ export const StudentsList: React.FC = () => {
               <button 
                 onClick={handleDelete}
                 className="btn"
-                style={{ backgroundColor: 'hsl(var(--error))', color: 'white' }}
+                style={{ backgroundColor: 'hsl(var(--error))', color: 'white', borderRadius: 'var(--radius-lg)' }}
                 disabled={deleting}
               >
                 {deleting ? 'Excluindo...' : 'Confirmar Exclusão'}

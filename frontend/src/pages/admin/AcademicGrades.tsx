@@ -59,7 +59,7 @@ export const AcademicGrades: React.FC = () => {
     <div className="flex flex-col gap-8 animate-fade-in">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <div className="icon-box" style={{ width: '70px', height: '70px', backgroundColor: 'hsl(var(--warning) / 0.1)', color: 'hsl(var(--warning))', borderRadius: 'var(--radius-lg)' }}>
+          <div className="icon-box" style={{ width: '70px', height: '70px', backgroundColor: 'hsl(var(--warning) / 0.1)', color: 'hsl(var(--warning))', borderRadius: 'var(--radius-xl)' }}>
             <ListOrdered size={36} />
           </div>
           <div>
@@ -89,7 +89,7 @@ export const AcademicGrades: React.FC = () => {
                 <label style={{ fontSize: '0.95rem', fontWeight: 700 }}>Nome da Série / Ano</label>
                 <input value={newName} onChange={e => setNewName(e.target.value)} className="input" placeholder="Ex: 1º Ano" required />
               </div>
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1.25rem' }}>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1.25rem', borderRadius: 'var(--radius-xl)' }}>
                 <Plus size={22} /> Adicionar Série
               </button>
             </form>
@@ -127,7 +127,8 @@ export const AcademicGrades: React.FC = () => {
                         color: 'hsl(var(--error))', 
                         backgroundColor: 'hsl(var(--error) / 0.05)',
                         marginLeft: 'auto',
-                        marginRight: 'auto'
+                        marginRight: 'auto',
+                        borderRadius: '12px'
                       }}>
                         <Trash2 size={20} />
                       </button>

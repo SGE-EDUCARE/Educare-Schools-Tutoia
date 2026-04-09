@@ -59,7 +59,7 @@ export const AcademicLevels: React.FC = () => {
             height: '70px', 
             backgroundColor: 'hsl(var(--primary) / 0.1)', 
             color: 'hsl(var(--primary))',
-            borderRadius: 'var(--radius-lg)'
+            borderRadius: 'var(--radius-xl)'
           }}>
             <Layers size={36} />
           </div>
@@ -94,7 +94,7 @@ export const AcademicLevels: React.FC = () => {
                 <p style={{ fontSize: '0.8rem', color: 'hsl(var(--text-light))' }}>Use nomes claros e oficiais para os níveis.</p>
               </div>
               
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1.25rem' }}>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1.25rem', borderRadius: 'var(--radius-xl)' }}>
                 <Plus size={22} /> Adicionar Nível
               </button>
             </form>
@@ -145,7 +145,8 @@ export const AcademicLevels: React.FC = () => {
                         color: 'hsl(var(--error))', 
                         backgroundColor: 'hsl(var(--error) / 0.05)',
                         marginLeft: 'auto',
-                        marginRight: 'auto'
+                        marginRight: 'auto',
+                        borderRadius: '12px'
                       }}>
                         <Trash2 size={20} />
                       </button>
