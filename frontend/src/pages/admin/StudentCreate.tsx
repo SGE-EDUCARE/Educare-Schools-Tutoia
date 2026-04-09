@@ -10,7 +10,6 @@ export const StudentCreate: React.FC = () => {
   const [submitLoading, setSubmitLoading] = useState(false)
   
   // Dados Dinâmicos do Banco
-  const [parents, setParents] = useState<any[]>([])
   const [academicLevels, setAcademicLevels] = useState<any[]>([])
   const [academicGrades, setAcademicGrades] = useState<any[]>([])
   const [academicClasses, setAcademicClasses] = useState<any[]>([])
@@ -28,7 +27,6 @@ export const StudentCreate: React.FC = () => {
     education_level_id: '',
     grade_id: '',
     class_id: '',
-    parent_id: '',
     address: '',
     phone: '',
     document: '',
@@ -46,15 +44,12 @@ export const StudentCreate: React.FC = () => {
   }, [])
 
   const fetchInitialData = async () => {
-    try {
-      const [raData, parentsData, levelsData] = await Promise.all([
+      const [raData, levelsData] = await Promise.all([
         api('/admin/next-ra'),
-        api('/admin/parents'),
         api('/admin/academic/levels')
       ])
       
       setFormData(prev => ({ ...prev, registration_id: raData.nextRa }))
-      setParents(parentsData)
       setAcademicLevels(levelsData)
     } catch (e) {
       console.error("Erro ao carregar dados iniciais")
@@ -281,14 +276,6 @@ export const StudentCreate: React.FC = () => {
               <input value={formData.father_name} onChange={e => setFormData({...formData, father_name: e.target.value})} className="input" placeholder="Nome completo do genitor" />
             </div>
             
-            <div style={{ gridColumn: 'span 2' }}>
-              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>Responsável pelo Portal * (Acesso dos Pais)</label>
-              <select required value={formData.parent_id} onChange={e => setFormData({...formData, parent_id: e.target.value})} className="input">
-                <option value="">Selecione na lista de responsáveis cadastrados...</option>
-                {parents.map(p => <option key={p.id} value={p.id}>{p.name} ({p.email})</option>)}
-              </select>
-            </div>
-
             <div>
               <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>Telefone de Contato</label>
               <input value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="input" placeholder="(00) 00000-0000" />
