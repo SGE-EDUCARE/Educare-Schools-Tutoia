@@ -332,3 +332,12 @@ tr:hover td {
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--text-light) / 0.5);
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}

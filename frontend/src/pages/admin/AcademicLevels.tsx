@@ -112,7 +112,7 @@ export const AcademicLevels: React.FC = () => {
           <div style={{ padding: '2rem 2.5rem', borderBottom: '1px solid hsl(var(--border) / 0.5)', backgroundColor: 'hsl(var(--background) / 0.2)' }}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Níveis Registrados</h3>
           </div>
-          <div className="table-container" style={{ margin: 0 }}>
+          <div className="table-container no-scrollbar" style={{ margin: 0 }}>
             <table style={{ width: '100%' }}>
               <thead>
                 <tr>
