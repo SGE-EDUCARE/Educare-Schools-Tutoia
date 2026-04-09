@@ -30,7 +30,7 @@ export const getStudent = async (req: Request, res: Response) => {
 
     // Busca o aluno permitindo falha graciosa caso ID não seja UUID
     const student = await prisma.student.findFirst({
-      where: { id },
+      where: { id: String(id) },
       include: {
         class: {
           include: {
@@ -148,7 +148,7 @@ export const updateStudent = async (req: Request, res: Response) => {
     const data = req.body
 
     const updated = await prisma.student.update({
-      where: { id },
+      where: { id: String(id) },
       data: {
         ...data,
         updated_at: undefined // Remover campos que não fazem parte do schema se existirem no body
