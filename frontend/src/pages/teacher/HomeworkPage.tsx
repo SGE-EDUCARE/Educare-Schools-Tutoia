@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
-import { ChevronLeft, Save, Loader2, Home, Calendar, Type } from 'lucide-react'
+import { ChevronLeft, Save, Loader2, Home, Calendar } from 'lucide-react'
 
 export const HomeworkPage: React.FC = () => {
   const { classId } = useParams()

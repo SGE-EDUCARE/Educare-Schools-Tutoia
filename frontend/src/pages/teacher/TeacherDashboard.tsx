@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { 
-  BookOpen, AlertCircle, ArrowRight, Clock, UserPlus, Users, 
-  LayoutDashboard, ClipboardList, CheckSquare, FileText, 
+  BookOpen, AlertCircle, LayoutDashboard, ClipboardList, CheckSquare, FileText, 
   Home, Megaphone, Activity, Loader2, GraduationCap 
 } from 'lucide-react'
 import { api } from '../../utils/api'

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
-import { ChevronLeft, Send, Loader2, Megaphone, Target, Users } from 'lucide-react'
+import { ChevronLeft, Send, Loader2, Target } from 'lucide-react'
 
 export const NoticesPage: React.FC = () => {
   const { classId } = useParams()
