@@ -26,8 +26,11 @@ export const getStudents = async (req: Request, res: Response) => {
 
 export const getStudent = async (req: Request, res: Response) => {
   try {
-    const student = await prisma.student.findUnique({
-      where: { id: req.params.id },
+    const { id } = req.params
+
+    // Busca o aluno permitindo falha graciosa caso ID não seja UUID
+    const student = await prisma.student.findFirst({
+      where: { id },
       include: {
         class: {
           include: {
@@ -41,11 +44,15 @@ export const getStudent = async (req: Request, res: Response) => {
         parent: { select: { id: true, name: true, email: true } }
       }
     })
-    if (!student) return res.status(404).json({ error: 'Aluno não encontrado' })
+
+    if (!student) {
+      return res.status(404).json({ error: 'Aluno não encontrado ou ID inválido' })
+    }
+
     res.json(student)
   } catch (error) {
     console.error(`Erro ao buscar aluno com ID ${req.params.id}:`, error)
-    res.status(500).json({ error: 'Erro ao buscar aluno' })
+    res.status(500).json({ error: 'Erro interno ao buscar aluno' })
   }
 }
 
