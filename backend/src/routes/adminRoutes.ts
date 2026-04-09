@@ -9,7 +9,8 @@ import {
   getClasses, 
   getParents,
   getNextRa,
-  admitTeacher
+  admitTeacher,
+  deleteStudent
 } from '../controllers/AdminController'
 import {
   getLevels,
@@ -33,6 +34,7 @@ router.get('/students', getStudents)
 router.get('/students/:id', getStudent)
 router.post('/students', createStudent)
 router.put('/students/:id', updateStudent)
+router.delete('/students/:id', deleteStudent)
 router.get('/next-ra', getNextRa)
 
 // Professores

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Plus, Search, Edit2, Trash2, Filter, Download, GraduationCap } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
+import { toast } from 'react-hot-toast'
 
 interface Student {
   id: string;
@@ -27,6 +28,9 @@ export const StudentsList: React.FC = () => {
   const navigate = useNavigate()
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [deleteModal, setDeleteModal] = useState<{ show: boolean, id: string, name: string }>({ show: false, id: '', name: '' })
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     fetchStudents()
@@ -49,6 +53,28 @@ export const StudentsList: React.FC = () => {
       setLoading(false)
     }
   }
+
+  const handleDelete = async () => {
+    if (!deleteModal.id) return
+    setDeleting(true)
+    const loadId = toast.loading('Excluindo aluno...')
+    try {
+      await api(`/admin/students/${deleteModal.id}`, { method: 'DELETE' })
+      setStudents(prev => prev.filter(s => s.id !== deleteModal.id))
+      setDeleteModal({ show: false, id: '', name: '' })
+      toast.success('Aluno removido com sucesso!', { id: loadId })
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message || 'Erro ao excluir aluno', { id: loadId })
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const filteredStudents = students.filter(s => 
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.registration_id.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
@@ -82,6 +108,8 @@ export const StudentsList: React.FC = () => {
               className="input" 
               placeholder="Pesquisar por nome completo ou número de matrícula..." 
               style={{ paddingLeft: '3.5rem' }}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <button className="btn btn-secondary" style={{ padding: '0.9rem 1.25rem' }}>
@@ -107,7 +135,7 @@ export const StudentsList: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {students.map((student) => (
+                {filteredStudents.map((student) => (
                   <tr key={student.id}>
                     <td>
                       <div className="flex items-center gap-4">
@@ -168,7 +196,11 @@ export const StudentsList: React.FC = () => {
                         >
                           <Edit2 size={18} />
                         </button>
-                        <button className="btn-ghost" style={{ color: 'hsl(var(--error))', backgroundColor: 'hsl(var(--error) / 0.05)' }}>
+                        <button 
+                          onClick={() => setDeleteModal({ show: true, id: student.id, name: student.name })}
+                          className="btn-ghost" 
+                          style={{ color: 'hsl(var(--error))', backgroundColor: 'hsl(var(--error) / 0.05)' }}
+                        >
                            <Trash2 size={18} />
                         </button>
                       </div>
@@ -180,6 +212,44 @@ export const StudentsList: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO */}
+      {deleteModal.show && (
+        <div style={{
+          position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999, padding: '1rem'
+        }}>
+          <div className="card" style={{ maxWidth: '450px', width: '100%', padding: '2.5rem', textAlign: 'center', animation: 'scaleIn 0.2s ease-out' }}>
+            <div className="icon-box" style={{ 
+              width: '80px', height: '80px', backgroundColor: 'hsl(var(--error) / 0.1)', color: 'hsl(var(--error))',
+              margin: '0 auto 1.5rem'
+            }}>
+              <Trash2 size={40} />
+            </div>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.75rem' }}>Confirmar Exclusão</h2>
+            <p style={{ color: 'hsl(var(--text-light))', marginBottom: '2rem', lineHeight: 1.5 }}>
+              Você está prestes a excluir o registro de <strong>{deleteModal.name}</strong>. Esta ação é definitiva e não pode ser desfeita.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <button 
+                onClick={() => setDeleteModal({ show: false, id: '', name: '' })}
+                className="btn btn-secondary"
+                disabled={deleting}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleDelete}
+                className="btn"
+                style={{ backgroundColor: 'hsl(var(--error))', color: 'white' }}
+                disabled={deleting}
+              >
+                {deleting ? 'Excluindo...' : 'Confirmar Exclusão'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

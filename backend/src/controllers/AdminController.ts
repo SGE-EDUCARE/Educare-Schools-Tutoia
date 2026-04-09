@@ -256,3 +256,16 @@ export const admitTeacher = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Falha ao admitir professor' })
   }
 }
+
+export const deleteStudent = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+    await prisma.student.delete({
+      where: { id: String(id) }
+    })
+    res.json({ message: 'Estudante excluído com sucesso' })
+  } catch (error) {
+    console.error('Erro ao excluir aluno:', error)
+    res.status(500).json({ error: 'Erro ao excluir aluno. Verifique se existem registros vinculados.' })
+  }
+}
