@@ -10,7 +10,8 @@ import {
   getParents,
   getNextRa,
   admitTeacher,
-  deleteStudent
+  deleteStudent,
+  getPerformanceData
 } from '../controllers/AdminController'
 import {
   getLevels,
@@ -41,8 +42,9 @@ router.get('/next-ra', getNextRa)
 router.get('/teachers', getTeachers)
 router.post('/teachers', admitTeacher)
 
-// Estatísticas
+// Estatísticas e Performance
 router.get('/stats', getStats)
+router.get('/performance', getPerformanceData)
 
 // Dados para formulários
 router.get('/parents', getParents)

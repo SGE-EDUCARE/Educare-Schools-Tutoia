@@ -11,13 +11,19 @@ interface Stats {
 
 export const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null)
+  const [performance, setPerformance] = useState<{ levels: any[], grades: any[], classes: any[] } | null>(null)
+  const [activeTab, setActiveTab] = useState<'levels' | 'grades' | 'classes'>('levels')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        const data = await api('/admin/stats')
-        setStats(data)
+        const [statsData, performanceData] = await Promise.all([
+          api('/admin/stats'),
+          api('/admin/performance')
+        ])
+        setStats(statsData)
+        setPerformance(performanceData)
       } catch (error) {
         setStats({
           totalStudents: 1248,
@@ -29,7 +35,7 @@ export const AdminDashboard: React.FC = () => {
         setLoading(false)
       }
     }
-    fetchStats()
+    fetchData()
   }, [])
 
   return (
@@ -102,18 +108,63 @@ export const AdminDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="card-title" style={{ marginBottom: '0.25rem' }}>Status de Desempenho</h3>
-              <p style={{ fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 500 }}>Distribuição de rendimento por nível de ensino.</p>
+              <p style={{ fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 500 }}>Baseado no critério institucional: (P1 + P2) / 2</p>
             </div>
-            <button className="btn btn-secondary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.85rem' }}>
-              Relatórios <ArrowRight size={16} />
-            </button>
+          </div>
+
+          <div style={{ 
+            display: 'flex', 
+            backgroundColor: 'hsl(var(--background))', 
+            padding: '0.4rem', 
+            borderRadius: 'var(--radius-md)',
+            border: '1px solid hsl(var(--border) / 0.5)' 
+          }}>
+            {(['levels', 'grades', 'classes'] as const).map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  flex: 1,
+                  padding: '0.6rem',
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: activeTab === tab ? 'hsl(var(--surface))' : 'transparent',
+                  color: activeTab === tab ? 'hsl(var(--primary))' : 'hsl(var(--text-light))',
+                  boxShadow: activeTab === tab ? 'var(--shadow-sm)' : 'none',
+                  transition: 'all 0.2s ease',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}
+              >
+                {tab === 'levels' ? 'Nível' : tab === 'grades' ? 'Série' : 'Turma'}
+              </button>
+            ))}
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-            <PowerBar label="Educação Infantil" percent={92} color="primary" />
-            <PowerBar label="Ensino Fundamental I" percent={78} color="success" />
-            <PowerBar label="Ensino Fundamental II" percent={64} color="warning" />
-            <PowerBar label="Ensino Médio" percent={45} color="error" />
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '1.75rem',
+            maxHeight: '380px',
+            overflowY: 'auto',
+            paddingRight: '0.5rem'
+          }} className="no-scrollbar">
+            {performance && performance[activeTab].length > 0 ? (
+              performance[activeTab].map((item: any) => (
+                <PowerBar 
+                  key={item.id}
+                  label={item.name} 
+                  subLabel={item.level || item.grade}
+                  percent={item.score} 
+                  color={item.score >= 70 ? 'success' : item.score >= 50 ? 'warning' : 'error'} 
+                />
+              ))
+            ) : (
+              <div style={{ padding: '2rem', textAlign: 'center', color: 'hsl(var(--text-light))' }}>
+                Aguardando lançamentos de notas...
+              </div>
+            )}
           </div>
         </div>
 
@@ -241,7 +292,7 @@ const NoticeItem = ({ title, time, type, description }: any) => {
   )
 }
 
-const PowerBar = ({ label, percent, color }: any) => {
+const PowerBar = ({ label, subLabel, percent, color }: any) => {
   const colorMap: any = {
     primary: 'var(--primary)',
     success: 'var(--success)',
@@ -252,8 +303,11 @@ const PowerBar = ({ label, percent, color }: any) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
       <div className="flex items-center justify-between">
-        <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'hsl(var(--text))' }}>{label}</span>
-        <span style={{ fontSize: '0.85rem', fontWeight: 800, color: `hsl(${colorMap[color]})` }}>{percent}%</span>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'hsl(var(--text))' }}>{label}</span>
+          {subLabel && <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'hsl(var(--text-light))' }}>{subLabel}</span>}
+        </div>
+        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: `hsl(${colorMap[color]})` }}>{percent === 0 ? '--' : `${percent}%`}</span>
       </div>
       <div style={{ 
         height: '10px', width: '100%', backgroundColor: 'hsl(var(--background))', 

@@ -136,6 +136,7 @@ model Grade {
   id               String  @id @default(uuid())
   bimester         Int
   subject          String?
+  label            String? // ex: 1ª Prova, 2ª Prova
   value            Float?
   qualitative_text String?
   student_id       String

@@ -269,3 +269,86 @@ export const deleteStudent = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Erro ao excluir aluno. Verifique se existem registros vinculados.' })
   }
 }
+
+export const getPerformanceData = async (req: Request, res: Response) => {
+  try {
+    // Buscamos toda a hierarquia com notas para cálculo
+    const levels = await prisma.academicLevel.findMany({
+      include: {
+        grades: {
+          include: {
+            classes: {
+              include: {
+                students: {
+                  include: {
+                    grades: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+
+    const calculateEntityScore = (students: any[]) => {
+      let totalScore = 0
+      let studentCount = 0
+
+      students.forEach(student => {
+        // Agrupar notas por bimestre e matéria para aplicar (P1+P2)/2
+        const gradeGroups: { [key: string]: { p1?: number, p2?: number } } = {}
+        
+        student.grades.forEach((g: any) => {
+          const key = `${g.bimester}-${g.subject}`
+          if (!gradeGroups[key]) gradeGroups[key] = {}
+          
+          if (g.label?.includes('1ª Prova')) gradeGroups[key].p1 = g.value
+          else if (g.label?.includes('2ª Prova')) gradeGroups[key].p2 = g.value
+        })
+
+        // Calcular médias bimestrais do aluno
+        const bimesterAverages = Object.values(gradeGroups).map(group => {
+          if (group.p1 !== undefined && group.p2 !== undefined) return (group.p1 + group.p2) / 2
+          if (group.p1 !== undefined) return group.p1 // Parcial
+          if (group.p2 !== undefined) return group.p2 // Parcial
+          return null
+        }).filter(v => v !== null) as number[]
+
+        if (bimesterAverages.length > 0) {
+          const studentAvg = bimesterAverages.reduce((a, b) => a + b, 0) / bimesterAverages.length
+          totalScore += studentAvg
+          studentCount++
+        }
+      })
+
+      if (studentCount === 0) return 0
+      return Math.round((totalScore / studentCount) * 10) // Convertendo 0-10 para 0-100%
+    }
+
+    const performance = {
+      levels: levels.map(l => ({
+        id: l.id,
+        name: l.name,
+        score: calculateEntityScore(l.grades.flatMap(g => g.classes.flatMap(c => c.students)))
+      })),
+      grades: levels.flatMap(l => l.grades.map(g => ({
+        id: g.id,
+        name: g.name,
+        level: l.name,
+        score: calculateEntityScore(g.classes.flatMap(c => c.students))
+      }))),
+      classes: levels.flatMap(l => l.grades.flatMap(g => g.classes.map(c => ({
+        id: c.id,
+        name: c.name,
+        grade: g.name,
+        score: calculateEntityScore(c.students)
+      }))))
+    }
+
+    res.json(performance)
+  } catch (error) {
+    console.error('Erro ao calcular performance:', error)
+    res.status(500).json({ error: 'Erro ao processar dados de desempenho' })
+  }
+}
