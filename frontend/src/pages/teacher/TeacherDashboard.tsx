@@ -180,7 +180,3 @@ const TeacherStatCard = ({ icon, label, value, color, trend }: any) => {
     </div>
   )
 }
- </div>
-    </div>
-  )
-}
