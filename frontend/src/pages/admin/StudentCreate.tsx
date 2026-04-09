@@ -44,6 +44,7 @@ export const StudentCreate: React.FC = () => {
   }, [])
 
   const fetchInitialData = async () => {
+    try {
       const [raData, levelsData] = await Promise.all([
         api('/admin/next-ra'),
         api('/admin/academic/levels')
