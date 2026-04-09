@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Plus, Search, Edit2, Trash2, Filter, Download, MoreHorizontal, UserCircle, GraduationCap } from 'lucide-react'
+import { Plus, Search, Edit2, Trash2, Filter, Download, GraduationCap } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
 
@@ -13,12 +13,7 @@ interface Student {
   status: string; 
 }
 
-const GRADE_MAP: Record<string, string[]> = {
-  INFANTIL: ['Pilar 1', 'Pilar 2', 'Pilar 3', 'Pilar 4', 'Pilar 5'],
-  FUNDAMENTAL_I: ['1º Ano', '2º Ano', '3º Ano', '4º Ano', '5º Ano'],
-  FUNDAMENTAL_II: ['6º Ano', '7º Ano', '8º Ano', '9º Ano'],
-  MEDIO: ['1ª Série', '2ª Série', '3ª Série']
-}
+
 
 export const StudentsList: React.FC = () => {
   const navigate = useNavigate()

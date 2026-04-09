@@ -6,15 +6,11 @@ import {
   LayoutDashboard, 
   Users, 
   UserSquare2, 
-  CalendarDays, 
   GraduationCap, 
-  FileCheck, 
   Bell,
   MessageSquare,
   ClipboardCheck,
-  BookOpenCheck,
   ChevronRight,
-  Settings,
   Layers,
   ListOrdered,
   Clock,
@@ -33,8 +29,6 @@ export const Layout: React.FC = () => {
 
   const isAdmin = user?.role === 'DIRECTOR' || user?.role === 'COORDINATOR' || user?.role === 'SECRETARY'
   const isTeacher = user?.role === 'TEACHER'
-  const isParent = user?.role === 'PARENT'
-  const isCoordinator = user?.role === 'COORDINATOR'
 
   const getPageTitle = () => {
     const path = location.pathname.split('/').pop() || 'Dashboard'

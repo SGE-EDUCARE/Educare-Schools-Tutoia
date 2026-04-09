@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Users, UserSquare2, ClipboardList, AlertCircle, TrendingDown, ArrowUpRight, Calendar, ArrowRight } from 'lucide-react'
+import { Users, UserSquare2, ClipboardList, TrendingDown, ArrowUpRight, ArrowRight } from 'lucide-react'
 import { api } from '../../utils/api'
 
 interface Stats {

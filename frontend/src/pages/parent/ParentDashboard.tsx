@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Calendar, FileText, CheckCircle, Bell, User, ArrowRight, Star, Heart, TrendingUp } from 'lucide-react'
+import { Calendar, FileText, CheckCircle, Bell, ArrowRight, Star, TrendingUp } from 'lucide-react'
 
 export const ParentDashboard: React.FC = () => {
   const [children] = useState([

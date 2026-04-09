@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GraduationCap, ArrowLeft, Check, User, MapPin, Phone, FileText, Calendar, Heart, Shield } from 'lucide-react'
+import { ArrowLeft, Check, User, Heart, Shield } from 'lucide-react'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
 

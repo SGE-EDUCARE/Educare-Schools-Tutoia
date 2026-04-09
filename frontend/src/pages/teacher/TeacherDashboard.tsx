@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Calendar, UserCheck, BookOpen, AlertCircle, ArrowRight, Clock, UserPlus, Users, LayoutDashboard } from 'lucide-react'
+import { BookOpen, AlertCircle, ArrowRight, Clock, UserPlus, Users, LayoutDashboard } from 'lucide-react'
 
 export const TeacherDashboard: React.FC = () => {
   const [classes] = useState([

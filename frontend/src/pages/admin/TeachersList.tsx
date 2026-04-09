@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Plus, Search, Edit2, Trash2, Mail, ExternalLink, MoreVertical, ShieldCheck, UserSquare2, FileText } from 'lucide-react'
+import { Plus, Search, Edit2, Mail, MoreVertical, ShieldCheck, UserSquare2 } from 'lucide-react'
 import { api } from '../../utils/api'
 
 interface Teacher {
