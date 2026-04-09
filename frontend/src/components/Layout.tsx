@@ -43,9 +43,29 @@ export const Layout: React.FC = () => {
   const isAdmin = user?.role === 'DIRECTOR' || user?.role === 'COORDINATOR' || user?.role === 'SECRETARY'
   const isTeacher = user?.role === 'TEACHER'
 
+
   const getPageTitle = () => {
-    const path = location.pathname.split('/').pop() || 'Dashboard'
-    return path.charAt(0).toUpperCase() + path.slice(1).replace('-', ' ')
+    const path = location.pathname
+    const routeTitles: Record<string, string> = {
+      '/teacher/dashboard': 'Meu Painel',
+      '/teacher/attendance': 'Chamada Diária',
+      '/teacher/grades': 'Lançamento de Notas',
+      '/teacher/lesson-plan': 'Plano de Aula',
+      '/teacher/homework': 'Agenda de Casa',
+      '/teacher/notices': 'Comunicados',
+      '/teacher/routine': 'Rotina Infantil',
+      '/admin/dashboard': 'Dashboard',
+      '/admin/students': 'Gestão de Alunos',
+      '/admin/teachers': 'Corpo Docente',
+      '/admin/levels': 'Níveis de Ensino',
+      '/admin/grades': 'Anos / Séries',
+      '/admin/turns': 'Turnos',
+      '/admin/classes': 'Turmas',
+      '/chat': 'Chat e Mural',
+    }
+    // Match by prefix (handles routes with :id params)
+    const match = Object.keys(routeTitles).find(key => path.startsWith(key))
+    return match ? routeTitles[match] : 'Painel'
   }
 
   return (
@@ -150,14 +170,13 @@ export const Layout: React.FC = () => {
 
       {/* Main Container */}
       <div className="main-content">
-        {/* Topbar */}
         <header className="topbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             {/* Menu Hambúrguer (Mobile Only) */}
             <button 
               className="mobile-only btn-ghost" 
               onClick={() => setIsSidebarOpen(true)}
-              style={{ padding: '0.5rem' }}
+              style={{ padding: '0.5rem', flexShrink: 0 }}
             >
               <Menu size={24} />
             </button>
@@ -176,23 +195,25 @@ export const Layout: React.FC = () => {
               {user?.role}
             </div>
             <ChevronRight size={16} opacity={0.4} className="desktop-only" />
-            <span style={{ fontSize: '0.95rem', color: 'hsl(var(--text))', fontWeight: 600 }}>{getPageTitle()}</span>
+            <span style={{ fontSize: '1rem', color: 'hsl(var(--text))', fontWeight: 700 }}>{getPageTitle()}</span>
           </div>
-          <div className="flex items-center gap-6">
-             <button className="btn-ghost" style={{ position: 'relative' }}>
-               <Bell size={22} />
+          <div className="flex items-center gap-3">
+             <button className="btn-ghost" style={{ position: 'relative', padding: '0.5rem' }}>
+               <Bell size={20} />
                <span style={{ position: 'absolute', top: '2px', right: '2px', width: '8px', height: '8px', backgroundColor: 'hsl(var(--error))', borderRadius: '50%', border: '2px solid hsl(var(--surface))' }}></span>
              </button>
-            <div className="flex items-center gap-3">
-               <div style={{ textAlign: 'right' }}>
+            <div className="flex items-center gap-2">
+               {/* Nome visível só no desktop */}
+               <div className="desktop-only" style={{ textAlign: 'right' }}>
                   <p style={{ fontSize: '0.9rem', fontWeight: 700 }}>{user?.name}</p>
                </div>
-               <div className="icon-box" style={{ width: '40px', height: '40px', backgroundColor: 'hsl(var(--primary))', color: 'white', fontWeight: 700 }}>
+               <div className="icon-box" style={{ width: '36px', height: '36px', backgroundColor: 'hsl(var(--primary))', color: 'white', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', flexShrink: 0 }}>
                 {user?.name?.charAt(0)}
               </div>
             </div>
           </div>
         </header>
+
 
         <main className="page-content animate-fade-in">
           <Outlet />
