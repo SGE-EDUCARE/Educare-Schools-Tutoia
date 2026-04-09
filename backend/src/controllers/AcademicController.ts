@@ -29,7 +29,7 @@ export const createLevel = async (req: Request, res: Response) => {
 export const deleteLevel = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    await prisma.academicLevel.delete({ where: { id } })
+    await prisma.academicLevel.delete({ where: { id: String(id) } })
     res.json({ message: 'Nível removido com sucesso' })
   } catch (error) {
     res.status(500).json({ error: 'Erro ao remover nível. Verifique se existem séries vinculadas.' })
@@ -59,7 +59,7 @@ export const createGrade = async (req: Request, res: Response) => {
 export const deleteGrade = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    await prisma.academicGrade.delete({ where: { id } })
+    await prisma.academicGrade.delete({ where: { id: String(id) } })
     res.json({ message: 'Série removida com sucesso' })
   } catch (error) {
     res.status(500).json({ error: 'Erro ao remover série. Verifique se existem turmas vinculadas.' })
@@ -89,7 +89,7 @@ export const createTurn = async (req: Request, res: Response) => {
 export const deleteTurn = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    await prisma.academicTurn.delete({ where: { id } })
+    await prisma.academicTurn.delete({ where: { id: String(id) } })
     res.json({ message: 'Turno removido com sucesso' })
   } catch (error) {
     res.status(500).json({ error: 'Erro ao remover turno.' })
@@ -126,7 +126,7 @@ export const createClassFull = async (req: Request, res: Response) => {
 export const deleteClassFull = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    await prisma.class.delete({ where: { id } })
+    await prisma.class.delete({ where: { id: String(id) } })
     res.json({ message: 'Turma removida com sucesso' })
   } catch (error) {
     res.status(500).json({ error: 'Erro ao remover turma.' })
