@@ -9,7 +9,14 @@ interface Student {
   registration_id: string;
   education_level: string;
   grade_name: string;
-  class?: { name: string };
+  class?: { 
+    name: string;
+    grade?: {
+      name: string;
+      level?: { name: string };
+    };
+    turn?: { name: string };
+  };
   status: string; 
 }
 
@@ -115,9 +122,20 @@ export const StudentsList: React.FC = () => {
                       </span>
                     </td>
                     <td>
-                      <div className="flex flex-col">
-                        <span style={{ fontWeight: 700 }}>{student.class?.name || student.grade_name}</span>
-                        <span style={{ fontSize: '0.8rem', color: 'hsl(var(--text-light))' }}>{student.education_level}</span>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex flex-col">
+                          <span style={{ fontWeight: 800, fontSize: '1rem', color: 'hsl(var(--text))' }}>
+                            {student.class?.grade?.name || student.grade_name} - {student.class?.name || 'S/T'}
+                          </span>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'hsl(var(--primary))' }}>
+                            {student.class?.grade?.level?.name || student.education_level}
+                          </span>
+                        </div>
+                        {student.class?.turn?.name && (
+                          <span className="badge" style={{ fontSize: '0.7rem', padding: '0.2rem 0.6rem', width: 'fit-content', backgroundColor: 'hsl(var(--secondary))', color: 'hsl(var(--text-light))' }}>
+                            Turno: {student.class.turn.name}
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td>

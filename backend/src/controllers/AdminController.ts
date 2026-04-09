@@ -5,7 +5,16 @@ export const getStudents = async (req: Request, res: Response) => {
   try {
     const students = await prisma.student.findMany({
       include: {
-        class: true,
+        class: {
+          include: {
+            grade: {
+              include: {
+                level: true
+              }
+            },
+            turn: true
+          }
+        },
       }
     })
     res.json(students)
