@@ -8,6 +8,8 @@ export class TeacherController {
   // Listar turmas do professor
   static async getClasses(req: AuthRequest, res: Response) {
     const teacher_id = req.user?.id;
+    if (!teacher_id) return res.status(401).json({ message: 'Professor não identificado' });
+
     try {
       const allocations = await prisma.teacherAllocation.findMany({
         where: { teacher_id },
@@ -22,9 +24,10 @@ export class TeacherController {
             }
           }
         }
-      });
+      }) as any[];
+      
       res.json(allocations.map(a => ({
-        ...a.class,
+        ...(a.class || {}),
         subject: a.subject
       })));
     } catch (error: any) {
