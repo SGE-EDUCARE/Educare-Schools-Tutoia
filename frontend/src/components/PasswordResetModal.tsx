@@ -59,8 +59,10 @@ export const PasswordResetModal: React.FC = () => {
       padding: '1.5rem'
     }}>
       <div className="card" style={{ 
-        maxWidth: '500px', 
+        maxWidth: '550px', 
         width: '100%', 
+        maxHeight: '90vh',
+        overflowY: 'auto',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
         animation: 'modalSlideUp 0.4s ease-out'
       }}>

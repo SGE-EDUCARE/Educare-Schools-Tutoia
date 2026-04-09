@@ -15,6 +15,12 @@ import { AcademicClasses } from './pages/admin/AcademicClasses'
 import { StudentEdit } from './pages/admin/StudentEdit'
 import { Toaster } from 'react-hot-toast'
 import { TeacherDashboard } from './pages/teacher/TeacherDashboard'
+import { AttendancePage } from './pages/teacher/AttendancePage'
+import { GradesEntryPage } from './pages/teacher/GradesEntryPage'
+import { LessonPlanPage } from './pages/teacher/LessonPlanPage'
+import { HomeworkPage } from './pages/teacher/HomeworkPage'
+import { NoticesPage } from './pages/teacher/NoticesPage'
+import { InfantRoutinePage } from './pages/teacher/InfantRoutinePage'
 import { ParentDashboard } from './pages/parent/ParentDashboard'
 import { useAuthStore } from './store/useAuthStore'
 
@@ -69,7 +75,12 @@ function App() {
           {/* Rotas de Professor */}
           <Route element={<ProtectedRoute allowedRoles={['TEACHER']} />}>
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
-            {/* Outras rotas entrarão aqui */}
+            <Route path="/teacher/attendance/:classId" element={<AttendancePage />} />
+            <Route path="/teacher/grades/:classId" element={<GradesEntryPage />} />
+            <Route path="/teacher/lesson-plan/:classId" element={<LessonPlanPage />} />
+            <Route path="/teacher/homework/:classId" element={<HomeworkPage />} />
+            <Route path="/teacher/notices/:classId" element={<NoticesPage />} />
+            <Route path="/teacher/routine/:classId" element={<InfantRoutinePage />} />
           </Route>
 
           {/* Rotas de Pais */}

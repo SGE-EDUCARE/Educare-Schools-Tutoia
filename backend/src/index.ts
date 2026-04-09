@@ -3,6 +3,7 @@ import cors from 'cors'
 import * as dotenv from 'dotenv'
 import adminRoutes from './routes/adminRoutes'
 import authRoutes from './routes/authRoutes'
+import teacherRoutes from './routes/teacherRoutes'
 
 dotenv.config()
 
@@ -17,6 +18,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/teacher', teacherRoutes)
 
 const PORT = process.env.PORT || 3001
 

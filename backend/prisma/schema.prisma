@@ -21,6 +21,7 @@ model User {
   messages_recv       Message[]    @relation("ReceivedMessages")
   messages_sent Message[]    @relation("SentMessages")
   children      Student[]    @relation("ParentStudents")
+  daily_routines DailyRoutine[]
 
   @@map("users")
 }
@@ -49,6 +50,7 @@ model Student {
   parent_id       String?
   attendances     Attendance[]
   grades          Grade[]
+  daily_routines  DailyRoutine[]
   class           Class?       @relation(fields: [class_id], references: [id])
   parent          User?        @relation("ParentStudents", fields: [parent_id], references: [id])
 
@@ -189,4 +191,20 @@ model TeacherAllocation {
   class      Class    @relation(fields: [class_id], references: [id], onDelete: Cascade)
 
   @@map("teacher_allocations")
+}
+
+model DailyRoutine {
+  id         String   @id @default(uuid())
+  date       DateTime @default(now())
+  food       String?  // Tudo, Parcial, Nada
+  sleep      Boolean  @default(false)
+  hygiene    String?  // Troca de Fralda, Banho, etc
+  obs        String?
+  student_id String
+  teacher_id String
+  
+  student    Student  @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  teacher    User     @relation(fields: [teacher_id], references: [id], onDelete: Cascade)
+  
+  @@map("daily_routines")
 }
