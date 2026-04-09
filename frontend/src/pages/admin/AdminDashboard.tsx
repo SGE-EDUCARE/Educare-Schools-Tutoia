@@ -45,25 +45,6 @@ export const AdminDashboard: React.FC = () => {
   }, [])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem', position: 'relative' }}>
-      <div className="bg-gradient-top"></div>
-      
-      <header className="animate-fade-in" style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between',
-        backgroundColor: 'hsl(var(--primary-light) / 0.3)',
-        padding: '2.5rem',
-        borderRadius: 'var(--radius-xl)',
-        border: '1px solid hsl(var(--primary) / 0.1)',
-        overflow: 'hidden',
-        position: 'relative'
-      }}>
-        <div style={{ zIndex: 2 }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-0.05em', color: 'hsl(var(--text))', marginBottom: '0.5rem' }}>
-            Olá, <span style={{ color: 'hsl(var(--primary))' }}>Ezequiel</span> 👋
-          </h1>
-          <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.15rem', fontWeight: 500, maxWidth: '500px' }}>
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', padding: '1rem' }}>
       <header className="flex justify-between items-center mb-4">
         <div>
