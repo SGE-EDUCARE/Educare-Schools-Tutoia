@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Users, UserSquare2, ClipboardList, TrendingDown, ArrowRight, GraduationCap } from 'lucide-react'
+import { Users, UserSquare2, ClipboardList, TrendingDown, GraduationCap } from 'lucide-react'
 import { api } from '../../utils/api'
 
 interface Stats {
