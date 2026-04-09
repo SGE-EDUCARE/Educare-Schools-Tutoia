@@ -1,11 +1,12 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { AuthRequest } from '../middleware/auth';
 
 const prisma = new PrismaClient();
 
 export class TeacherController {
   // Listar turmas do professor
-  static async getClasses(req: Request, res: Response) {
+  static async getClasses(req: AuthRequest, res: Response) {
     const teacher_id = req.user?.id;
     try {
       const allocations = await prisma.teacherAllocation.findMany({
@@ -32,11 +33,11 @@ export class TeacherController {
   }
 
   // Listar alunos de uma turma
-  static async getStudentsByClass(req: Request, res: Response) {
+  static async getStudentsByClass(req: AuthRequest, res: Response) {
     const { classId } = req.params;
     try {
       const students = await prisma.student.findMany({
-        where: { class_id: classId },
+        where: { class_id: String(classId) },
         orderBy: { name: 'asc' }
       });
       res.json(students);
@@ -46,7 +47,7 @@ export class TeacherController {
   }
 
   // Lançar Frequência
-  static async launchAttendance(req: Request, res: Response) {
+  static async launchAttendance(req: AuthRequest, res: Response) {
     const { classId, date, attendances } = req.body; // attendances: { studentId: boolean }
     try {
       const operations = Object.entries(attendances).map(([studentId, present]) => {
@@ -111,7 +112,7 @@ export class TeacherController {
   }
 
   // Lançar Notas
-  static async launchGrades(req: Request, res: Response) {
+  static async launchGrades(req: AuthRequest, res: Response) {
     const { bimester, subject, label, grades } = req.body; // grades: { studentId: value }
     try {
       for (const [studentId, value] of Object.entries(grades)) {
@@ -148,7 +149,7 @@ export class TeacherController {
   }
 
   // Rotina Diária (Infantil)
-  static async launchDailyRoutine(req: Request, res: Response) {
+  static async launchDailyRoutine(req: AuthRequest, res: Response) {
     const teacher_id = req.user?.id;
     const { date, routines } = req.body; // routines: { studentId: { food, sleep, hygiene, obs } }
     try {
@@ -198,7 +199,7 @@ export class TeacherController {
   }
 
   // Agenda de Aula
-  static async launchHomework(req: Request, res: Response) {
+  static async launchHomework(req: AuthRequest, res: Response) {
     const { classId, title, description, dueDate } = req.body;
     try {
       const homework = await prisma.homework.create({
@@ -216,7 +217,7 @@ export class TeacherController {
   }
 
   // Comunicados
-  static async createNotice(req: Request, res: Response) {
+  static async createNotice(req: AuthRequest, res: Response) {
     const { title, content, targetRole, classId } = req.body;
     try {
       const notice = await prisma.notice.create({
@@ -234,7 +235,7 @@ export class TeacherController {
   }
 
   // Planos de Aula
-  static async createLessonPlan(req: Request, res: Response) {
+  static async createLessonPlan(req: AuthRequest, res: Response) {
     const teacher_id = req.user?.id;
     const { date, content, type, classId } = req.body;
     try {
