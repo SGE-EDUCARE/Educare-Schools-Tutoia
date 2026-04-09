@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3001/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
 export const api = async (endpoint: string, options: RequestInit = {}) => {
   // Pegando token do zustand storage persistido
