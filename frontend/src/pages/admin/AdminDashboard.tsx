@@ -166,7 +166,7 @@ const StatCard = ({ icon, label, value, trend, color, loading }: any) => {
       borderLeft: `5px solid hsl(${colorMap[color]})`,
       transition: 'var(--transition-all)'
     }}>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between" style={{ marginBottom: '2.5rem' }}>
         <div className="icon-box" style={{ 
           width: '56px', 
           height: '56px', 
