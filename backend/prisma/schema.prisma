@@ -63,7 +63,7 @@ model AcademicGrade {
   id          String   @id @default(uuid())
   name        String   // ex: 1º Ano
   level_id    String
-  level       AcademicLevel @relation(fields: [level_id], references: [id])
+  level       AcademicLevel @relation(fields: [level_id], references: [id], onDelete: Cascade)
   classes     Class[]
   @@map("academic_grades")
 }
@@ -79,9 +79,9 @@ model Class {
   id              String       @id @default(uuid())
   name            String       // ex: Turma A
   grade_id        String
-  grade           AcademicGrade @relation(fields: [grade_id], references: [id])
+  grade           AcademicGrade @relation(fields: [grade_id], references: [id], onDelete: Cascade)
   turn_id         String
-  turn            AcademicTurn  @relation(fields: [turn_id], references: [id])
+  turn            AcademicTurn  @relation(fields: [turn_id], references: [id], onDelete: Cascade)
   
   homeworks       Homework[]
   lesson_plans    LessonPlan[]
