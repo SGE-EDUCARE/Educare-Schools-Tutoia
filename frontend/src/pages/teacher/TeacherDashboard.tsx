@@ -37,17 +37,17 @@ export const TeacherDashboard: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '3.5rem' }}>
-      <header className="flex justify-between items-end">
+      <header className="flex flex-mobile-col items-start justify-between gap-4">
         <div>
           <h1 style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.04em', color: 'hsl(var(--text))' }}>Painel Docente</h1>
           <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.2rem', fontWeight: 500 }}>Sua central de controle para turmas, diários e planejamento.</p>
         </div>
-        <div style={{ padding: '0.75rem 1.5rem', backgroundColor: 'hsl(var(--surface))', borderRadius: 'var(--radius-md)', border: '1px solid hsl(var(--border) / 0.5)', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ padding: '0.75rem 1.5rem', backgroundColor: 'hsl(var(--surface))', borderRadius: 'var(--radius-md)', border: '1px solid hsl(var(--border) / 0.5)', boxShadow: 'var(--shadow-sm)', width: 'auto' }}>
            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'hsl(var(--primary))' }}>Ambiente de Trabalho Ativo</span>
         </div>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.25rem' }}>
         <TeacherStatCard icon={<BookOpen size={28} />} label="Turmas Ativas" value={classes.length.toString().padStart(2, '0')} color="primary" trend="Sincronizado" />
         <TeacherStatCard icon={<GraduationCap size={28} />} label="Total Alunos" value={classes.reduce((acc, c) => acc + c._count.students, 0).toString().padStart(2, '0')} color="success" trend="Base de dados real" />
         <TeacherStatCard icon={<AlertCircle size={28} />} label="Pendências" value="00" color="warning" trend="Tudo em dia" />
@@ -71,7 +71,7 @@ export const TeacherDashboard: React.FC = () => {
             <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.1rem' }}>Você ainda não possui turmas vinculadas. Entre em contato com a coordenação.</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
             {classes.map(cls => (
                <div key={cls.id} className="card" style={{ 
                  display: 'flex', 
@@ -81,7 +81,7 @@ export const TeacherDashboard: React.FC = () => {
                  position: 'relative',
                  overflow: 'hidden'
                }}>
-                  <div className="flex justify-between items-start" style={{ position: 'relative' }}>
+                  <div className="flex flex-mobile-col justify-between items-start gap-4" style={{ position: 'relative' }}>
                     <div>
                       <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary-light))', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)' }}>
                         {cls.subject || 'Polivalente'}
@@ -91,7 +91,7 @@ export const TeacherDashboard: React.FC = () => {
                         {cls.grade.name} • {cls.grade.level.name}
                       </p>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
+                    <div style={{ textAlign: 'left' }}>
                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'hsl(var(--text))' }}>{cls._count.students}</div>
                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'hsl(var(--text-light))', textTransform: 'uppercase' }}>Alunos</div>
                     </div>
