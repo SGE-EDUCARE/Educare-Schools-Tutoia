@@ -103,7 +103,7 @@ export const TeachersList: React.FC = () => {
                       </div>
                     </td>
                     <td>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', minWidth: '180px', padding: '0.5rem 0' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0.5rem 0' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
                             <span style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))' }}>
                               {(teacher as any).allocations?.length || 0} Atribuições
