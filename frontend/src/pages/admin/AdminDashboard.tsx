@@ -15,6 +15,12 @@ export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'levels' | 'grades' | 'classes'>('levels')
   const [loading, setLoading] = useState(true)
 
+  // Cores institucionais do Horizon UI
+  const brandColor = '#4318FF'
+  const textColor = '#2B3674'
+  const textSecondary = '#A3AED0'
+  const bgMain = '#F4F7FE'
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,98 +64,62 @@ export const AdminDashboard: React.FC = () => {
             Olá, <span style={{ color: 'hsl(var(--primary))' }}>Ezequiel</span> 👋
           </h1>
           <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.15rem', fontWeight: 500, maxWidth: '500px' }}>
-            Seu portal administrativo está pronto. Veja o que mudou na rede Educare hoje.
-          </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', padding: '1rem' }}>
+      <header className="flex justify-between items-center mb-4">
+        <div>
+          <p style={{ color: textSecondary, fontSize: '0.9rem', fontWeight: 600 }}>Páginas / Dashboard</p>
+          <h1 style={{ fontSize: '2.1rem', fontWeight: 700, color: textColor, letterSpacing: '-0.02em' }}>Dashboard Principal</h1>
         </div>
-        <div style={{ 
-          position: 'absolute', right: '-20px', bottom: '-20px', opacity: 0.1, pointerEvents: 'none'
-        }}>
-          <GraduationCap size={240} />
+        <div style={{ display: 'flex', gap: '1rem', backgroundColor: 'white', padding: '0.6rem 1rem', borderRadius: 'var(--radius-full)', boxShadow: 'var(--shadow-horizon)' }}>
+           <span style={{ fontSize: '0.85rem', fontWeight: 700, color: brandColor }}>{new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
         </div>
       </header>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-        <StatCard 
-          icon={<Users size={28} />} 
-          label="Estudantes Ativos" 
-          value={stats?.totalStudents.toLocaleString() || '0'} 
-          trend="+12 este mês"
-          color="primary"
-          loading={loading}
-        />
-        <StatCard 
-          icon={<UserSquare2 size={28} />} 
-          label="Docentes" 
-          value={stats?.activeTeachers.toString() || '0'} 
-          trend="Quadro completo"
-          color="success"
-          loading={loading}
-        />
-        <StatCard 
-          icon={<ClipboardList size={28} />} 
-          label="Planos Pendentes" 
-          value={stats?.pendingPlans.toString() || '0'} 
-          trend="Urgente"
-          color="warning"
-          loading={loading}
-        />
-        <StatCard 
-          icon={<TrendingDown size={28} />} 
-          label="Taxa de Evasão" 
-          value={`${stats?.dropoutRate}%`} 
-          trend="-0.2% vs 2025"
-          color="error"
-          loading={loading}
-        />
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
+        <StatCard icon={<Users size={22} />} label="Total Estudantes" value={stats?.totalStudents || '--'} color="primary" />
+        <StatCard icon={<UserSquare2 size={22} />} label="Docentes Ativos" value={stats?.activeTeachers || '--'} color="success" />
+        <StatCard icon={<ClipboardList size={22} />} label="Planos Pendentes" value={stats?.pendingPlans || '--'} color="warning" />
+        <StatCard icon={<TrendingDown size={22} />} label="Evasão Escolar" value={stats?.dropoutRate ? `${stats.dropoutRate}%` : '--'} color="error" />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '3rem' }}>
-        <div className="card glass animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', animationDelay: '0.2s' }}>
-          <div className="flex items-center justify-between">
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
+        <div className="card" style={{ padding: '2rem', boxShadow: 'var(--shadow-horizon)', borderRadius: 'var(--radius-xl)' }}>
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="card-title" style={{ marginBottom: '0.25rem' }}>Status de Desempenho</h3>
-              <p style={{ fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 500 }}>Baseado no critério institucional: (P1 + P2) / 2</p>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: textColor, marginBottom: '0.25rem' }}>Status de Desempenho</h3>
+              <p style={{ fontSize: '0.85rem', color: textSecondary, fontWeight: 500 }}>Fórmula: (Prova 1 + Prova 2) / 2</p>
+            </div>
+            
+            <div style={{ 
+              display: 'flex', 
+              backgroundColor: bgMain, 
+              padding: '0.3rem', 
+              borderRadius: 'var(--radius-lg)'
+            }}>
+              {(['levels', 'grades', 'classes'] as const).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  style={{
+                    padding: '0.5rem 1.2rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: activeTab === tab ? 'white' : 'transparent',
+                    color: activeTab === tab ? brandColor : textSecondary,
+                    boxShadow: activeTab === tab ? '0px 4px 10px rgba(0,0,0,0.05)' : 'none',
+                    transition: 'all 0.2s ease',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {tab === 'levels' ? 'Nível' : tab === 'grades' ? 'Série' : 'Turma'}
+                </button>
+              ))}
             </div>
           </div>
-
-          <div style={{ 
-            display: 'flex', 
-            backgroundColor: 'hsl(var(--background))', 
-            padding: '0.4rem', 
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid hsl(var(--border) / 0.5)' 
-          }}>
-            {(['levels', 'grades', 'classes'] as const).map(tab => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                style={{
-                  flex: 1,
-                  padding: '0.6rem',
-                  fontSize: '0.8rem',
-                  fontWeight: 800,
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: activeTab === tab ? 'hsl(var(--surface))' : 'transparent',
-                  color: activeTab === tab ? 'hsl(var(--primary))' : 'hsl(var(--text-light))',
-                  boxShadow: activeTab === tab ? 'var(--shadow-sm)' : 'none',
-                  transition: 'all 0.2s ease',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
-                }}
-              >
-                {tab === 'levels' ? 'Nível' : tab === 'grades' ? 'Série' : 'Turma'}
-              </button>
-            ))}
-          </div>
           
-          <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '1.75rem',
-            maxHeight: '380px',
-            overflowY: 'auto',
-            paddingRight: '0.5rem'
-          }} className="no-scrollbar">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {performance && performance[activeTab].length > 0 ? (
               performance[activeTab].map((item: any) => (
                 <PowerBar 
@@ -157,54 +127,33 @@ export const AdminDashboard: React.FC = () => {
                   label={item.name} 
                   subLabel={item.level || item.grade}
                   percent={item.score} 
-                  color={item.score >= 70 ? 'success' : item.score >= 50 ? 'warning' : 'error'} 
                 />
               ))
             ) : (
-              <div style={{ padding: '2rem', textAlign: 'center', color: 'hsl(var(--text-light))' }}>
-                Aguardando lançamentos de notas...
+              <div style={{ padding: '3rem', textAlign: 'center', color: textSecondary }}>
+                Sem lançamentos detectados
               </div>
             )}
           </div>
         </div>
 
-        <div className="card glass animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', animationDelay: '0.3s' }}>
-          <div className="flex items-center justify-between">
-            <h3 className="card-title" style={{ marginBottom: 0 }}>Central de Avisos</h3>
-            <div className="badge animate-float" style={{ backgroundColor: 'hsl(var(--error) / 0.1)', color: 'hsl(var(--error))', border: '1px solid hsl(var(--error) / 0.2)' }}>LIVE</div>
+        <div className="card" style={{ padding: '2rem', boxShadow: 'var(--shadow-horizon)', borderRadius: 'var(--radius-xl)' }}>
+          <div className="flex items-center justify-between mb-8">
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: textColor }}>Avisos da Rede</h3>
+            <GraduationCap size={24} color={brandColor} />
           </div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <NoticeItem 
-              title="Reunião Pedagógica" 
-              time="Hoje, 14:00" 
-              type="primary"
-              description="Discussão estratégica sobre matriz curricular."
-            />
-            <NoticeItem 
-              title="Atualização de Notas" 
-              time="12 Abr, 2026" 
-              type="error"
-              description="Prazo fatal para fechamento do bimestre."
-            />
-            <NoticeItem 
-              title="Evento Educare" 
-              time="20 Abr, 2026" 
-              type="success"
-              description="Workshop de novas tecnologias aplicadas."
-            />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <NoticeItem title="Conselho de Classe" date="Agendado para 15/05" type="Live" />
+            <NoticeItem title="Formação Docente" date="Workshop BNCC" type="Recente" />
+            <NoticeItem title="Final do Bimestre" date="Lançamento até 20/05" type="Urgente" />
           </div>
-
-          <button className="btn btn-primary glow-primary" style={{ width: '100%', marginTop: 'auto' }}>
-            Novo Comunicado
-          </button>
         </div>
       </div>
     </div>
   )
 }
 
-const StatCard = ({ icon, label, value, trend, color, loading }: any) => {
+const StatCard = ({ icon, label, value, color }: any) => {
   const colorMap: any = {
     primary: 'var(--primary)',
     success: 'var(--success)',
@@ -213,111 +162,56 @@ const StatCard = ({ icon, label, value, trend, color, loading }: any) => {
   }
 
   return (
-    <div className={`card glass glow-${color} animate-scale-in`} style={{ 
-      borderLeft: `5px solid hsl(${colorMap[color]})`,
-      transition: 'var(--transition-all)'
-    }}>
-      <div className="flex items-center justify-between" style={{ marginBottom: '2.5rem' }}>
-        <div className="icon-box" style={{ 
-          width: '56px', 
-          height: '56px', 
-          backgroundColor: `hsl(${colorMap[color]} / 0.1)`, 
-          color: `hsl(${colorMap[color]})`,
-          borderRadius: '16px',
-        }}>
-          {icon}
-        </div>
-        {!loading && (
-          <div style={{ 
-            fontSize: '0.8rem', 
-            fontWeight: 700, 
-            color: `hsl(${colorMap[color]})`,
-            backgroundColor: `hsl(${colorMap[color]} / 0.05)`,
-            padding: '0.4rem 0.8rem',
-            borderRadius: 'var(--radius-sm)'
-          }}>
-            {trend}
-          </div>
-        )}
-      </div>
-
-      {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <div style={{ height: '24px', width: '70%', backgroundColor: 'hsl(var(--background))', borderRadius: '4px' }}></div>
-          <div style={{ height: '40px', width: '50%', backgroundColor: 'hsl(var(--background))', borderRadius: '4px' }}></div>
-        </div>
-      ) : (
-        <div>
-          <p style={{ color: 'hsl(var(--text-light))', fontSize: '1rem', fontWeight: 600, marginBottom: '0.25rem' }}>{label}</p>
-          <h3 style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 1 }}>{value}</h3>
-        </div>
-      )}
-    </div>
-  )
-}
-
-const NoticeItem = ({ title, time, type, description }: any) => {
-  const colorMap: any = {
-    primary: 'var(--primary)',
-    success: 'var(--success)',
-    warning: 'var(--warning)',
-    error: 'var(--error)'
-  }
-
-  return (
-    <div className="flex gap-4 p-4 glass animate-scale-in" style={{ 
-      borderRadius: 'var(--radius-md)', 
-      border: '1px solid hsl(var(--border) / 0.4)',
-      cursor: 'pointer',
-      transition: 'var(--transition-all)'
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = 'translateX(8px)'
-      e.currentTarget.style.backgroundColor = `hsl(${colorMap[type]} / 0.05)`
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = 'translateX(0)'
-      e.currentTarget.style.backgroundColor = 'transparent'
-    }}
-    >
-      <div style={{ width: '4px', borderRadius: '2px', backgroundColor: `hsl(${colorMap[type]})` }}></div>
-      <div style={{ flex: 1 }}>
-        <div className="flex items-center justify-between mb-1">
-          <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>{title}</h4>
-          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: `hsl(${colorMap[type]})`, textTransform: 'uppercase' }}>{time}</span>
-        </div>
-        <p style={{ fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 500, lineHeight: 1.4 }}>{description}</p>
-      </div>
-    </div>
-  )
-}
-
-const PowerBar = ({ label, subLabel, percent, color }: any) => {
-  const colorMap: any = {
-    primary: 'var(--primary)',
-    success: 'var(--success)',
-    warning: 'var(--warning)',
-    error: 'var(--error)'
-  }
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-      <div className="flex items-center justify-between">
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'hsl(var(--text))' }}>{label}</span>
-          {subLabel && <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'hsl(var(--text-light))' }}>{subLabel}</span>}
-        </div>
-        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: `hsl(${colorMap[color]})` }}>{percent === 0 ? '--' : `${percent}%`}</span>
-      </div>
-      <div style={{ 
-        height: '10px', width: '100%', backgroundColor: 'hsl(var(--background))', 
-        borderRadius: 'var(--radius-full)', overflow: 'hidden', border: '1px solid hsl(var(--border) / 0.5)'
+    <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '1.25rem', boxShadow: 'var(--shadow-horizon)', borderRadius: 'var(--radius-xl)' }}>
+      <div className="icon-box" style={{ 
+        width: '56px', 
+        height: '56px', 
+        backgroundColor: '#F4F7FE', 
+        color: `hsl(${colorMap[color]})`,
+        borderRadius: '50%',
+        minWidth: '56px'
       }}>
+        {icon}
+      </div>
+      <div>
+        <p style={{ color: '#A3AED0', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.1rem' }}>{label}</p>
+        <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#2B3674' }}>{value}</h3>
+      </div>
+    </div>
+  )
+}
+
+const NoticeItem = ({ title, date, type }: any) => {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '1rem', borderBottom: '1px solid #F4F7FE' }}>
+      <div>
+        <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#2B3674' }}>{title}</h4>
+        <p style={{ fontSize: '0.8rem', color: '#A3AED0' }}>{date}</p>
+      </div>
+      <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4318FF', backgroundColor: '#F4F7FE', padding: '0.2rem 0.6rem', borderRadius: '4px' }}>{type}</span>
+    </div>
+  )
+}
+
+const PowerBar = ({ label, subLabel, percent }: any) => {
+  const brandColor = '#4318FF'
+  const textColor = '#2B3674'
+  const textSecondary = '#A3AED0'
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div className="flex items-center justify-between">
+        <div>
+          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: textColor }}>{label}</span>
+          {subLabel && <span style={{ fontSize: '0.75rem', fontWeight: 600, color: textSecondary, display: 'block' }}>{subLabel}</span>}
+        </div>
+        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: brandColor }}>{percent === 0 ? '--' : `${percent}%`}</span>
+      </div>
+      <div style={{ height: '8px', width: '100%', backgroundColor: '#EFF4FB', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
         <div style={{ 
           height: '100%', width: `${percent}%`, 
-          background: `linear-gradient(90deg, hsl(${colorMap[color]}), hsl(${colorMap[color]} / 0.6))`,
+          backgroundColor: brandColor,
           borderRadius: 'var(--radius-full)',
-          boxShadow: `0 0 10px hsl(${colorMap[color]} / 0.3)`,
           transition: 'width 1s cubic-bezier(0.34, 1.56, 0.64, 1)'
         }}></div>
       </div>
