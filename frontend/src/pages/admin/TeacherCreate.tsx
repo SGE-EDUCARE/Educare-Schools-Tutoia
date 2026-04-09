@@ -55,8 +55,16 @@ export const TeacherCreate: React.FC = () => {
   }
 
   const selectedLevel = levels.find(l => l.id === formData.level_id)
-  const isElementaryIIOrHigh = selectedLevel?.name.toLowerCase().includes('fundamental ii') || 
-                               selectedLevel?.name.toLowerCase().includes('médio')
+  const levelName = selectedLevel?.name.toLowerCase() || ''
+  
+  // Lógica de detecção mais flexível para tipos de ensino especialista
+  const isElementaryIIOrHigh = 
+    levelName.includes('fundamental ii') || 
+    levelName.includes('fundamental 2') || 
+    levelName.includes('médio') || 
+    levelName.includes('medio') ||
+    levelName.includes('técnico') ||
+    levelName.includes('tecnico') 
 
   const addAllocation = () => {
     setAllocations([...allocations, { class_id: '', subject: '', tempId: Date.now() }])
