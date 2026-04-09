@@ -69,55 +69,56 @@ export const InfantRoutinePage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <header className="flex justify-between items-center">
+      <header className="flex flex-mobile-col items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(-1)} className="btn-ghost" style={{ padding: '0.5rem' }}>
             <ChevronLeft size={24} />
           </button>
           <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'hsl(var(--text))' }}>Rotina Infantil</h1>
-            <p style={{ color: 'hsl(var(--text-light))' }}>Relatório diário de alimentação, sono e cuidados.</p>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'hsl(var(--text))' }}>Rotina</h1>
+            <p className="desktop-only" style={{ color: 'hsl(var(--text-light))' }}>Relatório diário de cuidados.</p>
           </div>
         </div>
         
-        <div className="flex gap-4">
-          <div className="card" style={{ padding: '0.4rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className="flex flex-mobile-col gap-4 w-full" style={{ maxWidth: '400px' }}>
+          <div className="card flex-1" style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
              <Calendar size={18} color="hsl(var(--primary))" />
              <input 
               type="date" 
               value={date} 
               onChange={e => setDate(e.target.value)}
-              style={{ border: 'none', background: 'none', fontWeight: 700, color: 'hsl(var(--text))', outline: 'none' }}
+              style={{ border: 'none', background: 'none', fontWeight: 700, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
              />
           </div>
           <button 
             disabled={saving}
             onClick={handleSave} 
             className="btn btn-primary" 
-            style={{ padding: '1rem 2rem' }}
+            style={{ padding: '0.9rem 1.5rem' }}
           >
-            {saving ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> Salvar Diário</>}
+            {saving ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> Salvar</>}
           </button>
         </div>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
         {students.map(student => (
           <div key={student.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="icon-box" style={{ width: '48px', height: '48px', backgroundColor: 'hsl(var(--primary-light))', color: 'hsl(var(--primary))', borderRadius: '12px' }}>
+                <div className="icon-box" style={{ width: '40px', height: '40px', backgroundColor: 'hsl(var(--primary-light))', color: 'hsl(var(--primary))', borderRadius: '10px' }}>
                   {student.name.charAt(0)}
                 </div>
                 <h3 style={{ fontWeight: 800, color: 'hsl(var(--text))' }}>{student.name}</h3>
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
               <div className="flex flex-col gap-2">
                 <label className="label flex items-center gap-2"><Utensils size={14} /> Alimentação</label>
                 <select 
                   className="input" 
+                  style={{ padding: '0.75rem 1rem' }}
                   value={routines[student.id]?.food}
                   onChange={e => updateStudentRoutine(student.id, 'food', e.target.value)}
                 >
@@ -133,7 +134,7 @@ export const InfantRoutinePage: React.FC = () => {
                   onClick={() => updateStudentRoutine(student.id, 'sleep', !routines[student.id]?.sleep)}
                   style={{ 
                     height: '45px',
-                    borderRadius: '12px',
+                    borderRadius: 'var(--radius-lg)',
                     border: '2px solid hsl(var(--border) / 0.5)',
                     display: 'flex',
                     alignItems: 'center',
@@ -142,10 +143,11 @@ export const InfantRoutinePage: React.FC = () => {
                     backgroundColor: routines[student.id]?.sleep ? 'hsl(var(--success) / 0.1)' : 'transparent',
                     color: routines[student.id]?.sleep ? 'hsl(var(--success))' : 'hsl(var(--text-light))',
                     fontWeight: 700,
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.2s ease',
+                    fontSize: '0.9rem'
                   }}
                 >
-                  {routines[student.id]?.sleep ? <><Check size={18} /> Dormiu</> : <><Circle size={18} /> Não dormiu</>}
+                  {routines[student.id]?.sleep ? <><Check size={18} /> Dormiu</> : <><Circle size={18} /> Acordado</>}
                 </div>
               </div>
 
@@ -153,12 +155,13 @@ export const InfantRoutinePage: React.FC = () => {
                 <label className="label flex items-center gap-2"><Baby size={14} /> Higiene</label>
                 <select 
                   className="input" 
+                  style={{ padding: '0.75rem 1rem' }}
                   value={routines[student.id]?.hygiene}
                   onChange={e => updateStudentRoutine(student.id, 'hygiene', e.target.value)}
                 >
-                  <option value="Troca de Fralda">Troca de Fralda</option>
+                  <option value="Fralda">Fralda</option>
                   <option value="Banho">Banho</option>
-                  <option value="Tudo em dia">Tudo em dia</option>
+                  <option value="OK">OK</option>
                 </select>
               </div>
 
@@ -166,7 +169,8 @@ export const InfantRoutinePage: React.FC = () => {
                 <label className="label flex items-center gap-2"><MessageCircle size={14} /> Obs</label>
                 <input 
                   className="input" 
-                  placeholder="Ex: Teve febre"
+                  style={{ padding: '0.75rem 1rem' }}
+                  placeholder="Avisos..."
                   value={routines[student.id]?.obs}
                   onChange={e => updateStudentRoutine(student.id, 'obs', e.target.value)}
                 />
@@ -176,5 +180,6 @@ export const InfantRoutinePage: React.FC = () => {
         ))}
       </div>
     </div>
+
   )
 }

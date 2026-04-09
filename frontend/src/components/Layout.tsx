@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/useAuthStore'
 import { 
@@ -14,7 +14,9 @@ import {
   Layers,
   ListOrdered,
   Clock,
-  School
+  School,
+  Menu,
+  X as CloseIcon
 } from 'lucide-react'
 import { PasswordResetModal } from './PasswordResetModal'
 
@@ -22,6 +24,16 @@ export const Layout: React.FC = () => {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  // Bloquear scroll do body quando o menu mobile está aberto
+  React.useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isSidebarOpen])
 
   const handleLogout = () => {
     logout()
@@ -38,15 +50,30 @@ export const Layout: React.FC = () => {
 
   return (
     <div className="app-container">
+      {/* Overlay para fechar menu no mobile */}
+      <div 
+        className={`sidebar-overlay ${isSidebarOpen ? 'visible' : ''}`} 
+        onClick={() => setIsSidebarOpen(false)}
+      />
+
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${isSidebarOpen ? 'mobile-open' : ''}`}>
         <div style={{ 
           padding: '2.5rem 2rem', 
           display: 'flex', 
           alignItems: 'center', 
           gap: '1rem',
-          marginBottom: '1rem'
+          marginBottom: '1rem',
+          position: 'relative'
         }}>
+          {/* Botão fechar (Mobile Only) */}
+          <button 
+            className="mobile-only" 
+            onClick={() => setIsSidebarOpen(false)}
+            style={{ position: 'absolute', right: '1rem', top: '1rem', color: 'hsl(var(--text-light))' }}
+          >
+            <CloseIcon size={20} />
+          </button>
           <div className="icon-box" style={{ 
             background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(255 85% 65%))',
             color: 'white',
@@ -126,7 +153,16 @@ export const Layout: React.FC = () => {
         {/* Topbar */}
         <header className="topbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ 
+            {/* Menu Hambúrguer (Mobile Only) */}
+            <button 
+              className="mobile-only btn-ghost" 
+              onClick={() => setIsSidebarOpen(true)}
+              style={{ padding: '0.5rem' }}
+            >
+              <Menu size={24} />
+            </button>
+
+            <div className="desktop-only" style={{ 
               backgroundColor: 'hsl(var(--primary-light))', 
               padding: '0.5rem 1rem', 
               borderRadius: 'var(--radius-full)',
@@ -139,7 +175,7 @@ export const Layout: React.FC = () => {
             }}>
               {user?.role}
             </div>
-            <ChevronRight size={16} opacity={0.4} />
+            <ChevronRight size={16} opacity={0.4} className="desktop-only" />
             <span style={{ fontSize: '0.95rem', color: 'hsl(var(--text))', fontWeight: 600 }}>{getPageTitle()}</span>
           </div>
           <div className="flex items-center gap-6">

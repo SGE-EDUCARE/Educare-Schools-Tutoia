@@ -37,25 +37,25 @@ export const NoticesPage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <header className="flex justify-between items-center">
+      <header className="flex flex-mobile-col items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(-1)} className="btn-ghost" style={{ padding: '0.5rem' }}>
             <ChevronLeft size={24} />
           </button>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Comunicado</h1>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Comunicado</h1>
         </div>
-        <button onClick={handleSend} disabled={saving} className="btn btn-primary" style={{ padding: '1rem 2rem' }}>
-          {saving ? <Loader2 className="animate-spin" size={20} /> : <><Send size={20} /> Enviar Comunicado</>}
+        <button onClick={handleSend} disabled={saving} className="btn btn-primary" style={{ padding: '0.9rem 1.5rem' }}>
+          {saving ? <Loader2 className="animate-spin" size={20} /> : <><Send size={20} /> Enviar</>}
         </button>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 320px)', gap: '2rem' }}>
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <div>
-            <label className="label">Título do Comunicado</label>
+            <label className="label">Título</label>
             <input 
               className="input" 
-              placeholder="Ex: Reunião de Pais - 1º Bimestre" 
+              placeholder="Ex: Reunião de Pais" 
               value={title}
               onChange={e => setTitle(e.target.value)}
             />
@@ -64,8 +64,8 @@ export const NoticesPage: React.FC = () => {
             <label className="label">Mensagem Detalhada</label>
             <textarea 
               className="input" 
-              style={{ minHeight: '250px' }}
-              placeholder="Escreva aqui as informações que deseja transmitir..."
+              style={{ minHeight: '200px' }}
+              placeholder="Escreva aqui as informações..."
               value={content}
               onChange={e => setContent(e.target.value)}
             />
@@ -77,7 +77,7 @@ export const NoticesPage: React.FC = () => {
             <div>
               <label className="label">Destinatários</label>
               <select className="input" value={targetRole} onChange={e => setTargetRole(e.target.value)}>
-                <option value="PARENT">Apenas Pais / Responsáveis</option>
+                <option value="PARENT">Pais / Responsáveis</option>
                 <option value="STUDENT">Apenas Alunos</option>
                 <option value="ALL">Todos</option>
               </select>
@@ -85,19 +85,14 @@ export const NoticesPage: React.FC = () => {
             <div>
               <label className="label">Abrangência</label>
               <select className="input" value={scope} onChange={e => setScope(e.target.value)}>
-                <option value="CLASS">Apenas esta Turma</option>
-                <option value="GLOBAL">Geral da Instituição</option>
+                <option value="CLASS">Apenas Turma</option>
+                <option value="GLOBAL">Geral (Escola)</option>
               </select>
             </div>
-          </div>
-          <div className="card" style={{ backgroundColor: 'hsl(var(--warning) / 0.1)', border: '1px dashed hsl(var(--warning) / 0.3)' }}>
-             <p style={{ fontSize: '0.85rem', color: 'hsl(var(--text))', display: 'flex', gap: '0.5rem' }}>
-               <Target size={18} className="shrink-0" />
-               Atenção: Comunicados de abrangência global podem ser revisados pela coordenação.
-             </p>
           </div>
         </div>
       </div>
     </div>
+
   )
 }

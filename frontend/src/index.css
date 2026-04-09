@@ -411,14 +411,95 @@ tr:hover td {
   animation: scaleIn 0.3s ease-out forwards;
 }
 
-/* Background Gradients Decorations */
-.bg-gradient-top {
-  position: absolute;
-  top: -100px;
-  right: -100px;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, hsl(var(--primary) / 0.05) 0%, transparent 70%);
-  z-index: -1;
-  pointer-events: none;
+@media (max-width: 1024px) {
+  :root {
+    --page-padding: 1rem;
+    --card-padding: 1.25rem;
+    --table-padding-x: 0.75rem;
+    --topbar-padding-x: 1rem;
+    --sidebar-width: 0px; 
+  }
+
+  .sidebar {
+    position: fixed !important;
+    left: -280px !important;
+    width: 280px !important;
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 20px 0 50px rgba(0,0,0,0.15);
+    height: 100vh !important;
+    display: none; /* Physical removal */
+  }
+
+  .sidebar.mobile-open {
+    display: flex;
+    transform: translateX(280px);
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  .app-container {
+    overflow-x: hidden;
+  }
+
+  .topbar {
+    padding: 0 var(--topbar-padding-x) !important;
+  }
+
+  /* Force 1 column on layout grids (with large min-width) */
+  div[style*="minmax(320px"] {
+    grid-template-columns: 1fr !important;
+  }
+  div[style*="gridTemplateColumns: 1fr 3"] { /* Notice/Homework/LessonPlan sidebars */
+    grid-template-columns: 1fr !important;
+  }
+
+  .flex-mobile-col {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+}
+
+/* Sidebar Overlay (Glassmorphism) */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 54, 116, 0.2);
+  backdrop-filter: blur(8px);
+  z-index: 900;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+}
+
+.sidebar-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Utility classes */
+.mobile-only { display: none; }
+.desktop-only { display: flex; }
+
+@media (max-width: 1024px) {
+  .card {
+    padding: var(--card-padding) !important;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
 }

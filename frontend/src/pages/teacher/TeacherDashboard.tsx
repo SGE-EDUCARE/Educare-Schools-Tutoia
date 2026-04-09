@@ -98,16 +98,16 @@ export const TeacherDashboard: React.FC = () => {
                   </div>
                   
                   {/* Grid de Ações Rápidas */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                    <ActionButton icon={<ClipboardList size={18} />} label="Chamada" onClick={() => navigate(`/teacher/attendance/${cls.id}`)} />
-                    <ActionButton icon={<CheckSquare size={18} />} label="Notas" onClick={() => navigate(`/teacher/grades/${cls.id}`)} />
-                    <ActionButton icon={<FileText size={18} />} label="Plano" onClick={() => navigate(`/teacher/lesson-plan/${cls.id}`)} />
-                    <ActionButton icon={<Home size={18} />} label="Agenda" onClick={() => navigate(`/teacher/homework/${cls.id}`)} />
-                    <ActionButton icon={<Megaphone size={18} />} label="Aviso" onClick={() => navigate(`/teacher/notices/${cls.id}`)} />
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '0.75rem' }}>
+                    <ActionButton icon={<ClipboardList size={20} />} label="Chamada" onClick={() => navigate(`/teacher/attendance/${cls.id}`)} />
+                    <ActionButton icon={<CheckSquare size={20} />} label="Notas" onClick={() => navigate(`/teacher/grades/${cls.id}`)} />
+                    <ActionButton icon={<FileText size={20} />} label="Plano" onClick={() => navigate(`/teacher/lesson-plan/${cls.id}`)} />
+                    <ActionButton icon={<Home size={20} />} label="Agenda" onClick={() => navigate(`/teacher/homework/${cls.id}`)} />
+                    <ActionButton icon={<Megaphone size={20} />} label="Aviso" onClick={() => navigate(`/teacher/notices/${cls.id}`)} />
                     
                     {/* Botão de Rotina apenas para Infantil */}
                     {(cls.grade.level.name.includes('Infantil') || cls.grade.name.includes('Infantil')) && (
-                       <ActionButton icon={<Activity size={18} />} label="Rotina" variant="primary" onClick={() => navigate(`/teacher/routine/${cls.id}`)} />
+                       <ActionButton icon={<Activity size={20} />} label="Rotina" variant="primary" onClick={() => navigate(`/teacher/routine/${cls.id}`)} />
                     )}
                   </div>
                </div>
