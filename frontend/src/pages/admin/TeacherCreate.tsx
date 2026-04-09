@@ -219,7 +219,7 @@ export const TeacherCreate: React.FC = () => {
                   )}
                 </div>
 
-                {allocations.map((alloc, index) => {
+                {allocations.map((alloc) => {
                   const filteredGrades = grades.filter(g => g.level_id === formData.level_id);
                   const filteredClasses = classes.filter(c => filteredGrades.some(g => g.id === c.grade_id));
 
