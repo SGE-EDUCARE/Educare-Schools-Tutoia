@@ -71,7 +71,7 @@ export const TeacherDashboard: React.FC = () => {
             <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.1rem' }}>Você ainda não possui turmas vinculadas. Entre em contato com a coordenação.</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
             {classes.map(cls => (
                <div key={cls.id} className="card" style={{ 
                  display: 'flex', 
@@ -81,19 +81,20 @@ export const TeacherDashboard: React.FC = () => {
                  position: 'relative',
                  overflow: 'hidden'
                }}>
-                  <div className="flex flex-mobile-col justify-between items-start gap-4" style={{ position: 'relative' }}>
+                  <div className="flex justify-between items-start" style={{ position: 'relative' }}>
                     <div>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary-light))', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)' }}>
-                        {cls.subject || 'Polivalente'}
-                      </span>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary-light))', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)' }}>
+                          {cls.subject || 'Polivalente'}
+                        </span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--text-light))', backgroundColor: 'hsl(var(--text) / 0.05)', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <GraduationCap size={14} /> {cls._count.students} Alunos
+                        </span>
+                      </div>
                       <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'hsl(var(--text))', marginTop: '1rem', letterSpacing: '-0.03em' }}>{cls.name}</h3>
                       <p style={{ color: 'hsl(var(--text-light))', fontSize: '1rem', fontWeight: 500, marginTop: '0.25rem' }}>
                         {cls.grade.name} • {cls.grade.level.name}
                       </p>
-                    </div>
-                    <div style={{ textAlign: 'left' }}>
-                       <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'hsl(var(--text))' }}>{cls._count.students}</div>
-                       <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'hsl(var(--text-light))', textTransform: 'uppercase' }}>Alunos</div>
                     </div>
                   </div>
                   
