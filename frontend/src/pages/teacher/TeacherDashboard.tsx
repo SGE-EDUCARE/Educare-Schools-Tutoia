@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { 
-  AlertCircle, LayoutDashboard, ClipboardList, CheckSquare, FileText, 
+  BookOpen, AlertCircle, LayoutDashboard, ClipboardList, CheckSquare, FileText, 
   Home, Megaphone, Activity, Loader2, GraduationCap, ChevronRight 
 } from 'lucide-react'
 import { api } from '../../utils/api'
@@ -36,146 +36,192 @@ export const TeacherDashboard: React.FC = () => {
     }
   }
 
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <Loader2 className="animate-spin" size={48} color="hsl(var(--primary))" />
-      </div>
-    )
-  }
-
-  const activeCls = classes.find(c => c.id === (selectedClassId || classes[0]?.id))
-
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', paddingBottom: '4rem' }}>
-      
-      {/* HEADER PREMIUM */}
-      <header style={{ marginTop: '2rem', marginBottom: '3.5rem' }}>
-        <div style={{ 
-          display: 'inline-flex', 
-          padding: '0.4rem 1rem', 
-          backgroundColor: 'hsl(var(--primary-light))', 
-          borderRadius: 'var(--radius-full)', 
-          color: 'hsl(var(--primary))', 
-          fontSize: '0.8rem', 
-          fontWeight: 800, 
-          letterSpacing: '0.05em',
-          marginBottom: '1rem',
-          textTransform: 'uppercase'
-        }}>
-          Portal do Professor
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '3.5rem' }}>
+      <header className="flex flex-mobile-col items-start justify-between gap-4">
+        <div>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.04em', color: 'hsl(var(--text))' }}>Painel Docente</h1>
+          <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.2rem', fontWeight: 500 }}>Sua central de controle para turmas, diários e planejamento.</p>
         </div>
-        <h1 style={{ fontSize: '3rem', fontWeight: 850, color: 'hsl(var(--text))', letterSpacing: '-0.05em', lineHeight: 1, marginBottom: '0.75rem' }}>
-          Olá, Professor
-        </h1>
-        <p style={{ fontSize: '1.25rem', fontWeight: 500, color: 'hsl(var(--text-light))', letterSpacing: '-0.02em' }}>
-          Gerencie suas turmas e diários com eficiência.
-        </p>
+        <div style={{ padding: '0.75rem 1.5rem', backgroundColor: 'hsl(var(--surface))', borderRadius: 'var(--radius-md)', border: '1px solid hsl(var(--border) / 0.5)', boxShadow: 'var(--shadow-sm)', width: 'auto' }}>
+           <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'hsl(var(--primary))' }}>Ambiente de Trabalho Ativo</span>
+        </div>
       </header>
 
-      {/* SELETOR DE TURMAS (BARRA HORIZONTAL FLAT) */}
-      <section style={{ marginBottom: '3rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-          <LayoutDashboard size={20} color="hsl(var(--text))" />
-          <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'hsl(var(--text))', letterSpacing: '-0.02em', margin: 0 }}>
-            Suas Turmas
-          </h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2.25rem' }}>
+        <TeacherStatCard icon={<BookOpen size={28} />} label="Turmas Ativas" value={classes.length.toString().padStart(2, '0')} color="primary" trend="Sincronizado" />
+        <TeacherStatCard icon={<GraduationCap size={28} />} label="Total Alunos" value={classes.reduce((acc, c) => acc + c._count.students, 0).toString().padStart(2, '0')} color="success" trend="Base de dados real" />
+        <TeacherStatCard icon={<AlertCircle size={28} />} label="Pendências" value="00" color="warning" trend="Tudo em dia" />
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div className="flex items-center gap-4">
+           <div className="icon-box" style={{ width: '40px', height: '40px', backgroundColor: 'hsl(var(--text) / 0.05)', color: 'hsl(var(--text))' }}>
+              <LayoutDashboard size={20} />
+           </div>
+           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>Selecione a Turma</h2>
         </div>
-        
-        <div className="hide-scroll" style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-          {classes.map(cls => {
-            const isActive = cls.id === (selectedClassId || classes[0]?.id)
-            return (
-              <button 
-                key={cls.id}
-                onClick={() => setSelectedClassId(cls.id)}
-                style={{ 
-                  flex: '0 0 auto',
-                  minWidth: '200px',
-                  padding: '1.25rem',
-                  borderRadius: 'var(--radius-xl)',
-                  backgroundColor: isActive ? 'hsl(var(--text))' : 'hsl(var(--surface))',
-                  color: isActive ? 'white' : 'hsl(var(--text))',
-                  border: isActive ? 'none' : '1px solid hsl(var(--border) / 0.5)',
-                  boxShadow: isActive ? '0 10px 20px -5px rgba(0,0,0,0.2)' : 'var(--shadow-sm)',
-                  transition: 'var(--transition-all)',
-                  textAlign: 'left',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.6, marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-                  {cls.subject || 'Geral'}
+
+        {loading ? (
+          <div style={{ padding: '6rem', textAlign: 'center' }}>
+            <Loader2 className="animate-spin" size={40} color="hsl(var(--primary))" style={{ margin: '0 auto' }} />
+            <p style={{ marginTop: '1rem', color: 'hsl(var(--text-light))' }}>Carregando suas turmas...</p>
+          </div>
+        ) : classes.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: '4rem' }}>
+            <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.1rem' }}>Você ainda não possui turmas vinculadas. Entre em contato com a coordenação.</p>
+          </div>
+        ) : (
+          <>
+            {/* 1. SEÇÃO SUPERIOR: CARDS SELETORES (Master) */}
+            <div 
+              className="hide-scroll"
+              style={{ 
+                display: 'flex', 
+                gap: '1rem', 
+                overflowX: 'auto', 
+                paddingBottom: '1rem',
+                marginRight: '-2rem', /* Allow bleeding on mobile */
+                paddingRight: '2rem'
+              }}
+            >
+              {classes.map(cls => {
+                const isActive = cls.id === (selectedClassId || classes[0]?.id)
+                return (
+                  <button 
+                    key={cls.id}
+                    onClick={() => setSelectedClassId(cls.id)}
+                    style={{ 
+                      minWidth: '280px',
+                      flex: '0 0 auto',
+                      textAlign: 'left',
+                      padding: '1.5rem',
+                      borderRadius: 'var(--radius-xl)',
+                      backgroundColor: isActive ? 'hsl(var(--primary))' : 'hsl(var(--surface))',
+                      color: isActive ? 'white' : 'hsl(var(--text))',
+                      border: isActive ? '2px solid hsl(var(--primary))' : '2px solid hsl(var(--border) / 0.3)',
+                      boxShadow: isActive ? '0 10px 25px -5px hsl(var(--primary) / 0.4)' : 'var(--shadow-sm)',
+                      transition: 'var(--transition-all)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span style={{ 
+                        fontSize: '0.7rem', 
+                        fontWeight: 800, 
+                        textTransform: 'uppercase', 
+                        letterSpacing: '0.05em', 
+                        color: isActive ? 'hsl(var(--primary))' : 'hsl(var(--text-light))', 
+                        backgroundColor: isActive ? 'white' : 'hsl(var(--text) / 0.05)', 
+                        padding: '0.2rem 0.6rem', 
+                        borderRadius: 'var(--radius-sm)' 
+                      }}>
+                        {cls.subject || 'Polivalente'}
+                      </span>
+                      <span style={{ 
+                        fontSize: '0.75rem', 
+                        fontWeight: 800, 
+                        color: isActive ? 'white' : 'hsl(var(--text-light))', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '0.25rem',
+                        opacity: isActive ? 0.9 : 1
+                      }}>
+                        <GraduationCap size={14} /> {cls._count.students} Alunos
+                      </span>
+                    </div>
+                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>{cls.name}</h3>
+                    <p style={{ fontSize: '0.9rem', fontWeight: 600, opacity: isActive ? 0.8 : 0.6 }}>
+                      {cls.grade.name} • {cls.grade.level.name}
+                    </p>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* 2. SEÇÃO INFERIOR: FERRAMENTAS DA TURMA (Detail) */}
+            {(() => {
+              const activeCls = classes.find(c => c.id === (selectedClassId || classes[0]?.id))
+              if (!activeCls) return null
+              
+              const isInfantil = activeCls.grade.level.name.includes('Infantil') || activeCls.grade.name.includes('Infantil')
+
+              return (
+                <div style={{ marginTop: '1rem', animation: 'fadeIn 0.3s ease' }}>
+                  <div className="flex items-center gap-3 mb-6">
+                     <span style={{ width: '8px', height: '24px', backgroundColor: 'hsl(var(--primary))', borderRadius: '4px' }}></span>
+                     <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>
+                       Módulos: {activeCls.name}
+                     </h3>
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                    <ActionCard 
+                      icon={<ClipboardList size={28} />} 
+                      title="Chamada Diária" 
+                      subtitle="Realocar presenças" 
+                      onClick={() => navigate(`/teacher/attendance/${activeCls.id}`)} 
+                    />
+                    <ActionCard 
+                      icon={<CheckSquare size={28} />} 
+                      title="Notas e Avaliações" 
+                      subtitle="Lançar resultados" 
+                      onClick={() => navigate(`/teacher/grades/${activeCls.id}`)} 
+                    />
+                    <ActionCard 
+                      icon={<FileText size={28} />} 
+                      title="Plano de Aula" 
+                      subtitle="Planejamento BNCC" 
+                      onClick={() => navigate(`/teacher/lesson-plan/${activeCls.id}`)} 
+                    />
+                    <ActionCard 
+                      icon={<Home size={28} />} 
+                      title="Agenda de Casa" 
+                      subtitle="Tarefas e lembretes" 
+                      onClick={() => navigate(`/teacher/homework/${activeCls.id}`)} 
+                    />
+                    <ActionCard 
+                      icon={<Megaphone size={28} />} 
+                      title="Mural de Avisos" 
+                      subtitle="Comunicar responsáveis" 
+                      onClick={() => navigate(`/teacher/notices/${activeCls.id}`)} 
+                    />
+                    {isInfantil && (
+                      <ActionCard 
+                        icon={<Activity size={28} />} 
+                        title="Rotina Infantil" 
+                        subtitle="Atividades e relatório" 
+                        variant="primary"
+                        onClick={() => navigate(`/teacher/routine/${activeCls.id}`)} 
+                      />
+                    )}
+                  </div>
                 </div>
-                <div style={{ fontSize: '1.2rem', fontWeight: 800 }}>{cls.name}</div>
-              </button>
-            )
-          })}
-        </div>
-      </section>
+              )
+            })()}
+          </>
+        )}
+      </div>
 
-      {/* GRID DE MÓDULOS (DETAIL) */}
-      {activeCls && (
-        <section style={{ animation: 'fadeIn 0.4s ease-out' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span style={{ width: '4px', height: '24px', backgroundColor: 'hsl(var(--primary))', borderRadius: '4px' }}></span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>
-                Módulos: {activeCls.name}
-              </h3>
-            </div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'hsl(var(--text-light))', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <GraduationCap size={16} /> {activeCls._count.students} Alunos
-            </div>
+      <div className="card" style={{ backgroundColor: 'hsl(var(--primary-light) / 0.5)', border: '2px dashed hsl(var(--primary) / 0.2)', padding: '2.5rem' }}>
+        <div className="flex items-center gap-6">
+          <div className="icon-box" style={{ width: '64px', height: '64px', backgroundColor: 'hsl(var(--primary) / 0.1)', color: 'hsl(var(--primary))' }}>
+            <AlertCircle size={32} />
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-             <ModuleCard icon={<ClipboardList size={28} />} title="Chamada" onClick={() => navigate(`/teacher/attendance/${activeCls.id}`)} />
-             <ModuleCard icon={<CheckSquare size={28} />} title="Notas" onClick={() => navigate(`/teacher/grades/${activeCls.id}`)} />
-             <ModuleCard icon={<FileText size={28} />} title="Plano de Aula" onClick={() => navigate(`/teacher/lesson-plan/${activeCls.id}`)} />
-             <ModuleCard icon={<Home size={28} />} title="Agenda" onClick={() => navigate(`/teacher/homework/${activeCls.id}`)} />
-             <ModuleCard icon={<Megaphone size={28} />} title="Avisos" onClick={() => navigate(`/teacher/notices/${activeCls.id}`)} />
-             
-             {(activeCls.grade.level.name.includes('Infantil') || activeCls.grade.name.includes('Infantil')) && (
-                <ModuleCard 
-                  icon={<Activity size={28} />} 
-                  title="Rotina" 
-                  color="hsl(var(--primary))"
-                  onClick={() => navigate(`/teacher/routine/${activeCls.id}`)} 
-                />
-             )}
+          <div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'hsl(var(--text))', marginBottom: '0.25rem' }}>Informativo Docente</h3>
+            <p style={{ color: 'hsl(var(--text-light))', fontSize: '1rem', fontWeight: 500 }}>Primeiro selecione a turma no topo e depois acesse o módulo desejado na tela abaixo. Isso permite foco total no momento do lançamento.</p>
           </div>
-        </section>
-      )}
-
-      {/* FOOTER TIPS */}
-      <footer style={{ marginTop: '5rem', padding: '2.5rem', backgroundColor: 'hsl(var(--text) / 0.03)', borderRadius: 'var(--radius-xl)', border: '1px dashed hsl(var(--border))' }}>
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-           <div style={{ 
-             width: '56px', 
-             height: '56px', 
-             borderRadius: '50%', 
-             backgroundColor: 'white', 
-             display: 'flex', 
-             alignItems: 'center', 
-             justifyContent: 'center',
-             boxShadow: 'var(--shadow-sm)'
-           }}>
-             <AlertCircle size={28} color="hsl(var(--primary))" />
-           </div>
-           <div>
-              <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'hsl(var(--text))', marginBottom: '0.2rem' }}>Dica do Sistema</h4>
-              <p style={{ fontSize: '0.95rem', fontWeight: 500, color: 'hsl(var(--text-light))', lineHeight: 1.5 }}>
-                Suas alterações são salvas automaticamente na base da secretaria. Selecione uma turma acima para liberar as ferramentas de diário.
-              </p>
-           </div>
         </div>
-      </footer>
+      </div>
     </div>
   )
 }
 
-const ModuleCard = ({ icon, title, onClick, color }: any) => {
+const ActionCard = ({ icon, title, subtitle, onClick, variant = 'secondary' }: any) => {
   const [hover, setHover] = useState(false)
+  const isPrimary = variant === 'primary'
+  
   return (
     <button 
       onClick={onClick}
@@ -185,38 +231,79 @@ const ModuleCard = ({ icon, title, onClick, color }: any) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        padding: '2rem',
-        backgroundColor: 'hsl(var(--surface))',
-        borderRadius: 'var(--radius-xl)',
-        border: '1px solid hsl(var(--border) / 0.5)',
-        boxShadow: hover ? 'var(--shadow-md)' : 'var(--shadow-sm)',
-        transform: hover ? 'translateY(-4px)' : 'translateY(0)',
-        transition: 'var(--transition-all)',
         textAlign: 'left',
+        width: '100%',
+        padding: '1.75rem',
+        borderRadius: 'var(--radius-xl)',
+        backgroundColor: isPrimary ? 'hsl(var(--primary-light))' : 'hsl(var(--surface))',
+        border: `2px solid ${isPrimary ? 'hsl(var(--primary) / 0.3)' : 'hsl(var(--border) / 0.5)'}`,
+        boxShadow: hover ? 'var(--shadow-md)' : 'var(--shadow-sm)',
+        transform: hover ? 'translateY(-2px)' : 'translateY(0)',
+        transition: 'var(--transition-all)',
         cursor: 'pointer',
         position: 'relative',
         overflow: 'hidden'
       }}
     >
-      <div style={{ 
-        width: '56px', 
-        height: '56px', 
-        borderRadius: '16px', 
-        backgroundColor: color ? `${color}10` : 'hsl(var(--text) / 0.05)', 
-        color: color || 'hsl(var(--text))',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '1.5rem',
-        transition: 'all 0.3s'
-      }}>
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '56px', 
+          height: '56px', 
+          borderRadius: 'var(--radius-sm)',
+          backgroundColor: isPrimary ? 'hsl(var(--primary))' : 'hsl(var(--text) / 0.05)',
+          color: isPrimary ? 'white' : 'hsl(var(--text))',
+          marginBottom: '1.5rem',
+          transition: 'var(--transition-all)',
+          transform: hover ? 'scale(1.05)' : 'scale(1)'
+        }}
+      >
         {icon}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
-        <h4 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>{title}</h4>
-        <ChevronRight size={18} style={{ color: 'hsl(var(--text-light))', opacity: hover ? 1 : 0.2, transition: 'all 0.3s' }} />
+      <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: isPrimary ? 'hsl(var(--primary))' : 'hsl(var(--text))', letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>
+        {title}
+      </h4>
+      <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'hsl(var(--text-light))' }}>
+        {subtitle}
+      </p>
+      
+      <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', opacity: hover ? 1 : 0.2, transform: hover ? 'translateX(0)' : 'translateX(-4px)', transition: 'all 0.2s', color: isPrimary ? 'hsl(var(--primary))' : 'hsl(var(--text-light))' }}>
+        <ChevronRight size={20} />
       </div>
     </button>
   )
 }
 
+const TeacherStatCard = ({ icon, label, value, color, trend }: any) => {
+  const colorMap: any = {
+    primary: 'var(--primary)',
+    success: 'var(--success)',
+    warning: 'var(--warning)',
+  }
+
+  return (
+    <div className="card">
+      <div className="flex items-center gap-6">
+        <div className="icon-box" style={{ 
+          width: '64px', 
+          height: '64px', 
+          backgroundColor: `hsl(${colorMap[color]} / 0.1)`, 
+          color: `hsl(${colorMap[color]})`,
+          fontSize: '1.5rem',
+          boxShadow: `0 8px 16px -4px hsl(${colorMap[color]} / 0.2)`
+        }}>
+          {icon}
+        </div>
+        <div>
+          <p style={{ color: 'hsl(var(--text-light))', fontSize: '1rem', fontWeight: 600 }}>{label}</p>
+          <div className="flex items-baseline gap-2">
+            <h3 style={{ fontSize: '2.25rem', fontWeight: 800, letterSpacing: '-0.05em' }}>{value}</h3>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'hsl(var(--text-light) / 0.7)' }}>{trend}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
