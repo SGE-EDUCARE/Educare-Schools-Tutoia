@@ -312,98 +312,131 @@ export const LessonPlanPage: React.FC = () => {
 
             {/* 3. DESENVOLVIMENTO MENSAL */}
             <div className="card" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid hsl(var(--border) / 0.3)', paddingBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid hsl(var(--border) / 0.3)', paddingBottom: '0.75rem' }}>
                 <LayoutList size={18} color="hsl(var(--primary))" />
                 <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Desenvolvimento Mensal</h3>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <FormGroup label="Objeto(s) de Conhecimento" placeholder="Principais conteúdos do bimestre..." 
-                    value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} />
-                  
-                  {/* MULTISELECT BNCC */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginLeft: '0.2rem' }}>Habilidades (BNCC - Dicionário)</label>
-                    <div className="input-container" style={{ position: 'relative' }}>
-                      <input 
-                        type="text" 
-                        className="input" 
-                        placeholder="Pesquise por código (ex: EF09) ou descrição..."
-                        value={bnccSearch}
-                        onChange={e => setBnccSearch(e.target.value)}
-                        style={{ padding: '0.75rem 1rem', borderRadius: '8px', width: '100%', backgroundColor: 'hsl(var(--background))' }}
-                      />
-                      {searchingBNCC && (
-                        <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
-                          <Loader2 size={16} className="animate-spin" color="hsl(var(--primary))" />
-                        </div>
-                      )}
-                      
-                      {bnccResults.length > 0 && (
-                        <div style={{
-                          position: 'absolute', top: '105%', left: 0, right: 0, backgroundColor: 'white',
-                          borderRadius: '12px', boxShadow: '0 12px 30px -4px rgba(0,0,0,0.2)',
-                          zIndex: 100, border: '1px solid hsl(var(--border) / 0.5)', overflow: 'hidden'
-                        }}>
-                          {bnccResults.map(res => (
-                            <div key={res.id} onClick={() => addBnccSkill(res)} style={{ 
-                              padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid hsl(var(--border) / 0.2)',
-                              transition: 'background 0.2s'
-                            }} className="bncc-search-result">
-                              <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.8rem' }}>{res.code}</div>
-                              <div style={{ fontSize: '0.75rem', fontWeight: 500, color: 'hsl(var(--text))', marginTop: '0.1rem', lineHeight: 1.3 }}>{res.description}</div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Tags Selecionadas */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.8rem' }}>
-                      {selectedBnccObjects.map(skill => (
-                        <div key={skill.id} style={{ 
-                          backgroundColor: 'hsl(var(--primary) / 0.05)', color: 'hsl(var(--text))', 
-                          padding: '0.9rem', borderRadius: '10px', fontSize: '0.85rem',
-                          display: 'flex', gap: '1rem', border: '1px solid hsl(var(--primary) / 0.1)',
-                          position: 'relative', transition: 'all 0.2s'
-                        }}>
-                          <div style={{ 
-                            backgroundColor: 'hsl(var(--primary))', color: 'white', 
-                            padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', 
-                            fontWeight: 900, height: 'fit-content', whiteSpace: 'nowrap'
-                          }}>
-                            {skill.code}
-                          </div>
-                          <div style={{ fontWeight: 500, lineHeight: 1.4, flex: 1, paddingRight: '1rem' }}>
-                            {skill.description}
-                          </div>
-                          <button 
-                            onClick={() => removeBnccSkill(skill.id)}
-                            style={{ 
-                              position: 'absolute', right: '0.75rem', top: '0.75rem',
-                              background: 'none', border: 'none', cursor: 'pointer',
-                              color: 'hsl(var(--destructive))', opacity: 0.6
-                            }}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Campo livre extra */}
-                  <FormGroup label="Outras Habilidades (Texto Livre)" placeholder="Habilidades específicas ou personalizadas..." 
-                    value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} />
-                </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2rem' }}>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <FormGroup label="Cronograma (Conteúdos por Semana)" placeholder="Semana 1: ... | Semana 2: ..." 
-                    value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="140px" />
+                {/* COLUNA ESQUERDA: CONTEÚDO E BNCC */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <FormGroup 
+                    label="Objeto(s) de Conhecimento" 
+                    placeholder="Principais conteúdos do bimestre..." 
+                    value={currentPlan.knowledge_objects} 
+                    onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })}
+                    height="120px"
+                  />
                   
-                  <FormGroup label="Metodologia (Procedimentos)" placeholder="Aulas expositivas, trabalhos em grupo..." 
-                    value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} />
+                  <div style={{ 
+                    backgroundColor: 'hsl(var(--background))', 
+                    padding: '1.25rem', 
+                    borderRadius: '12px', 
+                    border: '1px solid hsl(var(--border) / 0.5)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem'
+                  }}>
+                    {/* MULTISELECT BNCC */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase' }}>Habilidades (BNCC - Dicionário)</label>
+                      <div className="input-container" style={{ position: 'relative' }}>
+                        <input 
+                          type="text" 
+                          className="input" 
+                          placeholder="Pesquise por código (ex: EF09) ou descrição..."
+                          value={bnccSearch}
+                          onChange={e => setBnccSearch(e.target.value)}
+                          style={{ padding: '0.75rem 1rem', borderRadius: '8px', width: '100%', border: '1px solid hsl(var(--border))' }}
+                        />
+                        {searchingBNCC && (
+                          <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
+                            <Loader2 size={16} className="animate-spin" color="hsl(var(--primary))" />
+                          </div>
+                        )}
+                        
+                        {bnccResults.length > 0 && (
+                          <div style={{
+                            position: 'absolute', top: '105%', left: 0, right: 0, backgroundColor: 'white',
+                            borderRadius: '12px', boxShadow: '0 12px 30px -4px rgba(0,0,0,0.2)',
+                            zIndex: 100, border: '1px solid hsl(var(--border) / 0.5)', overflow: 'hidden',
+                            maxHeight: '300px', overflowY: 'auto'
+                          }}>
+                            {bnccResults.map(res => (
+                              <div key={res.id} onClick={() => addBnccSkill(res)} style={{ 
+                                padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid hsl(var(--border) / 0.2)',
+                                transition: 'background 0.2s'
+                              }} className="bncc-search-result">
+                                <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.8rem' }}>{res.code}</div>
+                                <div style={{ fontSize: '0.75rem', fontWeight: 500, color: 'hsl(var(--text))', marginTop: '0.1rem', lineHeight: 1.3 }}>{res.description}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Tags Selecionadas */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.5rem' }}>
+                        {selectedBnccObjects.map(skill => (
+                          <div key={skill.id} style={{ 
+                            backgroundColor: 'white', color: 'hsl(var(--text))', 
+                            padding: '0.7rem 0.9rem', borderRadius: '8px', fontSize: '0.8rem',
+                            display: 'flex', gap: '0.8rem', border: '1px solid hsl(var(--border))',
+                            position: 'relative', boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                          }}>
+                            <div style={{ 
+                              backgroundColor: 'hsl(var(--primary))', color: 'white', 
+                              padding: '0.15rem 0.4rem', borderRadius: '4px', fontSize: '0.65rem', 
+                              fontWeight: 900, height: 'fit-content'
+                            }}>
+                              {skill.code}
+                            </div>
+                            <div style={{ fontWeight: 500, lineHeight: 1.4, flex: 1, paddingRight: '1rem' }}>
+                              {skill.description}
+                            </div>
+                            <button 
+                              onClick={() => removeBnccSkill(skill.id)}
+                              style={{ 
+                                position: 'absolute', right: '0.5rem', top: '0.5rem',
+                                background: 'none', border: 'none', cursor: 'pointer',
+                                color: 'hsl(var(--destructive))', opacity: 0.5
+                              }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <FormGroup 
+                      label="Habilidades Complementares" 
+                      placeholder="Outras habilidades específicas..." 
+                      value={currentPlan.skills} 
+                      onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} 
+                      height="80px"
+                    />
+                  </div>
+                </div>
+
+                {/* COLUNA DIREITA: CRONOGRAMA E METODOLOGIA */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <FormGroup 
+                    label="Cronograma (Conteúdos por Semana)" 
+                    placeholder="Semana 1: ... | Semana 2: ..." 
+                    value={currentPlan.programmatic_content} 
+                    onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} 
+                    height="180px" 
+                  />
+                  
+                  <FormGroup 
+                    label="Metodologia (Procedimentos)" 
+                    placeholder="Aulas expositivas, trabalhos em grupo..." 
+                    value={currentPlan.methodology} 
+                    onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} 
+                    height="160px"
+                  />
                 </div>
               </div>
             </div>
