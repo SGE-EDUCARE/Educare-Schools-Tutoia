@@ -122,7 +122,7 @@ export class TeacherController {
       // Se for o novo formato Master-Detail vindo de salvamento individual por aluno
       if (req.body.studentId) {
         const { studentId, grades: studentGrades } = req.body;
-        const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação' };
+        const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação', final: 'Resultado Final' };
         
         for (const [key, value] of Object.entries(studentGrades)) {
           if (value === '' || value === null) continue;
@@ -208,7 +208,7 @@ export class TeacherController {
     const { bimester, subject, grades, classId } = req.body;
     const normalizedSubject = String(subject).trim();
     try {
-      const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação' };
+      const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação', final: 'Resultado Final' };
 
       for (const [studentId, studentGrades] of Object.entries(grades)) {
         const sGrades = studentGrades as any;
