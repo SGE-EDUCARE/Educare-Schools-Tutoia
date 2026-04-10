@@ -35,14 +35,6 @@ export const GradesEntryPage: React.FC = () => {
     }
   }
 
-  const updateGrade = (studentId: string, field: 'p1' | 'p2' | 'result' | 'retry', value: string) => {
-    const val = value.replace(',', '.')
-    setGrades(prev => ({
-      ...prev,
-      [studentId]: { ...prev[studentId], [field]: val }
-    }))
-  }
-
   const handleSaveStudent = async (studentId: string) => {
     if (!subject) {
       toast.error('Informe a disciplina')
