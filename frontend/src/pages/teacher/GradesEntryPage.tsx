@@ -10,6 +10,7 @@ export const GradesEntryPage: React.FC = () => {
   const [students, setStudents] = useState<any[]>([])
   const [grades, setGrades] = useState<Record<string, { p1: string, p2: string, result: string, retry: string }>>({})
   const [bimester, setBimester] = useState('1')
+  const [subjects, setSubjects] = useState<string[]>([])
   const [subject, setSubject] = useState('')
   const [loading, setLoading] = useState(true)
   const [savingId, setSavingId] = useState<string | null>(null)
@@ -21,9 +22,15 @@ export const GradesEntryPage: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const studentsData = await api(`/teacher/classes/${classId}/students`)
+      const [studentsData, subjectsData] = await Promise.all([
+        api(`/teacher/classes/${classId}/students`),
+        api('/teacher/allocations')
+      ])
+      
       const sorted = studentsData.sort((a: any, b: any) => a.name.localeCompare(b.name))
       setStudents(sorted)
+      setSubjects(subjectsData)
+      if (subjectsData.length > 0) setSubject(subjectsData[0])
       
       const initial: Record<string, { p1: string, p2: string, result: string, retry: string }> = {}
       sorted.forEach((s: any) => {
@@ -194,12 +201,17 @@ export const GradesEntryPage: React.FC = () => {
              </div>
              <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
                 <div style={{ fontSize: '0.7rem', fontWeight: 900, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><BookOpen size={12}/> Disciplina</div>
-                <input 
-                  placeholder="Ex: Português" 
+                <select 
                   style={{ width: '100%', border: 'none', background: 'none', fontSize: '1.1rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none' }}
-                  value={subject}
+                  value={subject} 
                   onChange={e => setSubject(e.target.value)}
-                />
+                >
+                  {subjects.length > 0 ? subjects.map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  )) : (
+                    <option value="">Nenhuma disciplina encontrada</option>
+                  )}
+                </select>
              </div>
            </div>
 

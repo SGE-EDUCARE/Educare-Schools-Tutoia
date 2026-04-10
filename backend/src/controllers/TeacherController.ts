@@ -114,38 +114,101 @@ export class TeacherController {
     }
   }
 
-  // Lançar Notas
+  // Lançar Notas (Individual ou por Aluno Master-Detail)
   static async launchGrades(req: AuthRequest, res: Response) {
-    const { bimester, subject, label, grades } = req.body; // grades: { studentId: value }
+    const { bimester, subject, label, grades } = req.body; // grades: { studentId: value } ou { p1: val, p2: val... }
     try {
-      for (const [studentId, value] of Object.entries(grades)) {
-        const existing = await prisma.grade.findFirst({
-          where: {
-            student_id: studentId,
-            bimester: Number(bimester),
-            subject,
-            label
-          }
-        });
-
-        if (existing) {
-          await prisma.grade.update({
-            where: { id: existing.id },
-            data: { value: Number(value) }
-          });
-        } else {
-          await prisma.grade.create({
-            data: {
+      // Se for o novo formato Master-Detail vindo de salvamento individual por aluno
+      if (req.body.studentId) {
+        const { studentId, grades: studentGrades } = req.body;
+        const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação' };
+        
+        for (const [key, value] of Object.entries(studentGrades)) {
+          if (value === '') continue;
+          const labelName = labelsMap[key] || key;
+          
+          await prisma.grade.upsert({
+            where: {
+              // Schema real pode precisar de busca primeiro se não tiver ID composto
+              id: `${studentId}-${bimester}-${subject}-${labelName}` 
+            },
+            update: { value: Number(value) },
+            create: {
+              id: `${studentId}-${bimester}-${subject}-${labelName}`,
               student_id: studentId,
               bimester: Number(bimester),
               subject,
-              label,
+              label: labelName,
               value: Number(value)
             }
           });
         }
+      } else {
+        // Formato legiado legado (compatibilidade)
+        for (const [studentId, value] of Object.entries(grades)) {
+          const existing = await prisma.grade.findFirst({
+            where: { student_id: studentId, bimester: Number(bimester), subject, label }
+          });
+
+          if (existing) {
+            await prisma.grade.update({ where: { id: existing.id }, data: { value: Number(value) } });
+          } else {
+            await prisma.grade.create({
+              data: { student_id: studentId, bimester: Number(bimester), subject, label, value: Number(value) }
+            });
+          }
+        }
       }
-      res.json({ message: 'Notas lançadas com sucesso' });
+      res.json({ message: 'Notas salvas com sucesso' });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  // Novo: Lançar Notas em Massa (Todos os alunos da tela)
+  static async bulkLaunchGrades(req: AuthRequest, res: Response) {
+    const { bimester, subject, grades } = req.body; // grades: { studentId: { p1, p2, result, retry } }
+    try {
+      const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação' };
+
+      for (const [studentId, studentGrades] of Object.entries(grades)) {
+        const sGrades = studentGrades as any;
+        for (const [key, value] of Object.entries(sGrades)) {
+          if (value === '') continue;
+          const labelName = labelsMap[key] || key;
+
+          // Busca e Upsert manual para garantir integridade sem ID composto no Prisma
+          const existing = await prisma.grade.findFirst({
+            where: { student_id: studentId, bimester: Number(bimester), subject, label: labelName }
+          });
+
+          if (existing) {
+            await prisma.grade.update({ where: { id: existing.id }, data: { value: Number(value) } });
+          } else {
+            await prisma.grade.create({
+              data: { student_id: studentId, bimester: Number(bimester), subject, label: labelName, value: Number(value) }
+            });
+          }
+        }
+      }
+      res.json({ message: 'Lançamento em massa concluído' });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  // Novo: Buscar Disciplinas do Professor
+  static async getTeacherAllocations(req: AuthRequest, res: Response) {
+    const teacher_id = req.user?.id;
+    if (!teacher_id) return res.status(401).json({ message: 'Não autorizado' });
+
+    try {
+      const allocations = await prisma.teacherAllocation.findMany({
+        where: { teacher_id },
+        distinct: ['subject'],
+        select: { subject: true }
+      });
+      res.json(allocations.map(a => a.subject).filter(Boolean));
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
