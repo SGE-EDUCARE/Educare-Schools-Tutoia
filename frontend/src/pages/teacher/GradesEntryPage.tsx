@@ -2,15 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
-import { ChevronLeft, Search, Loader2, Award, Calendar, BookOpen, Check } from 'lucide-react'
+import { ChevronLeft, Search, Loader2, Award, Calendar, BookOpen, Check, Trash2, Rocket } from 'lucide-react'
 
 export const GradesEntryPage: React.FC = () => {
   const { classId } = useParams()
   const navigate = useNavigate()
   const [students, setStudents] = useState<any[]>([])
-  const [grades, setGrades] = useState<Record<string, string>>({})
+  const [grades, setGrades] = useState<Record<string, { p1: string, p2: string, result: string, retry: string }>>({})
   const [bimester, setBimester] = useState('1')
-  const [label, setLabel] = useState('1ª Prova')
   const [subject, setSubject] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -26,9 +25,9 @@ export const GradesEntryPage: React.FC = () => {
       const sorted = studentsData.sort((a: any, b: any) => a.name.localeCompare(b.name))
       setStudents(sorted)
       
-      const initial: Record<string, string> = {}
+      const initial: Record<string, { p1: string, p2: string, result: string, retry: string }> = {}
       sorted.forEach((s: any) => {
-        initial[s.id] = ''
+        initial[s.id] = { p1: '', p2: '', result: '', retry: '' }
       })
       setGrades(initial)
     } finally {
@@ -36,25 +35,32 @@ export const GradesEntryPage: React.FC = () => {
     }
   }
 
-  const handleSave = async () => {
+  const updateGrade = (studentId: string, field: 'p1' | 'p2' | 'result' | 'retry', value: string) => {
+    const val = value.replace(',', '.')
+    setGrades(prev => ({
+      ...prev,
+      [studentId]: { ...prev[studentId], [field]: val }
+    }))
+  }
+
+  const handleSaveStudent = async (studentId: string) => {
     if (!subject) {
       toast.error('Informe a disciplina')
       return
     }
     setSaving(true)
     try {
-      await api('/teacher/grades', {
+      await api('/teacher/grades/bulk-student', {
         method: 'POST',
         body: JSON.stringify({
+          studentId,
           classId,
           bimester,
           subject,
-          label,
-          grades
+          grades: grades[studentId]
         })
       })
-      toast.success('Notas lançadas com sucesso!')
-      navigate('/teacher/dashboard')
+      toast.success('Notas do aluno salvas!')
     } catch (error: any) {
       toast.error('Erro ao salvar notas')
     } finally {
@@ -62,11 +68,19 @@ export const GradesEntryPage: React.FC = () => {
     }
   }
 
+  const handleDeleteStudent = (studentId: string) => {
+    setGrades(prev => ({
+      ...prev,
+      [studentId]: { p1: '', p2: '', result: '', retry: '' }
+    }))
+    toast.success('Campos limpos')
+  }
+
   const filteredStudents = students.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const filledCount = Object.values(grades).filter(v => v !== '').length
+  const filledCount = Object.values(grades).filter(v => v.p1 !== '' || v.p2 !== '').length
   const progress = students.length > 0 ? (filledCount / students.length) * 100 : 0
 
   if (loading) return (
@@ -78,8 +92,8 @@ export const GradesEntryPage: React.FC = () => {
   return (
     <div style={{ margin: '0 auto', width: '100%', minHeight: '100vh', backgroundColor: '#F8FAFC', position: 'relative' }}>
       
-      {/* WRAPPER PARA ALINHAMENTO FIXO (MESMO DA CHAMADA) */}
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 1.25rem 12rem 1.25rem' }}>
+      {/* WRAPPER PARA ALINHAMENTO FIXO */}
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 1.25rem 6rem 1.25rem' }}>
         
         {/* HEADER ULTRA PREMIUM */}
         <header style={{ padding: '2rem 0 1rem 0' }}>
@@ -106,14 +120,13 @@ export const GradesEntryPage: React.FC = () => {
             Lançar Notas
           </h1>
           <p style={{ fontSize: '1.2rem', fontWeight: 500, color: 'hsl(var(--text-light))', letterSpacing: '-0.02em', marginBottom: '2rem' }}>
-            Insira as avaliações da sua turma.
+            Lançamento de múltiplas avaliações.
           </p>
 
-          {/* PROGRESS BAR DINÂMICA (NOTAS PREENCHIDAS) */}
           <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '24px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', alignItems: 'center' }}>
-               <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'hsl(var(--text))', opacity: 0.6 }}>PREENCHIMENTO</span>
-               <span style={{ fontSize: '0.9rem', fontWeight: 900, color: 'hsl(var(--primary))' }}>{filledCount} DE {students.length} NOTAS</span>
+               <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'hsl(var(--text))', opacity: 0.6 }}>ALUNOS LANÇADOS</span>
+               <span style={{ fontSize: '0.9rem', fontWeight: 900, color: 'hsl(var(--primary))' }}>{filledCount} DE {students.length} COMPLETOS</span>
             </div>
             <div style={{ width: '100%', height: '8px', backgroundColor: 'hsl(var(--primary) / 0.05)', borderRadius: '10px', overflow: 'hidden' }}>
               <div style={{ width: `${progress}%`, height: '100%', backgroundColor: 'hsl(var(--primary))', borderRadius: '10px', transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}></div>
@@ -121,7 +134,7 @@ export const GradesEntryPage: React.FC = () => {
           </div>
         </header>
 
-        {/* CONFIGURAÇÕES DA AVALIAÇÃO - CARDS PREMIUM */}
+        {/* CONFIGURAÇÕES GLOBAIS */}
         <section style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
              <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
@@ -138,28 +151,14 @@ export const GradesEntryPage: React.FC = () => {
                 </select>
              </div>
              <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
-                <div style={{ fontSize: '0.7rem', fontWeight: 900, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Award size={12}/> Avaliação</div>
-                <select 
+                <div style={{ fontSize: '0.7rem', fontWeight: 900, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><BookOpen size={12}/> Disciplina</div>
+                <input 
+                  placeholder="Ex: Português" 
                   style={{ width: '100%', border: 'none', background: 'none', fontSize: '1.1rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none' }}
-                  value={label} 
-                  onChange={e => setLabel(e.target.value)}
-                >
-                  <option value="1ª Prova">1ª Prova</option>
-                  <option value="2ª Prova">2ª Prova</option>
-                  <option value="Recuperação">Recuperação</option>
-                  <option value="Atividade">Atividade</option>
-                </select>
+                  value={subject}
+                  onChange={e => setSubject(e.target.value)}
+                />
              </div>
-           </div>
-           
-           <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
-              <div style={{ fontSize: '0.7rem', fontWeight: 900, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><BookOpen size={12}/> Disciplina</div>
-              <input 
-                placeholder="Ex: Português" 
-                style={{ width: '100%', border: 'none', background: 'none', fontSize: '1.1rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none' }}
-                value={subject}
-                onChange={e => setSubject(e.target.value)}
-              />
            </div>
 
            <div style={{ backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -173,134 +172,88 @@ export const GradesEntryPage: React.FC = () => {
            </div>
         </section>
 
-        {/* LISTAGEM DE ALUNOS NATIVE 2.0 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {filteredStudents.map((student, index) => {
-            const hasGrade = grades[student.id] !== ''
+        {/* LISTAGEM MASTER-DETAIL */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {filteredStudents.map((student) => {
+            const sGrades = grades[student.id] || { p1: '', p2: '', result: '', retry: '' }
             
             return (
-              <div 
-                key={student.id} 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between', 
-                  padding: '1.25rem',
-                  backgroundColor: 'white',
-                  borderRadius: '32px',
-                  boxShadow: hasGrade ? '0 10px 25px -5px hsl(var(--primary) / 0.1)' : '0 10px 20px -5px rgba(0,0,0,0.03)',
-                  transform: hasGrade ? 'scale(1.01)' : 'scale(1)',
-                  transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                  border: '1px solid rgba(0,0,0,0.01)'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: 0 }}>
-                   <div style={{ 
-                     width: '42px', 
-                     height: '42px', 
-                     borderRadius: '50%', 
-                     backgroundColor: hasGrade ? 'hsl(var(--primary))' : 'hsl(var(--text) / 0.05)',
-                     color: hasGrade ? 'white' : 'hsl(var(--text-light))',
-                     display: 'flex',
-                     alignItems: 'center',
-                     justifyContent: 'center',
-                     fontWeight: 900,
-                     fontSize: '1rem',
-                     flexShrink: 0,
-                     transition: 'all 0.3s'
-                   }}>
-                     {hasGrade ? <Check size={20} /> : index + 1}
-                   </div>
-                   <span style={{ 
-                     fontWeight: 700, 
-                     color: 'hsl(var(--text))', 
-                     fontSize: '1rem', 
-                     letterSpacing: '-0.01em', 
-                     lineHeight: '1.2',
-                     overflow: 'visible'
-                   }}>
+              <div key={student.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {/* NOME DO ALUNO BOX */}
+                <div style={{ backgroundColor: '#EEF2FF', padding: '1rem 1.5rem', borderRadius: '18px', border: '1px solid hsl(var(--primary) / 0.1)' }}>
+                   <span style={{ fontSize: '1.1rem', fontWeight: 850, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>
                      {student.name}
                    </span>
                 </div>
-                
-                <div style={{ flexShrink: 0, marginLeft: '1rem' }}>
-                  <input 
-                    style={{ 
-                      width: '70px', 
-                      height: '50px',
-                      borderRadius: '18px',
-                      border: '2px solid #F1F5F9',
-                      backgroundColor: '#F1F5F9',
-                      color: 'hsl(var(--text))',
-                      fontWeight: 900,
-                      fontSize: '1.3rem',
-                      textAlign: 'center',
-                      outline: 'none',
-                      transition: 'all 0.2s'
-                    }}
-                    placeholder="—"
-                    type="text"
-                    inputMode="decimal"
-                    value={grades[student.id] || ''}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = 'hsl(var(--primary))'
-                      e.target.style.backgroundColor = 'white'
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = '#F1F5F9'
-                      e.target.style.backgroundColor = '#F1F5F9'
-                    }}
-                    onChange={e => {
-                      const val = e.target.value.replace(',', '.')
-                      setGrades(prev => ({ ...prev, [student.id]: val }))
-                    }}
-                  />
+
+                {/* CARD DE NOTAS COMPACTO */}
+                <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '32px', boxShadow: '0 10px 30px -10px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.02)' }}>
+                  
+                  {/* GRID DE NOTAS 1 e 2 */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                       <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))', marginLeft: '0.5rem' }}>1ª Prova</label>
+                       <input 
+                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
+                         value={sGrades.p1}
+                         onChange={e => updateGrade(student.id, 'p1', e.target.value)}
+                         placeholder="—"
+                       />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                       <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))', marginLeft: '0.5rem' }}>2ª Prova</label>
+                       <input 
+                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
+                         value={sGrades.p2}
+                         onChange={e => updateGrade(student.id, 'p2', e.target.value)}
+                         placeholder="—"
+                       />
+                    </div>
+                  </div>
+
+                  {/* GRID DE MÉDIA E SUPERAÇÃO */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '2rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                       <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))', marginLeft: '0.5rem' }}>Média</label>
+                       <input 
+                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
+                         value={sGrades.result}
+                         onChange={e => updateGrade(student.id, 'result', e.target.value)}
+                         placeholder="—"
+                       />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                       <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))', marginLeft: '0.5rem' }}>Superação</label>
+                       <input 
+                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
+                         value={sGrades.retry}
+                         onChange={e => updateGrade(student.id, 'retry', e.target.value)}
+                         placeholder="—"
+                       />
+                    </div>
+                  </div>
+
+                  {/* AÇÕES DO CARD */}
+                  <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid #F1F5F9', paddingTop: '1.5rem' }}>
+                    <button 
+                      onClick={() => handleSaveStudent(student.id)}
+                      style={{ flex: 1, height: '52px', backgroundColor: '#22C55E', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none' }}
+                    >
+                      <Rocket size={20} />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteStudent(student.id)}
+                      style={{ width: '80px', height: '52px', backgroundColor: '#EF4444', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none' }}
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+
                 </div>
               </div>
             )
           })}
         </div>
-      </div>
-
-      {/* FLOAT ACTION BUTTON PREMIUM */}
-      <div style={{ 
-        position: 'fixed', 
-        bottom: '2rem', 
-        left: '50%', 
-        transform: 'translateX(-50%)', 
-        width: 'calc(100% - 2.5rem)', 
-        maxWidth: '768px', 
-        zIndex: 200,
-        boxSizing: 'border-box'
-      }}>
-        <button 
-          disabled={saving}
-          onClick={handleSave} 
-          style={{ 
-            width: '100%', 
-            padding: '1.4rem', 
-            borderRadius: '28px', 
-            backgroundColor: 'hsl(var(--primary))', 
-            color: 'white', 
-            boxShadow: '0 20px 40px -10px hsl(var(--primary) / 0.4)', 
-            fontSize: '1.2rem', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            gap: '1rem', 
-            fontWeight: 900, 
-            border: 'none', 
-            cursor: 'pointer',
-            letterSpacing: '-0.02em',
-            transition: 'all 0.3s ease'
-          }}
-        >
-          {saving ? <Loader2 className="animate-spin" size={24} /> : (
-            <>
-              SALVAR LANÇAMENTO <div style={{ width: '2px', height: '20px', backgroundColor: 'rgba(255,255,255,0.2)' }}></div> {filledCount} NOTAS
-            </>
-          )}
-        </button>
       </div>
     </div>
   )
