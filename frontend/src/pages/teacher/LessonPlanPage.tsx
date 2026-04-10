@@ -360,15 +360,34 @@ export const LessonPlanPage: React.FC = () => {
                     </div>
 
                     {/* Tags Selecionadas */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.5rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.8rem' }}>
                       {selectedBnccObjects.map(skill => (
                         <div key={skill.id} style={{ 
-                          backgroundColor: 'hsl(var(--primary) / 0.08)', color: 'hsl(var(--primary))', 
-                          padding: '0.4rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700,
-                          display: 'flex', alignItems: 'center', gap: '0.4rem', border: '1px solid hsl(var(--primary) / 0.1)'
+                          backgroundColor: 'hsl(var(--primary) / 0.05)', color: 'hsl(var(--text))', 
+                          padding: '0.9rem', borderRadius: '10px', fontSize: '0.85rem',
+                          display: 'flex', gap: '1rem', border: '1px solid hsl(var(--primary) / 0.1)',
+                          position: 'relative', transition: 'all 0.2s'
                         }}>
-                           {skill.code}
-                           <Trash2 size={12} onClick={() => removeBnccSkill(skill.id)} style={{ cursor: 'pointer', opacity: 0.6 }} />
+                          <div style={{ 
+                            backgroundColor: 'hsl(var(--primary))', color: 'white', 
+                            padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', 
+                            fontWeight: 900, height: 'fit-content', whiteSpace: 'nowrap'
+                          }}>
+                            {skill.code}
+                          </div>
+                          <div style={{ fontWeight: 500, lineHeight: 1.4, flex: 1, paddingRight: '1rem' }}>
+                            {skill.description}
+                          </div>
+                          <button 
+                            onClick={() => removeBnccSkill(skill.id)}
+                            style={{ 
+                              position: 'absolute', right: '0.75rem', top: '0.75rem',
+                              background: 'none', border: 'none', cursor: 'pointer',
+                              color: 'hsl(var(--destructive))', opacity: 0.6
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       ))}
                     </div>
