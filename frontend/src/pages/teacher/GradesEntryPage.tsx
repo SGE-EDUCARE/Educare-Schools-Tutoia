@@ -252,5 +252,3 @@ export const GradesEntryPage: React.FC = () => {
     </div>
   )
 }
-  )
-}
