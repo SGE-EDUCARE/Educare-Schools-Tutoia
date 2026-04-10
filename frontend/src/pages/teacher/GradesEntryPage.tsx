@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
-import { ChevronLeft, Search, Loader2, Award, Calendar, BookOpen, Check, Trash2, Rocket } from 'lucide-react'
+import { ChevronLeft, Search, Loader2, Calendar, BookOpen, Trash2, Rocket } from 'lucide-react'
 
 export const GradesEntryPage: React.FC = () => {
   const { classId } = useParams()
@@ -12,7 +12,7 @@ export const GradesEntryPage: React.FC = () => {
   const [bimester, setBimester] = useState('1')
   const [subject, setSubject] = useState('')
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const [savingId, setSavingId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export const GradesEntryPage: React.FC = () => {
       toast.error('Informe a disciplina')
       return
     }
-    setSaving(true)
+    setSavingId(studentId)
     try {
       await api('/teacher/grades/bulk-student', {
         method: 'POST',
@@ -64,7 +64,7 @@ export const GradesEntryPage: React.FC = () => {
     } catch (error: any) {
       toast.error('Erro ao salvar notas')
     } finally {
-      setSaving(false)
+      setSavingId(null)
     }
   }
 
@@ -236,10 +236,11 @@ export const GradesEntryPage: React.FC = () => {
                   {/* AÇÕES DO CARD */}
                   <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid #F1F5F9', paddingTop: '1.5rem' }}>
                     <button 
+                      disabled={savingId === student.id}
                       onClick={() => handleSaveStudent(student.id)}
-                      style={{ flex: 1, height: '52px', backgroundColor: '#22C55E', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none' }}
+                      style={{ flex: 1, height: '52px', backgroundColor: '#22C55E', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none', opacity: savingId === student.id ? 0.7 : 1 }}
                     >
-                      <Rocket size={20} />
+                      {savingId === student.id ? <Loader2 className="animate-spin" size={20} /> : <Rocket size={20} />}
                     </button>
                     <button 
                       onClick={() => handleDeleteStudent(student.id)}
