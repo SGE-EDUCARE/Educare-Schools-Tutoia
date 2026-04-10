@@ -11,7 +11,7 @@ router.get('/classes', TeacherController.getClasses);
 router.get('/classes/:classId/allocations', TeacherController.getTeacherAllocations);
 router.get('/classes/:classId/students', TeacherController.getStudentsByClass);
 
-router.post('/attendance', TeacherController.launchAttendance);
+router.post('/grades/bulk', TeacherController.bulkLaunchGrades);
 router.post('/grades', TeacherController.launchGrades);
 router.post('/routine', TeacherController.launchDailyRoutine);
 router.post('/homework', TeacherController.launchHomework);

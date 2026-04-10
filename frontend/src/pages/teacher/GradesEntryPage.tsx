@@ -202,12 +202,25 @@ export const GradesEntryPage: React.FC = () => {
              <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
                 <div style={{ fontSize: '0.7rem', fontWeight: 900, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><BookOpen size={12}/> Disciplina</div>
                 <select 
-                  style={{ width: '100%', border: 'none', background: 'none', fontSize: '1.1rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none' }}
+                  style={{ 
+                    width: '100%', 
+                    border: 'none', 
+                    background: 'none', 
+                    fontSize: '1.1rem', 
+                    fontWeight: 800, 
+                    color: 'hsl(var(--text))', 
+                    outline: 'none',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    appearance: 'none',
+                    cursor: 'pointer'
+                  }}
                   value={subject} 
                   onChange={e => setSubject(e.target.value)}
                 >
                   {subjects.length > 0 ? subjects.map(s => (
-                    <option key={s} value={s}>{s}</option>
+                    <option key={s} value={s}>{s.length > 15 ? `${s.substring(0, 15)}...` : s}</option>
                   )) : (
                     <option value="">Nenhuma disciplina encontrada</option>
                   )}
