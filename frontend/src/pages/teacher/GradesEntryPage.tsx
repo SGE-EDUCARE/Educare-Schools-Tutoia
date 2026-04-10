@@ -253,7 +253,7 @@ export const GradesEntryPage: React.FC = () => {
           </div>
 
           {/* Search */}
-          <div className="card grades-ctrl-search" style={{ padding: '0.7rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderRadius: '8px' }}>
+          <div className="card grades-ctrl-search" style={{ padding: '0.7rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderRadius: '8px', width: '100%' }}>
             <Search size={16} color="hsl(var(--text-light))" />
             <input placeholder="Pesquisar..." style={{ border: 'none', background: 'none', fontSize: '0.85rem', fontWeight: 600, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
               value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
@@ -490,9 +490,9 @@ export const GradesEntryPage: React.FC = () => {
           gap: 0.75rem;
           align-items: stretch;
         }
-        .grades-ctrl-bimestre { flex: 1 0 180px; }
-        .grades-ctrl-disciplina { flex: 3 1 400px; }
-        .grades-ctrl-search { flex: 1.5 1 250px; }
+        .grades-ctrl-bimestre { flex: 1 1 200px; display: flex; }
+        .grades-ctrl-disciplina { flex: 3 1 400px; display: flex; }
+        .grades-ctrl-search { flex: 1.5 1 250px; display: flex; }
 
         /* Modern select dropdown styling */
         .grades-select-popover {
@@ -583,6 +583,7 @@ const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange
       position: 'relative',
       cursor: 'pointer',
       height: '100%',
+      width: '100%',
       justifyContent: 'center'
     }} onClick={() => setIsOpen(!isOpen)}>
       <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
