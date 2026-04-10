@@ -110,15 +110,27 @@ model Schedule {
 }
 
 model LessonPlan {
-  id         String   @id @default(uuid())
-  date       DateTime
-  content    String
-  status     String   @default("PENDING")
-  type       String
-  teacher_id String
-  class_id   String
-  class      Class    @relation(fields: [class_id], references: [id])
-  teacher    User     @relation(fields: [teacher_id], references: [id])
+  id                    String   @id @default(uuid())
+  date                  DateTime
+  subject               String?
+  bimester              Int?
+  month                 String?
+  general_competencies  String?  @db.Text
+  specific_competencies String?  @db.Text
+  knowledge_objects     String?  @db.Text
+  programmatic_content  String?  @db.Text
+  skills                String?  @db.Text
+  methodology           String?  @db.Text
+  evaluation            String?  @db.Text
+  resources             String?  @db.Text
+  references            String?  @db.Text
+  content               String?  @db.Text // Mantido para compatibilidade legado
+  status                String   @default("PENDING")
+  type                  String?  @default("Mensal")
+  teacher_id            String
+  class_id              String
+  class                 Class    @relation(fields: [class_id], references: [id])
+  teacher               User     @relation(fields: [teacher_id], references: [id])
 
   @@map("lesson_plans")
 }

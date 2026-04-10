@@ -16,7 +16,7 @@ router.post('/grades/bulk', TeacherController.bulkLaunchGrades);
 router.post('/grades', TeacherController.launchGrades);
 router.post('/routine', TeacherController.launchDailyRoutine);
 router.post('/homework', TeacherController.launchHomework);
-router.post('/notices', TeacherController.createNotice);
 router.post('/lesson-plans', TeacherController.createLessonPlan);
+router.get('/classes/:classId/lesson-plans', TeacherController.getLessonPlansByClass);
 
 export default router;

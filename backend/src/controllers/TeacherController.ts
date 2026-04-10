@@ -359,18 +359,60 @@ export class TeacherController {
   // Planos de Aula
   static async createLessonPlan(req: AuthRequest, res: Response) {
     const teacher_id = req.user?.id;
-    const { date, content, type, classId } = req.body;
+    const { 
+      id, date, subject, bimester, month, type, classId,
+      general_competencies, specific_competencies, knowledge_objects,
+      programmatic_content, skills, methodology, evaluation, resources, references,
+      content 
+    } = req.body;
+
     try {
-      const plan = await prisma.lessonPlan.create({
-        data: {
-          date: new Date(date),
-          content,
-          type,
-          class_id: classId,
-          teacher_id: teacher_id!
-        }
+      const data: any = {
+        date: new Date(date),
+        subject,
+        bimester: bimester ? Number(bimester) : null,
+        month,
+        type: type || 'Mensal',
+        general_competencies,
+        specific_competencies,
+        knowledge_objects,
+        programmatic_content,
+        skills,
+        methodology,
+        evaluation,
+        resources,
+        references,
+        content,
+        class_id: classId,
+        teacher_id: teacher_id!
+      };
+
+      if (id) {
+        const plan = await prisma.lessonPlan.update({
+          where: { id },
+          data
+        });
+        res.json(plan);
+      } else {
+        const plan = await prisma.lessonPlan.create({ data });
+        res.json(plan);
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  // Listar Planos de Aula por Turma
+  static async getLessonPlansByClass(req: AuthRequest, res: Response) {
+    const { classId } = req.params;
+    const teacher_id = req.user?.id;
+
+    try {
+      const plans = await prisma.lessonPlan.findMany({
+        where: { class_id: classId, teacher_id: teacher_id! },
+        orderBy: { date: 'desc' }
       });
-      res.json(plan);
+      res.json(plans);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
