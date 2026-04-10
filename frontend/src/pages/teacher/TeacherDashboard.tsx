@@ -221,7 +221,3 @@ const ModuleCard = ({ icon, title, onClick, color }: any) => {
 }
 
 const TeacherStatCard = () => null // Deprecated - clean UI strategy
-div>
-    </div>
-  )
-}
