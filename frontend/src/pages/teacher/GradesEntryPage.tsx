@@ -20,6 +20,41 @@ export const GradesEntryPage: React.FC = () => {
     fetchData()
   }, [classId])
 
+  useEffect(() => {
+    if (students.length > 0 && subject) {
+      loadGrades()
+    }
+  }, [bimester, subject])
+
+  const loadGrades = async () => {
+    try {
+      const existingGrades = await api(`/teacher/classes/${classId}/grades?bimester=${bimester}&subject=${subject}`)
+      
+      const newGradesState: Record<string, { p1: string, p2: string, result: string, retry: string }> = {}
+      
+      // Inicializar todos com vazio primeiro para limpar estados antigos
+      students.forEach(s => {
+        newGradesState[s.id] = { p1: '', p2: '', result: '', retry: '' }
+      })
+
+      // Mapear labels do banco para as chaves do estado do frontend
+      const labelsMap: any = { '1ª Prova': 'p1', '2ª Prova': 'p2', 'Média': 'result', 'Superação': 'retry' }
+
+      existingGrades.forEach((g: any) => {
+        if (newGradesState[g.student_id]) {
+          const field = labelsMap[g.label]
+          if (field) {
+            newGradesState[g.student_id][field as keyof typeof newGradesState[string]] = String(g.value)
+          }
+        }
+      })
+
+      setGrades(newGradesState)
+    } catch (error) {
+      console.error('Erro ao carregar notas salvas')
+    }
+  }
+
   const fetchData = async () => {
     try {
       const [studentsData, subjectsData] = await Promise.all([
@@ -30,13 +65,16 @@ export const GradesEntryPage: React.FC = () => {
       const sorted = studentsData.sort((a: any, b: any) => a.name.localeCompare(b.name))
       setStudents(sorted)
       setSubjects(subjectsData)
-      if (subjectsData.length > 0) setSubject(subjectsData[0])
       
       const initial: Record<string, { p1: string, p2: string, result: string, retry: string }> = {}
       sorted.forEach((s: any) => {
         initial[s.id] = { p1: '', p2: '', result: '', retry: '' }
       })
       setGrades(initial)
+
+      if (subjectsData.length > 0) {
+        setSubject(subjectsData[0])
+      }
     } finally {
       setLoading(false)
     }

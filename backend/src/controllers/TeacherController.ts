@@ -165,8 +165,26 @@ export class TeacherController {
     }
   }
 
-  // Novo: Lançar Notas em Massa (Todos os alunos da tela)
-  static async bulkLaunchGrades(req: AuthRequest, res: Response) {
+  // Novo: Buscar Notas de uma Turma
+  static async getGradesByClass(req: AuthRequest, res: Response) {
+    const { classId } = req.params;
+    const { bimester, subject } = req.query;
+
+    try {
+      const grades = await prisma.grade.findMany({
+        where: {
+          student: { class_id: classId },
+          bimester: Number(bimester),
+          subject: String(subject)
+        }
+      });
+      res.json(grades);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  // Novo: Buscar Disciplinas do Professor (Filtrado por Turma se fornecido)
     const { bimester, subject, grades } = req.body; // grades: { studentId: { p1, p2, result, retry } }
     try {
       const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação' };

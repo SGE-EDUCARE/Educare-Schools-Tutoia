@@ -10,6 +10,7 @@ router.use(authenticateToken);
 router.get('/classes', TeacherController.getClasses);
 router.get('/classes/:classId/allocations', TeacherController.getTeacherAllocations);
 router.get('/classes/:classId/students', TeacherController.getStudentsByClass);
+router.get('/classes/:classId/grades', TeacherController.getGradesByClass);
 
 router.post('/grades/bulk', TeacherController.bulkLaunchGrades);
 router.post('/grades', TeacherController.launchGrades);
