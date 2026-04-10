@@ -83,7 +83,7 @@ export const AttendancePage: React.FC = () => {
     <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', paddingBottom: '10rem', minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
       
       {/* HEADER ULTRA PREMIUM */}
-      <header style={{ padding: '2rem 1rem 1rem 1rem' }}>
+      <header style={{ padding: '2rem 1.25rem 1rem 1.25rem' }}>
         <button 
           onClick={() => navigate(-1)} 
           style={{ 
@@ -123,7 +123,7 @@ export const AttendancePage: React.FC = () => {
       </header>
 
       {/* CONTROLES IMERSIVOS */}
-      <section style={{ padding: '0 1rem', marginBottom: '2.5rem' }}>
+      <section style={{ padding: '0 1.25rem', marginBottom: '2.5rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
             <Calendar size={20} color="hsl(var(--primary))" />
@@ -148,7 +148,7 @@ export const AttendancePage: React.FC = () => {
       </section>
 
       {/* QUICK ACTIONS PREMIUM */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2rem', padding: '0 1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2rem', padding: '0 1.25rem' }}>
         <button onClick={() => markAll(true)} style={{ flex: 1, backgroundColor: 'hsl(var(--success) / 0.05)', border: '1px solid hsl(var(--success) / 0.2)', padding: '0.85rem', borderRadius: '16px', color: 'hsl(var(--success))', fontSize: '0.8rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer' }}>
           <CheckCircle2 size={16} /> TODOS PRESENTES
         </button>
@@ -158,7 +158,7 @@ export const AttendancePage: React.FC = () => {
       </div>
 
       {/* LISTA DE ALUNOS NATIVE 2.0 */}
-      <div style={{ padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div style={{ padding: '0 1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {filteredStudents.map((student, index) => {
           const isPresent = attendances[student.id] === true
           const isAbsent = attendances[student.id] === false
