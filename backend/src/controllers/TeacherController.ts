@@ -409,7 +409,10 @@ export class TeacherController {
 
     try {
       const plans = await prisma.lessonPlan.findMany({
-        where: { class_id: classId, teacher_id: teacher_id! },
+        where: { 
+          class_id: String(classId), 
+          teacher_id: teacher_id! 
+        },
         orderBy: { date: 'desc' }
       });
       res.json(plans);
