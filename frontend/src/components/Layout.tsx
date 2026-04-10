@@ -32,8 +32,20 @@ const roleLabels: Record<string, string> = {
 export const Layout: React.FC = () => {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
-  const location = useLocation()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [activeClassId, setActiveClassId] = useState<string | null>(null)
+
+  // Detect and persist the active classId from URL
+  React.useEffect(() => {
+    const match = location.pathname.match(/\/(?:attendance|grades|lesson-plan|homework|notices|routine)\/([^\/]+)/)
+    if (match && match[1]) {
+      setActiveClassId(match[1])
+      sessionStorage.setItem('lastClassId', match[1])
+    } else {
+      const stored = sessionStorage.getItem('lastClassId')
+      if (stored) setActiveClassId(stored)
+    }
+  }, [location.pathname])
 
   React.useEffect(() => {
     document.body.style.overflow = isSidebarOpen ? 'hidden' : ''
@@ -254,8 +266,18 @@ export const Layout: React.FC = () => {
           {isTeacher && (
             <>
               <BottomTab to="/teacher/dashboard" icon={<Home size={22} />} label="Início" />
-              <BottomTab to="/teacher/attendance" icon={<ClipboardCheck size={22} />} label="Chamada" matchPrefix />
-              <BottomTab to="/teacher/grades" icon={<BarChart3 size={22} />} label="Notas" matchPrefix />
+              <BottomTab 
+                to={activeClassId ? `/teacher/attendance/${activeClassId}` : "/teacher/dashboard"} 
+                icon={<ClipboardCheck size={22} />} 
+                label="Chamada" 
+                matchPrefix 
+              />
+              <BottomTab 
+                to={activeClassId ? `/teacher/grades/${activeClassId}` : "/teacher/dashboard"} 
+                icon={<BarChart3 size={22} />} 
+                label="Notas" 
+                matchPrefix 
+              />
               <BottomTabAction icon={<User size={22} />} label="Perfil" onClick={handleLogout} />
             </>
           )}
