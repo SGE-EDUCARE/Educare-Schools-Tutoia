@@ -23,6 +23,10 @@ export const GradesEntryPage: React.FC = () => {
 
   const emptyGrade = (): GradeFields => ({ p1: '', p2: '', result: '', retry: '', final: '' })
 
+  // Controle de Dropdown Customizado (Desktop)
+  const [openBimester, setOpenBimester] = useState(false)
+  const [openSubject, setOpenSubject] = useState(false)
+
   useEffect(() => { fetchData() }, [classId])
 
   useEffect(() => {
@@ -179,7 +183,7 @@ export const GradesEntryPage: React.FC = () => {
             </div>
 
             {/* Progress pill — desktop inline */}
-            <div className="grades-progress-pill card" style={{ padding: '0.85rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', minWidth: '280px', borderRadius: '10px' }}>
+            <div className="grades-progress-pill card" style={{ padding: '0.85rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', minWidth: '280px', borderRadius: '8px' }}>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                   <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase' }}>Progresso</span>
@@ -195,32 +199,61 @@ export const GradesEntryPage: React.FC = () => {
 
         {/* ============ CONTROLS ============ */}
         <section className="grades-controls" style={{ marginBottom: '1.5rem' }}>
-          <div className="card grades-ctrl-bimestre" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', borderRadius: '10px' }}>
-            <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Calendar size={10}/> Bimestre</div>
-            <div style={{ position: 'relative' }}>
-              <select className="grades-select" style={{ width: '100%', border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none', appearance: 'none', paddingRight: '1.5rem', cursor: 'pointer' }}
+          
+          {/* Bimestre Dropdown */}
+          <div className="grades-ctrl-bimestre">
+            <div className="desktop-only" style={{ height: '100%' }}>
+              <CustomSelect 
+                label="Bimestre" 
+                icon={<Calendar size={10}/>}
+                value={bimester} 
+                options={[
+                  { label: '1º Bimestre', value: '1' },
+                  { label: '2º Bimestre', value: '2' },
+                  { label: '3º Bimestre', value: '3' },
+                  { label: '4º Bimestre', value: '4' },
+                ]}
+                isOpen={openBimester}
+                setIsOpen={setOpenBimester}
+                onChange={setBimester}
+              />
+            </div>
+            <div className="mobile-only card" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', borderRadius: 'var(--radius-lg)' }}>
+              <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Calendar size={10}/> Bimestre</div>
+              <select style={{ border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
                 value={bimester} onChange={e => setBimester(e.target.value)}>
                 <option value="1">1º Bimestre</option>
                 <option value="2">2º Bimestre</option>
                 <option value="3">3º Bimestre</option>
                 <option value="4">4º Bimestre</option>
               </select>
-              <ChevronDown size={14} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'hsl(var(--text-light))' }} />
             </div>
           </div>
-          <div className="card grades-ctrl-disciplina" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', borderRadius: '10px' }}>
-            <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><BookOpen size={10}/> Disciplina</div>
-            <div style={{ position: 'relative' }}>
-              <select className="grades-select" style={{ width: '100%', border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none', appearance: 'none', paddingRight: '1.5rem', cursor: 'pointer' }}
+
+          {/* Disciplina Dropdown */}
+          <div className="grades-ctrl-disciplina">
+            <div className="desktop-only" style={{ height: '100%' }}>
+              <CustomSelect 
+                label="Disciplina" 
+                icon={<BookOpen size={10}/>}
+                value={subject} 
+                options={subjects.map(s => ({ label: s, value: s }))}
+                isOpen={openSubject}
+                setIsOpen={setOpenSubject}
+                onChange={setSubject}
+              />
+            </div>
+            <div className="mobile-only card" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', borderRadius: 'var(--radius-lg)' }}>
+              <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><BookOpen size={10}/> Disciplina</div>
+              <select style={{ border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
                 value={subject} onChange={e => setSubject(e.target.value)}>
-                {subjects.length > 0 ? subjects.map(s => (
-                  <option key={s} value={s}>{s}</option>
-                )) : <option value="">Nenhuma</option>}
+                {subjects.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
-              <ChevronDown size={14} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'hsl(var(--text-light))' }} />
             </div>
           </div>
-          <div className="card grades-ctrl-search" style={{ padding: '0.7rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderRadius: '10px' }}>
+
+          {/* Search */}
+          <div className="card grades-ctrl-search" style={{ padding: '0.7rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderRadius: '8px' }}>
             <Search size={16} color="hsl(var(--text-light))" />
             <input placeholder="Pesquisar..." style={{ border: 'none', background: 'none', fontSize: '0.85rem', fontWeight: 600, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
               value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
@@ -328,7 +361,7 @@ export const GradesEntryPage: React.FC = () => {
 
         {/* ============ MOBILE CARD VIEW ============ */}
         <div className="grades-mobile-cards" style={{
-          display: 'flex', flexDirection: 'column', gap: '1.5rem',
+          flexDirection: 'column', gap: '1.5rem',
           opacity: loadingGrades ? 0.4 : 1, pointerEvents: loadingGrades ? 'none' : 'auto', transition: 'opacity 0.3s'
         }}>
           {filteredStudents.map((student) => {
@@ -458,27 +491,48 @@ export const GradesEntryPage: React.FC = () => {
           align-items: stretch;
         }
         .grades-ctrl-bimestre { flex: 0 0 auto; min-width: 155px; }
-        .grades-ctrl-disciplina { flex: 1 1 260px; min-width: 200px; }
-        .grades-ctrl-search { flex: 0 1 200px; min-width: 140px; }
+        .grades-ctrl-disciplina { flex: 1 1 320px; min-width: 240px; }
+        .grades-ctrl-search { flex: 0 1 160px; min-width: 120px; }
 
         /* Modern select dropdown styling */
-        .grades-select option {
-          font-family: 'Inter', sans-serif;
-          font-weight: 600;
-          font-size: 0.9rem;
-          padding: 0.75rem 1rem;
+        .grades-select-popover {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 0;
+          width: 100%;
           background: white;
-          color: #1B2559;
+          border-radius: 8px;
+          border: 1px solid hsl(var(--border) / 0.5);
+          box-shadow: 0 10px 25px -10px rgba(0,0,0,0.15);
+          z-index: 1000;
+          overflow: hidden;
+          animation: slideIn 0.2s ease;
         }
-        .grades-select option:checked {
-          background: linear-gradient(135deg, hsl(250 100% 55% / 0.1), hsl(250 100% 55% / 0.05));
-          color: hsl(250 100% 55%);
-          font-weight: 800;
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .grades-select-option {
+          padding: 0.75rem 1rem;
+          font-family: 'Inter', sans-serif;
+          font-weight: 700;
+          font-size: 0.85rem;
+          color: #1B2559;
+          cursor: pointer;
+          transition: all 0.1s;
+        }
+        .grades-select-option:hover {
+          background-color: hsl(var(--primary) / 0.04);
+          color: hsl(var(--primary));
+        }
+        .grades-select-option.active {
+          background-color: hsl(var(--primary) / 0.08);
+          color: hsl(var(--primary));
         }
 
         /* Desktop: show table, hide cards */
         .grades-desktop-table { display: block; }
-        .grades-mobile-cards { display: none; }
+        .grades-mobile-cards { display: none !important; }
 
         .grades-desktop-table table tr:hover td {
           background-color: hsl(var(--primary) / 0.02);
@@ -515,6 +569,55 @@ export const GradesEntryPage: React.FC = () => {
 }
 
 /* =================== Sub-Components =================== */
+
+const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange }: any) => {
+  const selectedLabel = options.find((o: any) => o.value === value)?.label || 'Selecione...'
+  
+  return (
+    <div className="card" style={{ 
+      padding: '0.85rem 1rem', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      gap: '0.3rem', 
+      borderRadius: '8px',
+      position: 'relative',
+      cursor: 'pointer',
+      height: '100%',
+      justifyContent: 'center'
+    }} onClick={() => setIsOpen(!isOpen)}>
+      <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        {icon} {label}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+        <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {selectedLabel}
+        </span>
+        <ChevronDown size={14} color="hsl(var(--text-light))" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+      </div>
+
+      {isOpen && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 999 }} onClick={(e) => { e.stopPropagation(); setIsOpen(false) }} />
+          <div className="grades-select-popover">
+            {options.map((opt: any) => (
+              <div 
+                key={opt.value} 
+                className={`grades-select-option ${value === opt.value ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onChange(opt.value)
+                  setIsOpen(false)
+                }}
+              >
+                {opt.label}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
 const TableInput = ({ value, onChange, disabled, accent }: {
   value: string; onChange: (v: string) => void; disabled?: boolean; accent?: boolean
