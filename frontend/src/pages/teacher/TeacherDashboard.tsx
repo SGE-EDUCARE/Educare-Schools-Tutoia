@@ -20,6 +20,7 @@ interface TeacherClass {
 export const TeacherDashboard: React.FC = () => {
   const navigate = useNavigate()
   const [classes, setClasses] = useState<TeacherClass[]>([])
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export const TeacherDashboard: React.FC = () => {
            <div className="icon-box" style={{ width: '40px', height: '40px', backgroundColor: 'hsl(var(--text) / 0.05)', color: 'hsl(var(--text))' }}>
               <LayoutDashboard size={20} />
            </div>
-           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>Minhas Atribuições</h2>
+           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>Selecione a Turma</h2>
         </div>
 
         {loading ? (
@@ -71,48 +72,134 @@ export const TeacherDashboard: React.FC = () => {
             <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.1rem' }}>Você ainda não possui turmas vinculadas. Entre em contato com a coordenação.</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
-            {classes.map(cls => (
-               <div key={cls.id} className="card" style={{ 
-                 display: 'flex', 
-                 flexDirection: 'column', 
-                 padding: 0, /* Remove padding to make list flush with edges */
-                 borderLeft: '6px solid hsl(var(--primary))',
-                 position: 'relative',
-                 overflow: 'hidden'
-               }}>
-                  {/* Cabeçalho do Card */}
-                  <div style={{ padding: '2rem 1.5rem 1rem 1.5rem' }}>
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary-light))', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)' }}>
+          <>
+            {/* 1. SEÇÃO SUPERIOR: CARDS SELETORES (Master) */}
+            <div 
+              className="hide-scroll"
+              style={{ 
+                display: 'flex', 
+                gap: '1rem', 
+                overflowX: 'auto', 
+                paddingBottom: '1rem',
+                marginRight: '-2rem', /* Allow bleeding on mobile */
+                paddingRight: '2rem'
+              }}
+            >
+              {classes.map(cls => {
+                const isActive = cls.id === (selectedClassId || classes[0]?.id)
+                return (
+                  <button 
+                    key={cls.id}
+                    onClick={() => setSelectedClassId(cls.id)}
+                    style={{ 
+                      minWidth: '280px',
+                      flex: '0 0 auto',
+                      textAlign: 'left',
+                      padding: '1.5rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: isActive ? 'hsl(var(--primary))' : 'hsl(var(--surface))',
+                      color: isActive ? 'white' : 'hsl(var(--text))',
+                      border: isActive ? '2px solid hsl(var(--primary))' : '2px solid hsl(var(--border) / 0.3)',
+                      boxShadow: isActive ? '0 10px 25px -5px hsl(var(--primary) / 0.4)' : 'var(--shadow-sm)',
+                      transition: 'var(--transition-all)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span style={{ 
+                        fontSize: '0.7rem', 
+                        fontWeight: 800, 
+                        textTransform: 'uppercase', 
+                        letterSpacing: '0.05em', 
+                        color: isActive ? 'hsl(var(--primary))' : 'hsl(var(--text-light))', 
+                        backgroundColor: isActive ? 'white' : 'hsl(var(--text) / 0.05)', 
+                        padding: '0.2rem 0.6rem', 
+                        borderRadius: 'var(--radius-sm)' 
+                      }}>
                         {cls.subject || 'Polivalente'}
                       </span>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--text-light))', backgroundColor: 'hsl(var(--text) / 0.05)', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <span style={{ 
+                        fontSize: '0.75rem', 
+                        fontWeight: 800, 
+                        color: isActive ? 'white' : 'hsl(var(--text-light))', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '0.25rem',
+                        opacity: isActive ? 0.9 : 1
+                      }}>
                         <GraduationCap size={14} /> {cls._count.students} Alunos
                       </span>
                     </div>
-                    <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'hsl(var(--text))', marginTop: '1rem', letterSpacing: '-0.03em' }}>{cls.name}</h3>
-                    <p style={{ color: 'hsl(var(--text-light))', fontSize: '1rem', fontWeight: 500, marginTop: '0.25rem' }}>
+                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>{cls.name}</h3>
+                    <p style={{ fontSize: '0.9rem', fontWeight: 600, opacity: isActive ? 0.8 : 0.6 }}>
                       {cls.grade.name} • {cls.grade.level.name}
                     </p>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* 2. SEÇÃO INFERIOR: FERRAMENTAS DA TURMA (Detail) */}
+            {(() => {
+              const activeCls = classes.find(c => c.id === (selectedClassId || classes[0]?.id))
+              if (!activeCls) return null
+              
+              const isInfantil = activeCls.grade.level.name.includes('Infantil') || activeCls.grade.name.includes('Infantil')
+
+              return (
+                <div style={{ marginTop: '1rem', animation: 'fadeIn 0.3s ease' }}>
+                  <div className="flex items-center gap-3 mb-6">
+                     <span style={{ width: '8px', height: '24px', backgroundColor: 'hsl(var(--primary))', borderRadius: '4px' }}></span>
+                     <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>
+                       Módulos: {activeCls.name}
+                     </h3>
                   </div>
                   
-                  {/* Lista de Ações Restruturada (Opção 1 iOS/Android App Style) */}
-                  <div style={{ display: 'flex', flexDirection: 'column', borderTop: '1px solid hsl(var(--border) / 0.5)' }}>
-                    <ActionRow icon={<ClipboardList size={20} />} label="Realizar Chamada Diária" onClick={() => navigate(`/teacher/attendance/${cls.id}`)} />
-                    <ActionRow icon={<CheckSquare size={20} />} label="Lançar Notas e Avaliações" onClick={() => navigate(`/teacher/grades/${cls.id}`)} />
-                    <ActionRow icon={<FileText size={20} />} label="Preencher Plano de Aula" onClick={() => navigate(`/teacher/lesson-plan/${cls.id}`)} />
-                    <ActionRow icon={<Home size={20} />} label="Agenda de Casa" onClick={() => navigate(`/teacher/homework/${cls.id}`)} />
-                    <ActionRow icon={<Megaphone size={20} />} label="Enviar Comunicado" onClick={() => navigate(`/teacher/notices/${cls.id}`)} />
-                    
-                    {/* Botão de Rotina apenas para Infantil */}
-                    {(cls.grade.level.name.includes('Infantil') || cls.grade.name.includes('Infantil')) && (
-                       <ActionRow icon={<Activity size={20} />} label="Rotina Infantil" variant="primary" onClick={() => navigate(`/teacher/routine/${cls.id}`)} />
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                    <ActionCard 
+                      icon={<ClipboardList size={28} />} 
+                      title="Chamada Diária" 
+                      subtitle="Realocar presenças" 
+                      onClick={() => navigate(`/teacher/attendance/${activeCls.id}`)} 
+                    />
+                    <ActionCard 
+                      icon={<CheckSquare size={28} />} 
+                      title="Notas e Avaliações" 
+                      subtitle="Lançar resultados" 
+                      onClick={() => navigate(`/teacher/grades/${activeCls.id}`)} 
+                    />
+                    <ActionCard 
+                      icon={<FileText size={28} />} 
+                      title="Plano de Aula" 
+                      subtitle="Planejamento BNCC" 
+                      onClick={() => navigate(`/teacher/lesson-plan/${activeCls.id}`)} 
+                    />
+                    <ActionCard 
+                      icon={<Home size={28} />} 
+                      title="Agenda de Casa" 
+                      subtitle="Tarefas e lembretes" 
+                      onClick={() => navigate(`/teacher/homework/${activeCls.id}`)} 
+                    />
+                    <ActionCard 
+                      icon={<Megaphone size={28} />} 
+                      title="Mural de Avisos" 
+                      subtitle="Comunicar responsáveis" 
+                      onClick={() => navigate(`/teacher/notices/${activeCls.id}`)} 
+                    />
+                    {isInfantil && (
+                      <ActionCard 
+                        icon={<Activity size={28} />} 
+                        title="Rotina Infantil" 
+                        subtitle="Atividades e relatório" 
+                        variant="primary"
+                        onClick={() => navigate(`/teacher/routine/${activeCls.id}`)} 
+                      />
                     )}
                   </div>
-               </div>
-            ))}
-          </div>
+                </div>
+              )
+            })()}
+          </>
         )}
       </div>
 
@@ -123,7 +210,7 @@ export const TeacherDashboard: React.FC = () => {
           </div>
           <div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'hsl(var(--text))', marginBottom: '0.25rem' }}>Informativo Docente</h3>
-            <p style={{ color: 'hsl(var(--text-light))', fontSize: '1rem', fontWeight: 500 }}>Utilize os módulos acima para lançamentos diários. Os dados são sincronizados em tempo real com a secretaria.</p>
+            <p style={{ color: 'hsl(var(--text-light))', fontSize: '1rem', fontWeight: 500 }}>Primeiro selecione a turma no topo e depois acesse o módulo desejado na tela abaixo. Isso permite foco total no momento do lançamento.</p>
           </div>
         </div>
       </div>
@@ -131,8 +218,10 @@ export const TeacherDashboard: React.FC = () => {
   )
 }
 
-const ActionRow = ({ icon, label, onClick, variant = 'text' }: any) => {
+const ActionCard = ({ icon, title, subtitle, onClick, variant = 'secondary' }: any) => {
   const [hover, setHover] = useState(false)
+  const isPrimary = variant === 'primary'
+  
   return (
     <button 
       onClick={onClick}
@@ -140,26 +229,49 @@ const ActionRow = ({ icon, label, onClick, variant = 'text' }: any) => {
       onMouseLeave={() => setHover(false)}
       style={{ 
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        textAlign: 'left',
         width: '100%',
-        padding: '1.25rem 1.5rem',
-        backgroundColor: hover ? (variant === 'primary' ? 'hsl(var(--primary) / 0.05)' : 'hsl(var(--text) / 0.02)') : 'transparent',
-        borderBottom: '1px solid hsl(var(--border) / 0.5)',
-        cursor: 'pointer',
+        padding: '1.75rem',
+        borderRadius: 'var(--radius-md)',
+        backgroundColor: isPrimary ? 'hsl(var(--primary-light))' : 'hsl(var(--surface))',
+        border: `2px solid ${isPrimary ? 'hsl(var(--primary) / 0.3)' : 'hsl(var(--border) / 0.5)'}`,
+        boxShadow: hover ? 'var(--shadow-md)' : 'var(--shadow-sm)',
+        transform: hover ? 'translateY(-2px)' : 'translateY(0)',
         transition: 'var(--transition-all)',
-        textAlign: 'left'
+        cursor: 'pointer',
+        position: 'relative',
+        overflow: 'hidden'
       }}
     >
-      <div className="flex items-center gap-4">
-        <div style={{ color: variant === 'primary' ? 'hsl(var(--primary))' : 'hsl(var(--text-light))' }}>
-          {icon}
-        </div>
-        <span style={{ fontSize: '1rem', fontWeight: 600, color: variant === 'primary' ? 'hsl(var(--primary))' : 'hsl(var(--text))' }}>
-          {label}
-        </span>
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '56px', 
+          height: '56px', 
+          borderRadius: 'var(--radius-sm)',
+          backgroundColor: isPrimary ? 'hsl(var(--primary))' : 'hsl(var(--text) / 0.05)',
+          color: isPrimary ? 'white' : 'hsl(var(--text))',
+          marginBottom: '1.5rem',
+          transition: 'var(--transition-all)',
+          transform: hover ? 'scale(1.05)' : 'scale(1)'
+        }}
+      >
+        {icon}
       </div>
-      <ChevronRight size={18} style={{ color: 'hsl(var(--text-light))', opacity: hover ? 1 : 0.3 }} />
+      <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: isPrimary ? 'hsl(var(--primary))' : 'hsl(var(--text))', letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>
+        {title}
+      </h4>
+      <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'hsl(var(--text-light))' }}>
+        {subtitle}
+      </p>
+      
+      <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', opacity: hover ? 1 : 0.2, transform: hover ? 'translateX(0)' : 'translateX(-4px)', transition: 'all 0.2s', color: isPrimary ? 'hsl(var(--primary))' : 'hsl(var(--text-light))' }}>
+        <ChevronRight size={20} />
+      </div>
     </button>
   )
 }
