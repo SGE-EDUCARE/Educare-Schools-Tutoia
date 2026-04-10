@@ -124,24 +124,35 @@ export class TeacherController {
         const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação' };
         
         for (const [key, value] of Object.entries(studentGrades)) {
-          if (value === '') continue;
+          if (value === '' || value === null) continue;
           const labelName = labelsMap[key] || key;
+          const numericValue = Number(String(value).replace(',', '.'));
           
-          await prisma.grade.upsert({
+          const existing = await prisma.grade.findFirst({
             where: {
-              // Schema real pode precisar de busca primeiro se não tiver ID composto
-              id: `${studentId}-${bimester}-${subject}-${labelName}` 
-            },
-            update: { value: Number(value) },
-            create: {
-              id: `${studentId}-${bimester}-${subject}-${labelName}`,
               student_id: studentId,
               bimester: Number(bimester),
-              subject,
-              label: labelName,
-              value: Number(value)
+              subject: String(subject),
+              label: labelName
             }
           });
+
+          if (existing) {
+            await prisma.grade.update({
+              where: { id: existing.id },
+              data: { value: numericValue }
+            });
+          } else {
+            await prisma.grade.create({
+              data: {
+                student_id: studentId,
+                bimester: Number(bimester),
+                subject: String(subject),
+                label: labelName,
+                value: numericValue
+              }
+            });
+          }
         }
       } else {
         // Formato legiado legado (compatibilidade)

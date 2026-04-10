@@ -44,8 +44,18 @@ export const GradesEntryPage: React.FC = () => {
         if (newGradesState[g.student_id]) {
           const field = labelsMap[g.label]
           if (field) {
-            newGradesState[g.student_id][field as keyof typeof newGradesState[string]] = String(g.value)
+            // Garantir que o valor seja formatado corretamente para o input
+            const val = g.value !== null && g.value !== undefined ? String(g.value) : ''
+            newGradesState[g.student_id][field as keyof typeof newGradesState[string]] = val
           }
+        }
+      })
+
+      // Recalcular médias para garantir consistência visual imediata
+      Object.keys(newGradesState).forEach(id => {
+        const s = newGradesState[id]
+        if (s.p1 || s.p2) {
+           s.result = calculateMedia(s.p1, s.p2)
         }
       })
 
