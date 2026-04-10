@@ -80,7 +80,6 @@ export const AttendancePage: React.FC = () => {
   )
 
   return (
-  return (
     <div style={{ margin: '0 auto', width: '100%', minHeight: '100vh', backgroundColor: '#F8FAFC', position: 'relative' }}>
       
       {/* WRAPPER PARA ALINHAMENTO FIXO */}
