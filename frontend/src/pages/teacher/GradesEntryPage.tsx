@@ -103,7 +103,7 @@ export const GradesEntryPage: React.FC = () => {
     }
     setSavingId(studentId)
     try {
-      await api('/teacher/grades/bulk-student', {
+      await api('/teacher/grades', {
         method: 'POST',
         body: JSON.stringify({
           studentId,

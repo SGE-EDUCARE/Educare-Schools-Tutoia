@@ -176,17 +176,19 @@ export class TeacherController {
     }
   }
 
-  // Novo: Buscar Notas de uma Turma
+  // Buscar Notas de uma Turma/Disciplina/Bimestre
   static async getGradesByClass(req: AuthRequest, res: Response) {
     const { classId } = req.params;
     const { bimester, subject } = req.query;
+
+    if (!bimester || !subject) return res.status(400).json({ message: 'Bimestre e disciplina são obrigatórios' });
 
     try {
       const grades = await prisma.grade.findMany({
         where: {
           student: { class_id: classId },
           bimester: Number(bimester),
-          subject: String(subject)
+          subject: String(subject).trim()
         }
       });
       res.json(grades);
