@@ -60,12 +60,60 @@ export const GradesEntryPage: React.FC = () => {
           grades: grades[studentId]
         })
       })
-      toast.success('Notas do aluno salvas!')
+      toast.success('Notas salvas!')
     } catch (error: any) {
       toast.error('Erro ao salvar notas')
     } finally {
       setSavingId(null)
     }
+  }
+
+  const handleSaveAll = async () => {
+    if (!subject) {
+      toast.error('Informe a disciplina')
+      return
+    }
+    setSavingId('all')
+    try {
+      await api('/teacher/grades/bulk', {
+        method: 'POST',
+        body: JSON.stringify({
+          classId,
+          bimester,
+          subject,
+          grades
+        })
+      })
+      toast.success('Todas as notas salvas com sucesso!')
+      navigate('/teacher/dashboard')
+    } catch (error: any) {
+      toast.error('Erro ao salvar todas as notas')
+    } finally {
+      setSavingId(null)
+    }
+  }
+
+  const calculateMedia = (p1: string, p2: string) => {
+    const v1 = parseFloat(p1) || 0
+    const v2 = parseFloat(p2) || 0
+    if (p1 === '' && p2 === '') return ''
+    const media = (v1 + v2) / 2
+    return media.toFixed(1)
+  }
+
+  const handleGradeChange = (studentId: string, field: 'p1' | 'p2' | 'retry', value: string) => {
+    const val = value.replace(',', '.')
+    setGrades(prev => {
+      const current = prev[studentId] || { p1: '', p2: '', result: '', retry: '' }
+      const newGrades = { ...current, [field]: val }
+      
+      // Auto calculo da média se for p1 ou p2
+      if (field === 'p1' || field === 'p2') {
+        newGrades.result = calculateMedia(newGrades.p1, newGrades.p2)
+      }
+      
+      return { ...prev, [studentId]: newGrades }
+    })
   }
 
   const handleDeleteStudent = (studentId: string) => {
@@ -89,11 +137,13 @@ export const GradesEntryPage: React.FC = () => {
     </div>
   )
 
+  const systemGradient = 'linear-gradient(135deg, #4318FF 0%, #7000FF 100%)'
+
   return (
     <div style={{ margin: '0 auto', width: '100%', minHeight: '100vh', backgroundColor: '#F8FAFC', position: 'relative' }}>
       
       {/* WRAPPER PARA ALINHAMENTO FIXO */}
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 1.25rem 6rem 1.25rem' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 1.25rem 12rem 1.25rem' }}>
         
         {/* HEADER ULTRA PREMIUM */}
         <header style={{ padding: '2rem 0 1rem 0' }}>
@@ -196,7 +246,7 @@ export const GradesEntryPage: React.FC = () => {
                        <input 
                          style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
                          value={sGrades.p1}
-                         onChange={e => updateGrade(student.id, 'p1', e.target.value)}
+                         onChange={e => handleGradeChange(student.id, 'p1', e.target.value)}
                          placeholder="—"
                        />
                     </div>
@@ -205,7 +255,7 @@ export const GradesEntryPage: React.FC = () => {
                        <input 
                          style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
                          value={sGrades.p2}
-                         onChange={e => updateGrade(student.id, 'p2', e.target.value)}
+                         onChange={e => handleGradeChange(student.id, 'p2', e.target.value)}
                          placeholder="—"
                        />
                     </div>
@@ -216,9 +266,9 @@ export const GradesEntryPage: React.FC = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                        <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))', marginLeft: '0.5rem' }}>Média</label>
                        <input 
-                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
+                         readOnly
+                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F1F5F9', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--primary))', outline: 'none', opacity: 0.8 }}
                          value={sGrades.result}
-                         onChange={e => updateGrade(student.id, 'result', e.target.value)}
                          placeholder="—"
                        />
                     </div>
@@ -227,7 +277,7 @@ export const GradesEntryPage: React.FC = () => {
                        <input 
                          style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
                          value={sGrades.retry}
-                         onChange={e => updateGrade(student.id, 'retry', e.target.value)}
+                         onChange={e => handleGradeChange(student.id, 'retry', e.target.value)}
                          placeholder="—"
                        />
                     </div>
@@ -238,7 +288,7 @@ export const GradesEntryPage: React.FC = () => {
                     <button 
                       disabled={savingId === student.id}
                       onClick={() => handleSaveStudent(student.id)}
-                      style={{ flex: 1, height: '52px', backgroundColor: '#22C55E', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none', opacity: savingId === student.id ? 0.7 : 1 }}
+                      style={{ flex: 1, height: '52px', background: systemGradient, color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none', opacity: savingId === student.id ? 0.7 : 1, boxShadow: '0 10px 20px -5px rgba(67, 24, 255, 0.3)' }}
                     >
                       {savingId === student.id ? <Loader2 className="animate-spin" size={20} /> : <Rocket size={20} />}
                     </button>
@@ -255,6 +305,47 @@ export const GradesEntryPage: React.FC = () => {
             )
           })}
         </div>
+      </div>
+
+      {/* FLOAT ACTION BUTTON PREMIUM - SALVAR TUDO */}
+      <div style={{ 
+        position: 'fixed', 
+        bottom: '2rem', 
+        left: '50%', 
+        transform: 'translateX(-50%)', 
+        width: 'calc(100% - 2.5rem)', 
+        maxWidth: '768px', 
+        zIndex: 200,
+        boxSizing: 'border-box'
+      }}>
+        <button 
+          disabled={savingId === 'all'}
+          onClick={handleSaveAll} 
+          style={{ 
+            width: '100%', 
+            padding: '1.4rem', 
+            borderRadius: '28px', 
+            background: systemGradient, 
+            color: 'white', 
+            boxShadow: '0 20px 40px -10px rgba(67, 24, 255, 0.4)', 
+            fontSize: '1.2rem', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            gap: '1rem', 
+            fontWeight: 900, 
+            border: 'none', 
+            cursor: 'pointer',
+            letterSpacing: '-0.02em',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          {savingId === 'all' ? <Loader2 className="animate-spin" size={24} /> : (
+            <>
+              CONCLUIR LANÇAMENTO <div style={{ width: '2px', height: '20px', backgroundColor: 'rgba(255,255,255,0.2)' }}></div> {filledCount} ALUNOS
+            </>
+          )}
+        </button>
       </div>
     </div>
   )
