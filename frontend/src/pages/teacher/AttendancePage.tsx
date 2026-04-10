@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
-import { ChevronLeft, Search, Loader2, CheckCircle2, XCircle, Calendar, UserCheck } from 'lucide-react'
+import { ChevronLeft, Search, Loader2, CheckCircle2, XCircle, Calendar, UserCheck, Check } from 'lucide-react'
 
 export const AttendancePage: React.FC = () => {
   const { classId } = useParams()
@@ -71,6 +71,7 @@ export const AttendancePage: React.FC = () => {
   )
 
   const presentCount = Object.values(attendances).filter(v => v).length
+  const progress = students.length > 0 ? (presentCount / students.length) * 100 : 0
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
@@ -79,53 +80,65 @@ export const AttendancePage: React.FC = () => {
   )
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', paddingBottom: '8rem' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', paddingBottom: '10rem', minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
       
-      <header style={{ marginTop: '2rem', marginBottom: '2.5rem' }}>
+      {/* HEADER ULTRA PREMIUM */}
+      <header style={{ padding: '2rem 1rem 1rem 1rem' }}>
         <button 
           onClick={() => navigate(-1)} 
           style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: '0.5rem', 
-            color: 'hsl(var(--text-light))', 
-            fontSize: '0.9rem', 
-            fontWeight: 700,
+            gap: '0.4rem', 
+            color: 'hsl(var(--primary))', 
+            fontSize: '0.85rem', 
+            fontWeight: 800,
             marginBottom: '1.5rem',
             border: 'none',
-            background: 'none',
+            background: 'hsl(var(--primary) / 0.08)',
+            padding: '0.5rem 1rem',
+            borderRadius: 'var(--radius-full)',
             cursor: 'pointer'
           }}
         >
-          <ChevronLeft size={18} /> Voltar ao Painel
+          <ChevronLeft size={16} /> VOLTAR AO PAINEL
         </button>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 850, color: 'hsl(var(--text))', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '0.5rem' }}>
+        <h1 style={{ fontSize: '2.8rem', fontWeight: 900, color: 'hsl(var(--text))', letterSpacing: '-0.05em', lineHeight: 1, marginBottom: '0.5rem' }}>
           Chamada Diária
         </h1>
-        <p style={{ fontSize: '1.1rem', fontWeight: 500, color: 'hsl(var(--text-light))' }}>
+        <p style={{ fontSize: '1.2rem', fontWeight: 500, color: 'hsl(var(--text-light))', letterSpacing: '-0.02em', marginBottom: '2rem' }}>
           Gerencie a frequência da sua turma hoje.
         </p>
+
+        {/* PROGRESS BAR COMPACTA NATIVA */}
+        <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '24px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.03)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', alignItems: 'center' }}>
+             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'hsl(var(--text))', opacity: 0.6 }}>STATUS DA TURMA</span>
+             <span style={{ fontSize: '0.9rem', fontWeight: 900, color: 'hsl(var(--primary))' }}>{presentCount} DE {students.length} PRESENTES</span>
+          </div>
+          <div style={{ width: '100%', height: '8px', backgroundColor: 'hsl(var(--primary) / 0.05)', borderRadius: '10px', overflow: 'hidden' }}>
+            <div style={{ width: `${progress}%`, height: '100%', backgroundColor: 'hsl(var(--primary))', borderRadius: '10px', transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}></div>
+          </div>
+        </div>
       </header>
 
-      <section style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--shadow-sm)', marginBottom: '2rem', border: '1px solid hsl(var(--border) / 0.5)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid hsl(var(--border) / 0.3)', paddingBottom: '1.25rem' }}>
+      {/* CONTROLES IMERSIVOS */}
+      <section style={{ padding: '0 1rem', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
             <Calendar size={20} color="hsl(var(--primary))" />
-            <div style={{ flex: 1 }}>
-               <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginBottom: '0.2rem' }}>DATA DO DIÁRIO</div>
-               <input 
-                 type="date" 
-                 value={date}
-                 onChange={e => setDate(e.target.value)}
-                 style={{ border: 'none', background: 'none', fontSize: '1.1rem', fontWeight: 700, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
-               />
-            </div>
+            <input 
+              type="date" 
+              value={date}
+              onChange={e => setDate(e.target.value)}
+              style={{ border: 'none', background: 'none', fontSize: '1.1rem', fontWeight: 750, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
+            />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
             <Search size={20} color="hsl(var(--text-light))" />
             <input 
-              placeholder="Pesquisar aluno na lista..." 
+              placeholder="Pesquisar aluno..." 
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               style={{ border: 'none', background: 'none', fontSize: '1rem', fontWeight: 600, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
@@ -134,21 +147,18 @@ export const AttendancePage: React.FC = () => {
         </div>
       </section>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', padding: '0 0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'hsl(var(--text-light))', fontSize: '0.85rem', fontWeight: 700 }}>
-          <UserCheck size={16} /> {filteredStudents.length} ALUNOS
-        </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button onClick={() => markAll(true)} style={{ color: 'hsl(var(--success))', fontSize: '0.85rem', fontWeight: 800, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-            <CheckCircle2 size={16} /> Marcar Todos
-          </button>
-          <button onClick={() => markAll(false)} style={{ color: 'hsl(var(--error))', fontSize: '0.85rem', fontWeight: 800, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-            <XCircle size={16} /> Limpar
-          </button>
-        </div>
+      {/* QUICK ACTIONS PREMIUM */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2rem', padding: '0 1rem' }}>
+        <button onClick={() => markAll(true)} style={{ flex: 1, backgroundColor: 'hsl(var(--success) / 0.05)', border: '1px solid hsl(var(--success) / 0.2)', padding: '0.85rem', borderRadius: '16px', color: 'hsl(var(--success))', fontSize: '0.8rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+          <CheckCircle2 size={16} /> TODOS PRESENTES
+        </button>
+        <button onClick={() => markAll(false)} style={{ flex: 1, backgroundColor: 'hsl(var(--error) / 0.05)', border: '1px solid hsl(var(--error) / 0.2)', padding: '0.85rem', borderRadius: '16px', color: 'hsl(var(--error))', fontSize: '0.8rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+          <XCircle size={16} /> LIMPAR LISTA
+        </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      {/* LISTA DE ALUNOS NATIVE 2.0 */}
+      <div style={{ padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {filteredStudents.map((student, index) => {
           const isPresent = attendances[student.id] === true
           const isAbsent = attendances[student.id] === false
@@ -160,44 +170,47 @@ export const AttendancePage: React.FC = () => {
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'space-between', 
-                padding: '1.25rem',
+                padding: '1.5rem',
                 backgroundColor: 'white',
-                borderRadius: 'var(--radius-lg)',
-                border: '1px solid hsl(var(--border) / 0.4)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                borderRadius: '32px',
+                boxShadow: isPresent ? '0 10px 25px -5px hsl(var(--success) / 0.1)' : isAbsent ? '0 10px 25px -5px hsl(var(--error) / 0.1)' : '0 10px 20px -5px rgba(0,0,0,0.03)',
+                transform: isPresent || isAbsent ? 'scale(1.01)' : 'scale(1)',
+                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                border: '1px solid rgba(0,0,0,0.01)'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', overflow: 'hidden' }}>
                  <div style={{ 
-                   width: '36px', 
-                   height: '36px', 
-                   borderRadius: '12px', 
-                   backgroundColor: isPresent ? 'hsl(var(--success) / 0.1)' : isAbsent ? 'hsl(var(--error) / 0.1)' : 'hsl(var(--text) / 0.05)',
-                   color: isPresent ? 'hsl(var(--success))' : isAbsent ? 'hsl(var(--error))' : 'hsl(var(--text-light))',
+                   width: '42px', 
+                   height: '42px', 
+                   borderRadius: '50%', 
+                   backgroundColor: isPresent ? 'hsl(var(--success))' : isAbsent ? 'hsl(var(--error))' : 'hsl(var(--text) / 0.05)',
+                   color: isPresent || isAbsent ? 'white' : 'hsl(var(--text-light))',
                    display: 'flex',
                    alignItems: 'center',
                    justifyContent: 'center',
-                   fontWeight: 850,
-                   fontSize: '0.9rem',
-                   flexShrink: 0
+                   fontWeight: 900,
+                   fontSize: '1rem',
+                   flexShrink: 0,
+                   transition: 'all 0.3s'
                  }}>
-                   {index + 1}
+                   {isPresent ? <Check size={20} /> : index + 1}
                  </div>
-                 <span style={{ fontWeight: 700, color: 'hsl(var(--text))', fontSize: '1.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                 <span style={{ fontWeight: 800, color: 'hsl(var(--text))', fontSize: '1.2rem', letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                    {student.name}
                  </span>
               </div>
               
-              <div style={{ display: 'flex', backgroundColor: 'hsl(var(--background))', padding: '0.3rem', borderRadius: '14px', border: '1px solid hsl(var(--border) / 0.5)' }}>
+              <div style={{ display: 'flex', backgroundColor: '#F1F5F9', padding: '0.4rem', borderRadius: '18px' }}>
                 <button 
                   onClick={() => setStatus(student.id, true)}
-                  style={{ width: '44px', height: '40px', borderRadius: '11px', backgroundColor: isPresent ? 'hsl(var(--success))' : 'transparent', color: isPresent ? 'white' : 'hsl(var(--text-light))', fontWeight: 850, fontSize: '1rem', border: 'none', transition: 'all 0.2s', cursor: 'pointer' }}
+                  style={{ width: '52px', height: '44px', borderRadius: '14px', backgroundColor: isPresent ? 'hsl(var(--success))' : 'transparent', color: isPresent ? 'white' : 'hsl(var(--text-light))', fontWeight: 900, fontSize: '1.1rem', border: 'none', transition: 'all 0.2s', cursor: 'pointer' }}
                 >
                   P
                 </button>
                 <button 
                   onClick={() => setStatus(student.id, false)}
-                  style={{ width: '44px', height: '40px', borderRadius: '11px', backgroundColor: isAbsent ? 'hsl(var(--error))' : 'transparent', color: isAbsent ? 'white' : 'hsl(var(--text-light))', fontWeight: 850, fontSize: '1rem', border: 'none', transition: 'all 0.2s', cursor: 'pointer' }}
+                  style={{ width: '52px', height: '44px', borderRadius: '14px', backgroundColor: isAbsent ? 'hsl(var(--error))' : 'transparent', color: isAbsent ? 'white' : 'hsl(var(--text-light))', fontWeight: 900, fontSize: '1.1rem', border: 'none', transition: 'all 0.2s', cursor: 'pointer' }}
                 >
                   F
                 </button>
@@ -207,13 +220,34 @@ export const AttendancePage: React.FC = () => {
         })}
       </div>
 
-      <div style={{ position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 2.5rem)', maxWidth: '760px', zIndex: 100 }}>
+      {/* FLOAT ACTION BUTTON PREMIUM */}
+      <div style={{ position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 2rem)', maxWidth: '500px', zIndex: 200 }}>
         <button 
           disabled={saving}
           onClick={handleSave} 
-          style={{ width: '100%', padding: '1.25rem', borderRadius: '20px', backgroundColor: 'hsl(var(--text))', color: 'white', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.3)', fontSize: '1.1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', fontWeight: 800, border: 'none', cursor: 'pointer' }}
+          style={{ 
+            width: '100%', 
+            padding: '1.4rem', 
+            borderRadius: '28px', 
+            background: 'linear-gradient(135deg, hsl(var(--text)), #1E293B)', 
+            color: 'white', 
+            boxShadow: '0 20px 40px -10px rgba(0,0,0,0.4)', 
+            fontSize: '1.2rem', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            gap: '1rem', 
+            fontWeight: 900, 
+            border: 'none', 
+            cursor: 'pointer',
+            letterSpacing: '-0.02em'
+          }}
         >
-          {saving ? <Loader2 className="animate-spin" size={24} /> : <>Finalizar Chamada • {presentCount} Presentes</>}
+          {saving ? <Loader2 className="animate-spin" size={24} /> : (
+            <>
+              CONCLUIR CHAMADA <div style={{ width: '2px', height: '20px', backgroundColor: 'rgba(255,255,255,0.2)' }}></div> {presentCount} PRESENTES
+            </>
+          )}
         </button>
       </div>
     </div>
