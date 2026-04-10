@@ -287,7 +287,7 @@ export const GradesEntryPage: React.FC = () => {
                 {filteredStudents.map((student) => {
                   const sg = grades[student.id] || emptyGrade()
                   const mediaNum = parseFloat(sg.result)
-                  const needsRetry = !isNaN(mediaNum) && mediaNum <= 6
+                  const needsRetry = !isNaN(mediaNum) && mediaNum < 7
 
                   return (
                     <tr key={student.id} style={{ borderBottom: '1px solid hsl(var(--border) / 0.3)', transition: 'background 0.15s' }}>
@@ -366,8 +366,8 @@ export const GradesEntryPage: React.FC = () => {
         }}>
           {filteredStudents.map((student) => {
             const sg = grades[student.id] || emptyGrade()
-            const mediaNum = parseFloat(sg.result)
-            const needsRetry = !isNaN(mediaNum) && mediaNum <= 6
+            const mediaNum = parseFloat(student.id ? grades[student.id]?.result : '0') || parseFloat(sg.result)
+            const needsRetry = !isNaN(mediaNum) && mediaNum < 7
             const finalVal = parseFloat(sg.final)
 
             return (
