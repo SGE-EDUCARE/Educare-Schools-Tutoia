@@ -371,17 +371,18 @@ export const GradesEntryPage: React.FC = () => {
             const finalVal = parseFloat(sg.final)
 
             return (
-              <div key={student.id} style={{ display: 'flex', flexDirection: 'column' }}>
-                {/* Nome */}
+              <div key={student.id} className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', border: '1px solid hsl(var(--border) / 0.5)' }}>
+                {/* Cabeçalho do Nome */}
                 <div style={{
-                  backgroundColor: 'hsl(var(--primary) / 0.06)', padding: '0.85rem 1.25rem',
-                  borderRadius: 'var(--radius-md) var(--radius-md) 0 0'
+                  padding: '1rem 1.25rem', 
+                  backgroundColor: 'hsl(var(--primary) / 0.05)',
+                  borderBottom: '1px solid hsl(var(--border) / 0.4)'
                 }}>
                   <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))' }}>{student.name}</span>
                 </div>
 
-                {/* Card */}
-                <div className="card" style={{ borderRadius: '0 0 var(--radius-xl) var(--radius-xl)', borderTop: 'none', padding: '1.25rem' }}>
+                {/* Conteúdo da Nota */}
+                <div style={{ padding: '1.25rem' }}>
                   {/* Provas */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
                     <MobileInput label="1ª Prova" value={sg.p1} onChange={v => handleGradeChange(student.id, 'p1', v)} />
