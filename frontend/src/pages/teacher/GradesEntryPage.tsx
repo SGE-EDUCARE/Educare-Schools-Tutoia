@@ -490,9 +490,9 @@ export const GradesEntryPage: React.FC = () => {
           gap: 0.75rem;
           align-items: stretch;
         }
-        .grades-ctrl-bimestre { flex: 0 0 auto; min-width: 155px; }
-        .grades-ctrl-disciplina { flex: 1 1 320px; min-width: 240px; }
-        .grades-ctrl-search { flex: 0 1 160px; min-width: 120px; }
+        .grades-ctrl-bimestre { flex: 1 0 180px; max-width: 220px; }
+        .grades-ctrl-disciplina { flex: 3 1 400px; }
+        .grades-ctrl-search { flex: 1.5 1 250px; }
 
         /* Modern select dropdown styling */
         .grades-select-popover {
