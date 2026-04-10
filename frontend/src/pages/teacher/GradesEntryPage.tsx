@@ -202,7 +202,7 @@ export const GradesEntryPage: React.FC = () => {
           
           {/* Bimestre Dropdown */}
           <div className="grades-ctrl-bimestre">
-            <div className="desktop-only" style={{ height: '100%' }}>
+            <div className="desktop-only" style={{ height: '100%', width: '100%' }}>
               <CustomSelect 
                 label="Bimestre" 
                 icon={<Calendar size={10}/>}
@@ -232,7 +232,7 @@ export const GradesEntryPage: React.FC = () => {
 
           {/* Disciplina Dropdown */}
           <div className="grades-ctrl-disciplina">
-            <div className="desktop-only" style={{ height: '100%' }}>
+            <div className="desktop-only" style={{ height: '100%', width: '100%' }}>
               <CustomSelect 
                 label="Disciplina" 
                 icon={<BookOpen size={10}/>}
@@ -490,7 +490,7 @@ export const GradesEntryPage: React.FC = () => {
           gap: 0.75rem;
           align-items: stretch;
         }
-        .grades-ctrl-bimestre { flex: 1 0 180px; max-width: 220px; }
+        .grades-ctrl-bimestre { flex: 1 0 180px; }
         .grades-ctrl-disciplina { flex: 3 1 400px; }
         .grades-ctrl-search { flex: 1.5 1 250px; }
 
