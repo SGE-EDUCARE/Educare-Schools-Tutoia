@@ -197,10 +197,10 @@ export const AttendancePage: React.FC = () => {
                    {isPresent ? <Check size={20} /> : index + 1}
                  </div>
                  <span style={{ 
-                   fontWeight: 800, 
+                   fontWeight: 700, 
                    color: 'hsl(var(--text))', 
-                   fontSize: '1.15rem', 
-                   letterSpacing: '-0.02em', 
+                   fontSize: '1rem', 
+                   letterSpacing: '-0.01em', 
                    lineHeight: '1.2',
                    overflow: 'visible'
                  }}>
