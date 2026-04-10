@@ -27,31 +27,34 @@ export const GradesEntryPage: React.FC = () => {
   }, [bimester, subject])
 
   const loadGrades = async () => {
+    if (!subject) return
+    await loadGradesExplicit(subject)
+  }
+
+  const loadGradesExplicit = async (currentSubject: string) => {
     try {
-      const existingGrades = await api(`/teacher/classes/${classId}/grades?bimester=${bimester}&subject=${subject}`)
+      console.log(`Buscando notas para: ${currentSubject}, Bimestre: ${bimester}`)
+      const existingGrades = await api(`/teacher/classes/${classId}/grades?bimester=${bimester}&subject=${encodeURIComponent(currentSubject)}`)
+      console.log('Notas encontradas:', existingGrades)
       
       const newGradesState: Record<string, { p1: string, p2: string, result: string, retry: string }> = {}
       
-      // Inicializar todos com vazio primeiro para limpar estados antigos
       students.forEach(s => {
         newGradesState[s.id] = { p1: '', p2: '', result: '', retry: '' }
       })
 
-      // Mapear labels do banco para as chaves do estado do frontend
       const labelsMap: any = { '1ª Prova': 'p1', '2ª Prova': 'p2', 'Média': 'result', 'Superação': 'retry' }
 
       existingGrades.forEach((g: any) => {
         if (newGradesState[g.student_id]) {
           const field = labelsMap[g.label]
           if (field) {
-            // Garantir que o valor seja formatado corretamente para o input
             const val = g.value !== null && g.value !== undefined ? String(g.value) : ''
             newGradesState[g.student_id][field as keyof typeof newGradesState[string]] = val
           }
         }
       })
 
-      // Recalcular médias para garantir consistência visual imediata
       Object.keys(newGradesState).forEach(id => {
         const s = newGradesState[id]
         if (s.p1 || s.p2) {
@@ -61,7 +64,7 @@ export const GradesEntryPage: React.FC = () => {
 
       setGrades(newGradesState)
     } catch (error) {
-      console.error('Erro ao carregar notas salvas')
+      console.error('Erro ao carregar notas salvas:', error)
     }
   }
 
@@ -83,7 +86,10 @@ export const GradesEntryPage: React.FC = () => {
       setGrades(initial)
 
       if (subjectsData.length > 0) {
-        setSubject(subjectsData[0])
+        const firstSubject = subjectsData[0]
+        setSubject(firstSubject)
+        // Forçar carregamento imediato após definir a primeira disciplina
+        await loadGradesExplicit(firstSubject)
       }
     } finally {
       setLoading(false)
