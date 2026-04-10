@@ -132,7 +132,7 @@ export class TeacherController {
             where: {
               student_id: studentId,
               bimester: Number(bimester),
-              subject: String(subject),
+              subject: String(subject).trim(),
               label: labelName
             }
           });
