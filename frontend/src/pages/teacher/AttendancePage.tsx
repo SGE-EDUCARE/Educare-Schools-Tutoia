@@ -170,7 +170,7 @@ export const AttendancePage: React.FC = () => {
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'space-between', 
-                padding: '1.5rem',
+                padding: '1.25rem',
                 backgroundColor: 'white',
                 borderRadius: '32px',
                 boxShadow: isPresent ? '0 10px 25px -5px hsl(var(--success) / 0.1)' : isAbsent ? '0 10px 25px -5px hsl(var(--error) / 0.1)' : '0 10px 20px -5px rgba(0,0,0,0.03)',
@@ -179,7 +179,7 @@ export const AttendancePage: React.FC = () => {
                 border: '1px solid rgba(0,0,0,0.01)'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: 0 }}>
                  <div style={{ 
                    width: '42px', 
                    height: '42px', 
@@ -196,21 +196,28 @@ export const AttendancePage: React.FC = () => {
                  }}>
                    {isPresent ? <Check size={20} /> : index + 1}
                  </div>
-                 <span style={{ fontWeight: 800, color: 'hsl(var(--text))', fontSize: '1.2rem', letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                 <span style={{ 
+                   fontWeight: 800, 
+                   color: 'hsl(var(--text))', 
+                   fontSize: '1.15rem', 
+                   letterSpacing: '-0.02em', 
+                   lineHeight: '1.2',
+                   overflow: 'visible'
+                 }}>
                    {student.name}
                  </span>
               </div>
               
-              <div style={{ display: 'flex', backgroundColor: '#F1F5F9', padding: '0.4rem', borderRadius: '18px' }}>
+              <div style={{ display: 'flex', backgroundColor: '#F1F5F9', padding: '0.4rem', borderRadius: '18px', flexShrink: 0, marginLeft: '0.5rem' }}>
                 <button 
                   onClick={() => setStatus(student.id, true)}
-                  style={{ width: '52px', height: '44px', borderRadius: '14px', backgroundColor: isPresent ? 'hsl(var(--success))' : 'transparent', color: isPresent ? 'white' : 'hsl(var(--text-light))', fontWeight: 900, fontSize: '1.1rem', border: 'none', transition: 'all 0.2s', cursor: 'pointer' }}
+                  style={{ width: '48px', height: '40px', borderRadius: '14px', backgroundColor: isPresent ? 'hsl(var(--success))' : 'transparent', color: isPresent ? 'white' : 'hsl(var(--text-light))', fontWeight: 900, fontSize: '1rem', border: 'none', transition: 'all 0.2s', cursor: 'pointer' }}
                 >
                   P
                 </button>
                 <button 
                   onClick={() => setStatus(student.id, false)}
-                  style={{ width: '52px', height: '44px', borderRadius: '14px', backgroundColor: isAbsent ? 'hsl(var(--error))' : 'transparent', color: isAbsent ? 'white' : 'hsl(var(--text-light))', fontWeight: 900, fontSize: '1.1rem', border: 'none', transition: 'all 0.2s', cursor: 'pointer' }}
+                  style={{ width: '48px', height: '40px', borderRadius: '14px', backgroundColor: isAbsent ? 'hsl(var(--error))' : 'transparent', color: isAbsent ? 'white' : 'hsl(var(--text-light))', fontWeight: 900, fontSize: '1rem', border: 'none', transition: 'all 0.2s', cursor: 'pointer' }}
                 >
                   F
                 </button>
@@ -221,7 +228,7 @@ export const AttendancePage: React.FC = () => {
       </div>
 
       {/* FLOAT ACTION BUTTON PREMIUM */}
-      <div style={{ position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 2rem)', maxWidth: '500px', zIndex: 200 }}>
+      <div style={{ position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 2rem)', maxWidth: '768px', zIndex: 200 }}>
         <button 
           disabled={saving}
           onClick={handleSave} 
@@ -229,9 +236,9 @@ export const AttendancePage: React.FC = () => {
             width: '100%', 
             padding: '1.4rem', 
             borderRadius: '28px', 
-            background: 'linear-gradient(135deg, hsl(var(--text)), #1E293B)', 
+            backgroundColor: 'hsl(var(--primary))', 
             color: 'white', 
-            boxShadow: '0 20px 40px -10px rgba(0,0,0,0.4)', 
+            boxShadow: '0 20px 40px -10px hsl(var(--primary) / 0.4)', 
             fontSize: '1.2rem', 
             display: 'flex', 
             justifyContent: 'center', 
@@ -240,7 +247,8 @@ export const AttendancePage: React.FC = () => {
             fontWeight: 900, 
             border: 'none', 
             cursor: 'pointer',
-            letterSpacing: '-0.02em'
+            letterSpacing: '-0.02em',
+            transition: 'all 0.3s ease'
           }}
         >
           {saving ? <Loader2 className="animate-spin" size={24} /> : (
