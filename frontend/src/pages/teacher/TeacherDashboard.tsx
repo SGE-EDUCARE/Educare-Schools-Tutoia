@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { 
-  BookOpen, AlertCircle, LayoutDashboard, ClipboardList, CheckSquare, FileText, 
+  AlertCircle, LayoutDashboard, ClipboardList, CheckSquare, FileText, 
   Home, Megaphone, Activity, Loader2, GraduationCap, ChevronRight 
 } from 'lucide-react'
 import { api } from '../../utils/api'
@@ -220,4 +220,3 @@ const ModuleCard = ({ icon, title, onClick, color }: any) => {
   )
 }
 
-const TeacherStatCard = () => null // Deprecated - clean UI strategy
