@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { 
   BookOpen, AlertCircle, LayoutDashboard, ClipboardList, CheckSquare, FileText, 
-  Home, Megaphone, Activity, Loader2, GraduationCap 
+  Home, Megaphone, Activity, Loader2, GraduationCap, ChevronRight 
 } from 'lucide-react'
 import { api } from '../../utils/api'
 import { useNavigate } from 'react-router-dom'
@@ -47,7 +47,7 @@ export const TeacherDashboard: React.FC = () => {
         </div>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2.25rem' }}>
         <TeacherStatCard icon={<BookOpen size={28} />} label="Turmas Ativas" value={classes.length.toString().padStart(2, '0')} color="primary" trend="Sincronizado" />
         <TeacherStatCard icon={<GraduationCap size={28} />} label="Total Alunos" value={classes.reduce((acc, c) => acc + c._count.students, 0).toString().padStart(2, '0')} color="success" trend="Base de dados real" />
         <TeacherStatCard icon={<AlertCircle size={28} />} label="Pendências" value="00" color="warning" trend="Tudo em dia" />
@@ -76,39 +76,38 @@ export const TeacherDashboard: React.FC = () => {
                <div key={cls.id} className="card" style={{ 
                  display: 'flex', 
                  flexDirection: 'column', 
-                 gap: '2rem', 
+                 padding: 0, /* Remove padding to make list flush with edges */
                  borderLeft: '6px solid hsl(var(--primary))',
                  position: 'relative',
                  overflow: 'hidden'
                }}>
-                  <div className="flex justify-between items-start" style={{ position: 'relative' }}>
-                    <div>
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary-light))', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)' }}>
-                          {cls.subject || 'Polivalente'}
-                        </span>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--text-light))', backgroundColor: 'hsl(var(--text) / 0.05)', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          <GraduationCap size={14} /> {cls._count.students} Alunos
-                        </span>
-                      </div>
-                      <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'hsl(var(--text))', marginTop: '1rem', letterSpacing: '-0.03em' }}>{cls.name}</h3>
-                      <p style={{ color: 'hsl(var(--text-light))', fontSize: '1rem', fontWeight: 500, marginTop: '0.25rem' }}>
-                        {cls.grade.name} • {cls.grade.level.name}
-                      </p>
+                  {/* Cabeçalho do Card */}
+                  <div style={{ padding: '2rem 1.5rem 1rem 1.5rem' }}>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary-light))', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)' }}>
+                        {cls.subject || 'Polivalente'}
+                      </span>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--text-light))', backgroundColor: 'hsl(var(--text) / 0.05)', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <GraduationCap size={14} /> {cls._count.students} Alunos
+                      </span>
                     </div>
+                    <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'hsl(var(--text))', marginTop: '1rem', letterSpacing: '-0.03em' }}>{cls.name}</h3>
+                    <p style={{ color: 'hsl(var(--text-light))', fontSize: '1rem', fontWeight: 500, marginTop: '0.25rem' }}>
+                      {cls.grade.name} • {cls.grade.level.name}
+                    </p>
                   </div>
                   
-                  {/* Grid de Ações Rápidas */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '0.75rem' }}>
-                    <ActionButton icon={<ClipboardList size={20} />} label="Chamada" onClick={() => navigate(`/teacher/attendance/${cls.id}`)} />
-                    <ActionButton icon={<CheckSquare size={20} />} label="Notas" onClick={() => navigate(`/teacher/grades/${cls.id}`)} />
-                    <ActionButton icon={<FileText size={20} />} label="Plano" onClick={() => navigate(`/teacher/lesson-plan/${cls.id}`)} />
-                    <ActionButton icon={<Home size={20} />} label="Agenda" onClick={() => navigate(`/teacher/homework/${cls.id}`)} />
-                    <ActionButton icon={<Megaphone size={20} />} label="Aviso" onClick={() => navigate(`/teacher/notices/${cls.id}`)} />
+                  {/* Lista de Ações Restruturada (Opção 1 iOS/Android App Style) */}
+                  <div style={{ display: 'flex', flexDirection: 'column', borderTop: '1px solid hsl(var(--border) / 0.5)' }}>
+                    <ActionRow icon={<ClipboardList size={20} />} label="Realizar Chamada Diária" onClick={() => navigate(`/teacher/attendance/${cls.id}`)} />
+                    <ActionRow icon={<CheckSquare size={20} />} label="Lançar Notas e Avaliações" onClick={() => navigate(`/teacher/grades/${cls.id}`)} />
+                    <ActionRow icon={<FileText size={20} />} label="Preencher Plano de Aula" onClick={() => navigate(`/teacher/lesson-plan/${cls.id}`)} />
+                    <ActionRow icon={<Home size={20} />} label="Agenda de Casa" onClick={() => navigate(`/teacher/homework/${cls.id}`)} />
+                    <ActionRow icon={<Megaphone size={20} />} label="Enviar Comunicado" onClick={() => navigate(`/teacher/notices/${cls.id}`)} />
                     
                     {/* Botão de Rotina apenas para Infantil */}
                     {(cls.grade.level.name.includes('Infantil') || cls.grade.name.includes('Infantil')) && (
-                       <ActionButton icon={<Activity size={20} />} label="Rotina" variant="primary" onClick={() => navigate(`/teacher/routine/${cls.id}`)} />
+                       <ActionRow icon={<Activity size={20} />} label="Rotina Infantil" variant="primary" onClick={() => navigate(`/teacher/routine/${cls.id}`)} />
                     )}
                   </div>
                </div>
@@ -132,22 +131,38 @@ export const TeacherDashboard: React.FC = () => {
   )
 }
 
-const ActionButton = ({ icon, label, onClick, variant = 'secondary' }: any) => (
-  <button 
-    onClick={onClick}
-    className={`btn btn-${variant}`} 
-    style={{ 
-      flexDirection: 'column', 
-      padding: '0.85rem', 
-      gap: '0.5rem', 
-      fontSize: '0.8rem',
-      borderRadius: 'var(--radius-md)' 
-    }}
-  >
-    {icon}
-    {label}
-  </button>
-)
+const ActionRow = ({ icon, label, onClick, variant = 'text' }: any) => {
+  const [hover, setHover] = useState(false)
+  return (
+    <button 
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{ 
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        padding: '1.25rem 1.5rem',
+        backgroundColor: hover ? (variant === 'primary' ? 'hsl(var(--primary) / 0.05)' : 'hsl(var(--text) / 0.02)') : 'transparent',
+        borderBottom: '1px solid hsl(var(--border) / 0.5)',
+        cursor: 'pointer',
+        transition: 'var(--transition-all)',
+        textAlign: 'left'
+      }}
+    >
+      <div className="flex items-center gap-4">
+        <div style={{ color: variant === 'primary' ? 'hsl(var(--primary))' : 'hsl(var(--text-light))' }}>
+          {icon}
+        </div>
+        <span style={{ fontSize: '1rem', fontWeight: 600, color: variant === 'primary' ? 'hsl(var(--primary))' : 'hsl(var(--text))' }}>
+          {label}
+        </span>
+      </div>
+      <ChevronRight size={18} style={{ color: 'hsl(var(--text-light))', opacity: hover ? 1 : 0.3 }} />
+    </button>
+  )
+}
 
 const TeacherStatCard = ({ icon, label, value, color, trend }: any) => {
   const colorMap: any = {
