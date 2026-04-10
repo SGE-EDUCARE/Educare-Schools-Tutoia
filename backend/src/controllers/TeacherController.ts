@@ -197,14 +197,19 @@ export class TeacherController {
     }
   }
 
-  // Novo: Buscar Disciplinas do Professor
+  // Novo: Buscar Disciplinas do Professor (Filtrado por Turma se fornecido)
   static async getTeacherAllocations(req: AuthRequest, res: Response) {
     const teacher_id = req.user?.id;
+    const { classId } = req.params;
+    
     if (!teacher_id) return res.status(401).json({ message: 'Não autorizado' });
 
     try {
+      const where: any = { teacher_id };
+      if (classId) where.class_id = classId;
+
       const allocations = await prisma.teacherAllocation.findMany({
-        where: { teacher_id },
+        where,
         distinct: ['subject'],
         select: { subject: true }
       });

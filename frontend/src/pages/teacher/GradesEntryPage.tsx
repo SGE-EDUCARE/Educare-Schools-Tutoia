@@ -24,7 +24,7 @@ export const GradesEntryPage: React.FC = () => {
     try {
       const [studentsData, subjectsData] = await Promise.all([
         api(`/teacher/classes/${classId}/students`),
-        api('/teacher/allocations')
+        api(`/teacher/classes/${classId}/allocations`)
       ])
       
       const sorted = studentsData.sort((a: any, b: any) => a.name.localeCompare(b.name))

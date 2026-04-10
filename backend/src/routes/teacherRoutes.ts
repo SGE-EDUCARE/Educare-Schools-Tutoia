@@ -8,6 +8,7 @@ const router = Router();
 router.use(authenticateToken);
 
 router.get('/classes', TeacherController.getClasses);
+router.get('/classes/:classId/allocations', TeacherController.getTeacherAllocations);
 router.get('/classes/:classId/students', TeacherController.getStudentsByClass);
 
 router.post('/attendance', TeacherController.launchAttendance);
