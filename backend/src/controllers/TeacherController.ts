@@ -195,27 +195,42 @@ export class TeacherController {
     }
   }
 
-  // Novo: Buscar Disciplinas do Professor (Filtrado por Turma se fornecido)
-    const { bimester, subject, grades } = req.body; // grades: { studentId: { p1, p2, result, retry } }
+  // Lançamento em Massa (Todos os alunos da tela)
+  static async bulkLaunchGrades(req: AuthRequest, res: Response) {
+    const { bimester, subject, grades, classId } = req.body; 
     try {
       const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação' };
 
       for (const [studentId, studentGrades] of Object.entries(grades)) {
         const sGrades = studentGrades as any;
         for (const [key, value] of Object.entries(sGrades)) {
-          if (value === '') continue;
+          if (value === '' || value === null) continue;
           const labelName = labelsMap[key] || key;
+          const numericValue = Number(String(value).replace(',', '.'));
 
-          // Busca e Upsert manual para garantir integridade sem ID composto no Prisma
           const existing = await prisma.grade.findFirst({
-            where: { student_id: studentId, bimester: Number(bimester), subject, label: labelName }
+            where: {
+              student_id: studentId,
+              bimester: Number(bimester),
+              subject: String(subject),
+              label: labelName
+            }
           });
 
           if (existing) {
-            await prisma.grade.update({ where: { id: existing.id }, data: { value: Number(value) } });
+            await prisma.grade.update({
+              where: { id: existing.id },
+              data: { value: numericValue }
+            });
           } else {
             await prisma.grade.create({
-              data: { student_id: studentId, bimester: Number(bimester), subject, label: labelName, value: Number(value) }
+              data: {
+                student_id: studentId,
+                bimester: Number(bimester),
+                subject: String(subject),
+                label: labelName,
+                value: numericValue
+              }
             });
           }
         }
@@ -225,8 +240,6 @@ export class TeacherController {
       res.status(500).json({ message: error.message });
     }
   }
-
-  // Novo: Buscar Disciplinas do Professor (Filtrado por Turma se fornecido)
   static async getTeacherAllocations(req: AuthRequest, res: Response) {
     const teacher_id = req.user?.id;
     const { classId } = req.params;
