@@ -8,17 +8,26 @@ import {
   UserSquare2, 
   GraduationCap, 
   Bell,
-  MessageSquare,
-  ClipboardCheck,
-  ChevronRight,
   Layers,
   ListOrdered,
   Clock,
   School,
   Menu,
-  X as CloseIcon
+  X as CloseIcon,
+  Home,
+  ClipboardCheck,
+  BarChart3,
+  User
 } from 'lucide-react'
 import { PasswordResetModal } from './PasswordResetModal'
+
+const roleLabels: Record<string, string> = {
+  DIRECTOR: 'Diretor(a)',
+  COORDINATOR: 'Coordenador(a)',
+  SECRETARY: 'Secretário(a)',
+  TEACHER: 'Professor(a)',
+  PARENT: 'Responsável'
+}
 
 export const Layout: React.FC = () => {
   const { user, logout } = useAuthStore()
@@ -26,13 +35,9 @@ export const Layout: React.FC = () => {
   const location = useLocation()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  // Bloquear scroll do body quando o menu mobile está aberto
   React.useEffect(() => {
-    if (isSidebarOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
+    document.body.style.overflow = isSidebarOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
   }, [isSidebarOpen])
 
   const handleLogout = () => {
@@ -42,212 +47,295 @@ export const Layout: React.FC = () => {
 
   const isAdmin = user?.role === 'DIRECTOR' || user?.role === 'COORDINATOR' || user?.role === 'SECRETARY'
   const isTeacher = user?.role === 'TEACHER'
-
+  const isParent = user?.role === 'PARENT'
+  const showBottomTabs = isTeacher || isParent
 
   const getPageTitle = () => {
     const path = location.pathname
-    const routeTitles: Record<string, string> = {
-      '/teacher/dashboard': 'Meu Painel',
-      '/teacher/attendance': 'Chamada Diária',
-      '/teacher/grades': 'Lançamento de Notas',
+    const titles: Record<string, string> = {
+      '/teacher/dashboard': 'Painel',
+      '/teacher/attendance': 'Chamada',
+      '/teacher/grades': 'Notas',
       '/teacher/lesson-plan': 'Plano de Aula',
-      '/teacher/homework': 'Agenda de Casa',
+      '/teacher/homework': 'Agenda',
       '/teacher/notices': 'Comunicados',
       '/teacher/routine': 'Rotina Infantil',
       '/admin/dashboard': 'Dashboard',
-      '/admin/students': 'Gestão de Alunos',
-      '/admin/teachers': 'Corpo Docente',
-      '/admin/levels': 'Níveis de Ensino',
-      '/admin/grades': 'Anos / Séries',
+      '/admin/students': 'Alunos',
+      '/admin/teachers': 'Docentes',
+      '/admin/levels': 'Níveis',
+      '/admin/grades': 'Séries',
       '/admin/turns': 'Turnos',
       '/admin/classes': 'Turmas',
-      '/chat': 'Chat e Mural',
+      '/parent/dashboard': 'Início',
     }
-    // Match by prefix (handles routes with :id params)
-    const match = Object.keys(routeTitles).find(key => path.startsWith(key))
-    return match ? routeTitles[match] : 'Painel'
+    const match = Object.keys(titles).find(key => path.startsWith(key))
+    return match ? titles[match] : 'Educare'
   }
+
+  const firstName = user?.name?.split(' ')[0] || 'Usuário'
 
   return (
     <div className="app-container">
-      {/* Overlay para fechar menu no mobile */}
+      {/* SIDEBAR OVERLAY (Mobile) */}
       <div 
         className={`sidebar-overlay ${isSidebarOpen ? 'visible' : ''}`} 
         onClick={() => setIsSidebarOpen(false)}
       />
 
-      {/* Sidebar */}
-      <aside className={`sidebar ${isSidebarOpen ? 'mobile-open' : ''}`}>
-        <div style={{ 
-          padding: '2.5rem 2rem', 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '1rem',
-          marginBottom: '1rem',
-          position: 'relative'
-        }}>
-          {/* Botão fechar (Mobile Only) */}
-          <button 
-            className="mobile-only" 
-            onClick={() => setIsSidebarOpen(false)}
-            style={{ position: 'absolute', right: '1rem', top: '1rem', color: 'hsl(var(--text-light))' }}
-          >
-            <CloseIcon size={20} />
-          </button>
-          <div className="icon-box" style={{ 
-            background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(255 85% 65%))',
-            color: 'white',
-            width: '48px',
-            height: '48px',
-            boxShadow: '0 8px 16px -4px hsl(var(--primary) / 0.4)'
+      {/* SIDEBAR — Desktop Admin Only */}
+      {isAdmin && (
+        <aside className={`sidebar ${isSidebarOpen ? 'mobile-open' : ''}`}>
+          {/* Logo */}
+          <div style={{ 
+            padding: '2rem 1.5rem', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.75rem',
+            borderBottom: '1px solid hsl(var(--border) / 0.3)',
+            position: 'relative'
           }}>
-            <GraduationCap size={28} />
-          </div>
-          <div>
-            <h2 style={{ 
-              fontSize: '1.5rem', 
-              fontWeight: 800, 
-              letterSpacing: '-0.04em',
-              color: 'hsl(var(--text))',
-              lineHeight: 1
-            }}>
-              Educare
-            </h2>
-            <span style={{ fontSize: '0.8rem', color: 'hsl(var(--text-light))', fontWeight: 600, letterSpacing: '0.02em' }}>EDUCAÇÃO PRIVADA</span>
-          </div>
-        </div>
-
-        <nav style={{ 
-          flex: 1, 
-          padding: '0 1.25rem', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: '0.4rem',
-          overflowY: 'auto'
-        }}>
-          <div style={{ padding: '0.5rem 1rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--text-light) / 0.5)' }}>Operacional</div>
-          
-          {isAdmin && (
-            <>
-              <SidebarLink to="/admin/dashboard" icon={<LayoutDashboard />} label="Dashboard" />
-              <SidebarLink to="/admin/students" icon={<Users />} label="Gestão de Alunos" />
-              <SidebarLink to="/admin/teachers" icon={<UserSquare2 />} label="Corpo Docente" />
-            </>
-          )}
-
-          {isTeacher && (
-            <>
-              <SidebarLink to="/teacher/dashboard" icon={<LayoutDashboard />} label="Meu Painel" />
-              <SidebarLink to="/teacher/attendance" icon={<ClipboardCheck />} label="Chamada Diária" />
-            </>
-          )}
-
-          {isAdmin && (
-            <>
-              <div style={{ marginTop: '1.5rem', padding: '0.5rem 1rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--text-light) / 0.5)' }}>Estrutura Acadêmica</div>
-              <SidebarLink to="/admin/levels" icon={<Layers />} label="Níveis de Ensino" />
-              <SidebarLink to="/admin/grades" icon={<ListOrdered />} label="Anos / Séries" />
-              <SidebarLink to="/admin/turns" icon={<Clock />} label="Turnos" />
-              <SidebarLink to="/admin/classes" icon={<School />} label="Turmas" />
-            </>
-          )}
-
-          <div style={{ marginTop: '1.5rem', padding: '0.5rem 1rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'hsl(var(--text-light) / 0.5)' }}>Comunicação</div>
-          <SidebarLink to="/chat" icon={<MessageSquare />} label="Chat e Mural" />
-        </nav>
-
-        <div style={{ padding: '1.5rem', borderTop: '1px solid hsl(var(--border) / 0.5)' }}>
-          <button 
-            onClick={handleLogout}
-            className="btn btn-secondary"
-            style={{ width: '100%', padding: '0.75rem', gap: '0.5rem' }}
-          >
-            <LogOut size={16} />
-            Sair
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Container */}
-      <div className="main-content">
-        <header className="topbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* Menu Hambúrguer (Mobile Only) */}
             <button 
-              className="mobile-only btn-ghost" 
-              onClick={() => setIsSidebarOpen(true)}
-              style={{ padding: '0.5rem', flexShrink: 0 }}
+              className="mobile-only" 
+              onClick={() => setIsSidebarOpen(false)}
+              style={{ position: 'absolute', right: '1rem', top: '1rem', color: 'hsl(var(--text-light))', padding: '0.5rem' }}
             >
-              <Menu size={24} />
+              <CloseIcon size={18} />
             </button>
-
-            <div className="desktop-only" style={{ 
-              backgroundColor: 'hsl(var(--primary-light))', 
-              padding: '0.5rem 1rem', 
-              borderRadius: 'var(--radius-full)',
-              color: 'hsl(var(--primary))',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
+            <div className="icon-box" style={{ 
+              background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(260 85% 60%))',
+              color: 'white',
+              width: '42px',
+              height: '42px',
+              borderRadius: 'var(--radius-sm)',
+              boxShadow: '0 4px 12px -2px hsl(var(--primary) / 0.35)'
             }}>
-              {user?.role}
+              <GraduationCap size={22} />
             </div>
-            <ChevronRight size={16} opacity={0.4} className="desktop-only" />
-            <span style={{ fontSize: '1rem', color: 'hsl(var(--text))', fontWeight: 700 }}>{getPageTitle()}</span>
+            <div>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.03em', color: 'hsl(var(--text))', lineHeight: 1.1 }}>
+                Educare
+              </h2>
+              <span style={{ fontSize: '0.65rem', color: 'hsl(var(--text-light))', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Gestão Escolar
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-             <button className="btn-ghost" style={{ position: 'relative', padding: '0.5rem' }}>
-               <Bell size={20} />
-               <span style={{ position: 'absolute', top: '2px', right: '2px', width: '8px', height: '8px', backgroundColor: 'hsl(var(--error))', borderRadius: '50%', border: '2px solid hsl(var(--surface))' }}></span>
-             </button>
-            <div className="flex items-center gap-2">
-               {/* Nome visível só no desktop */}
-               <div className="desktop-only" style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: '0.9rem', fontWeight: 700 }}>{user?.name}</p>
-               </div>
-               <div className="icon-box" style={{ width: '36px', height: '36px', backgroundColor: 'hsl(var(--primary))', color: 'white', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', flexShrink: 0 }}>
-                {user?.name?.charAt(0)}
+
+          {/* Nav */}
+          <nav style={{ flex: 1, padding: '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', overflowY: 'auto' }}>
+            <NavSection label="Operacional">
+              <SidebarLink to="/admin/dashboard" icon={<LayoutDashboard />} label="Dashboard" onClick={() => setIsSidebarOpen(false)} />
+              <SidebarLink to="/admin/students" icon={<Users />} label="Alunos" onClick={() => setIsSidebarOpen(false)} />
+              <SidebarLink to="/admin/teachers" icon={<UserSquare2 />} label="Docentes" onClick={() => setIsSidebarOpen(false)} />
+            </NavSection>
+
+            <NavSection label="Acadêmico">
+              <SidebarLink to="/admin/levels" icon={<Layers />} label="Níveis" onClick={() => setIsSidebarOpen(false)} />
+              <SidebarLink to="/admin/grades" icon={<ListOrdered />} label="Séries" onClick={() => setIsSidebarOpen(false)} />
+              <SidebarLink to="/admin/turns" icon={<Clock />} label="Turnos" onClick={() => setIsSidebarOpen(false)} />
+              <SidebarLink to="/admin/classes" icon={<School />} label="Turmas" onClick={() => setIsSidebarOpen(false)} />
+            </NavSection>
+          </nav>
+
+          {/* User Card + Logout */}
+          <div style={{ padding: '1rem', borderTop: '1px solid hsl(var(--border) / 0.3)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', padding: '0 0.5rem' }}>
+              <div className="icon-box" style={{ width: '36px', height: '36px', backgroundColor: 'hsl(var(--primary))', color: 'white', fontWeight: 700, fontSize: '0.85rem', borderRadius: 'var(--radius-full)' }}>
+                {firstName.charAt(0)}
               </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: '0.85rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name}</p>
+                <p style={{ fontSize: '0.7rem', color: 'hsl(var(--text-light))', fontWeight: 600 }}>{roleLabels[user?.role || ''] || user?.role}</p>
+              </div>
+            </div>
+            <button 
+              onClick={handleLogout}
+              style={{ 
+                width: '100%', 
+                padding: '0.65rem',
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: 'hsl(var(--error) / 0.06)',
+                color: 'hsl(var(--error))',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                transition: 'var(--transition-all)'
+              }}
+            >
+              <LogOut size={16} /> Sair da Conta
+            </button>
+          </div>
+        </aside>
+      )}
+
+      {/* MAIN CONTENT */}
+      <div className="main-content">
+        {/* TOPBAR */}
+        <header className="topbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* Hamburger (Admin mobile only) */}
+            {isAdmin && (
+              <button 
+                className="mobile-only btn-ghost" 
+                onClick={() => setIsSidebarOpen(true)}
+                style={{ padding: '0.5rem' }}
+              >
+                <Menu size={22} />
+              </button>
+            )}
+
+            {/* Role Badge (Desktop) */}
+            {isAdmin && (
+              <div className="desktop-only" style={{ 
+                backgroundColor: 'hsl(var(--primary) / 0.06)', 
+                padding: '0.375rem 0.75rem', 
+                borderRadius: 'var(--radius-full)',
+                color: 'hsl(var(--primary))',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                letterSpacing: '0.02em'
+              }}>
+                {roleLabels[user?.role || ''] || user?.role}
+              </div>
+            )}
+
+            {/* Page Title */}
+            <h1 style={{ 
+              fontSize: showBottomTabs ? '1.25rem' : '1rem', 
+              fontWeight: 800, 
+              color: 'hsl(var(--text))',
+              letterSpacing: '-0.02em'
+            }}>
+              {showBottomTabs ? `Olá, ${firstName}` : getPageTitle()}
+            </h1>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button className="btn-ghost" style={{ position: 'relative' }}>
+              <Bell size={20} />
+              <span style={{ 
+                position: 'absolute', top: '6px', right: '6px', 
+                width: '7px', height: '7px', 
+                backgroundColor: 'hsl(var(--error))', 
+                borderRadius: '50%', 
+                border: '2px solid hsl(var(--surface))' 
+              }}></span>
+            </button>
+            <div className="icon-box" style={{ 
+              width: '34px', height: '34px', 
+              backgroundColor: 'hsl(var(--primary))', 
+              color: 'white', 
+              fontWeight: 700, 
+              fontSize: '0.85rem', 
+              borderRadius: 'var(--radius-full)',
+              cursor: 'pointer' 
+            }}>
+              {firstName.charAt(0)}
             </div>
           </div>
         </header>
 
-
-        <main className="page-content animate-fade-in">
+        {/* PAGE CONTENT */}
+        <main className="page-content">
           <Outlet />
         </main>
-        
-        {/* Modal Global de Segurança */}
+
+        {/* PASSWORD RESET MODAL */}
         <PasswordResetModal />
       </div>
+
+      {/* BOTTOM TAB BAR — Professor & Parent (Mobile Only) */}
+      {showBottomTabs && (
+        <nav className="bottom-tabs">
+          {isTeacher && (
+            <>
+              <BottomTab to="/teacher/dashboard" icon={<Home size={22} />} label="Início" />
+              <BottomTab to="/teacher/attendance" icon={<ClipboardCheck size={22} />} label="Chamada" matchPrefix />
+              <BottomTab to="/teacher/grades" icon={<BarChart3 size={22} />} label="Notas" matchPrefix />
+              <BottomTabAction icon={<User size={22} />} label="Perfil" onClick={handleLogout} />
+            </>
+          )}
+          {isParent && (
+            <>
+              <BottomTab to="/parent/dashboard" icon={<Home size={22} />} label="Início" />
+              <BottomTab to="/parent/grades" icon={<BarChart3 size={22} />} label="Boletim" matchPrefix />
+              <BottomTab to="/parent/messages" icon={<Bell size={22} />} label="Avisos" matchPrefix />
+              <BottomTabAction icon={<User size={22} />} label="Sair" onClick={handleLogout} />
+            </>
+          )}
+        </nav>
+      )}
     </div>
   )
 }
 
-const SidebarLink = ({ to, icon, label }: { to: string, icon: React.ReactNode, label: string }) => {
+/* =================== SUB-COMPONENTS =================== */
+
+const NavSection = ({ label, children }: { label: string, children: React.ReactNode }) => (
+  <div style={{ marginBottom: '0.5rem' }}>
+    <div style={{ 
+      padding: '0.5rem 0.75rem', 
+      fontSize: '0.6rem', 
+      fontWeight: 800, 
+      textTransform: 'uppercase', 
+      letterSpacing: '0.1em', 
+      color: 'hsl(var(--text-light) / 0.5)',
+      marginTop: '0.5rem'
+    }}>
+      {label}
+    </div>
+    {children}
+  </div>
+)
+
+const SidebarLink = ({ to, icon, label, onClick }: { to: string, icon: React.ReactNode, label: string, onClick?: () => void }) => (
+  <NavLink 
+    to={to} 
+    onClick={onClick}
+    style={({ isActive }) => ({
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.625rem',
+      padding: '0.6rem 0.75rem',
+      color: isActive ? 'hsl(var(--primary))' : 'hsl(var(--text-light))',
+      backgroundColor: isActive ? 'hsl(var(--primary) / 0.06)' : 'transparent',
+      borderRadius: 'var(--radius-sm)',
+      fontWeight: isActive ? 700 : 600,
+      fontSize: '0.85rem',
+      transition: 'var(--transition-fast)',
+      textDecoration: 'none'
+    })}
+  >
+    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>
+      {React.cloneElement(icon as React.ReactElement<any>, { size: 18 })}
+    </span>
+    {label}
+  </NavLink>
+)
+
+const BottomTab = ({ to, icon, label, matchPrefix }: { to: string, icon: React.ReactNode, label: string, matchPrefix?: boolean }) => {
+  const location = useLocation()
+  const isActive = matchPrefix ? location.pathname.startsWith(to) : location.pathname === to
+
   return (
     <NavLink 
       to={to} 
-      className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-      style={({ isActive }) => ({
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        padding: '0.75rem 1rem',
-        color: isActive ? 'hsl(var(--primary))' : 'hsl(var(--text-light))',
-        backgroundColor: isActive ? 'hsl(var(--primary) / 0.08)' : 'transparent',
-        borderRadius: 'var(--radius-md)',
-        fontWeight: isActive ? 700 : 600,
-        fontSize: '0.9rem',
-        transition: 'var(--transition-all)',
-      })}
+      className={`bottom-tab-item ${isActive ? 'active' : ''}`}
+      style={{ textDecoration: 'none' }}
     >
-      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>
-        {React.cloneElement(icon as React.ReactElement<any>, { size: 20 })}
-      </span>
-      {label}
+      <span className="bottom-tab-icon">{icon}</span>
+      <span className="bottom-tab-label">{label}</span>
     </NavLink>
   )
 }
+
+const BottomTabAction = ({ icon, label, onClick }: { icon: React.ReactNode, label: string, onClick: () => void }) => (
+  <button className="bottom-tab-item" onClick={onClick}>
+    <span className="bottom-tab-icon">{icon}</span>
+    <span className="bottom-tab-label">{label}</span>
+  </button>
+)

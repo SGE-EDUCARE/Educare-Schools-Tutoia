@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/useAuthStore'
-import { GraduationCap, Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react'
+import { GraduationCap, Mail, Lock, LogIn, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { api } from '../utils/api'
 import { toast } from 'react-hot-toast'
 
@@ -32,61 +32,137 @@ export const Login: React.FC = () => {
       else if (role === 'TEACHER') navigate('/teacher/dashboard')
       else navigate('/admin/dashboard')
     } catch (error: any) {
-      toast.error('E-mail ou senha incorretos. Tente novamente.')
+      toast.error('E-mail ou senha incorretos.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', backgroundColor: 'hsl(var(--background))' }}>
+    <div style={{ 
+      minHeight: '100dvh',
+      display: 'flex', 
+      backgroundColor: 'hsl(var(--background))' 
+    }}>
       
-      {/* Left Panel - Branding */}
+      {/* LEFT PANEL — Branding (Desktop Only) */}
       <div style={{
         flex: 1.2,
-        background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(230 85% 55%))',
+        background: 'linear-gradient(145deg, hsl(var(--primary)), hsl(260 85% 50%), hsl(230 85% 45%))',
         color: '#fff',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: '5rem',
+        padding: '4rem',
         position: 'relative',
         overflow: 'hidden'
-      }}>
-        {/* Decorative elements */}
-        <div style={{ position: 'absolute', width: 800, height: 800, background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%)', top: '-20%', left: '-10%', borderRadius: '50%' }}></div>
-        <div style={{ position: 'absolute', width: 400, height: 400, background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%)', bottom: '10%', right: '-5%', borderRadius: '50%' }}></div>
+      }} className="desktop-only">
+        {/* Decorative orbs */}
+        <div style={{ position: 'absolute', width: 600, height: 600, background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)', top: '-15%', left: '-10%', borderRadius: '50%' }}></div>
+        <div style={{ position: 'absolute', width: 400, height: 400, background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)', bottom: '10%', right: '-5%', borderRadius: '50%' }}></div>
         
-        <div style={{ zIndex: 1, maxWidth: 540 }}>
-          <div style={{ display: 'inline-flex', padding: '1.25rem', background: 'rgba(255,255,255,0.15)', borderRadius: '1.25rem', marginBottom: '2.5rem', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)' }}>
-             <GraduationCap size={56} />
+        <div style={{ zIndex: 1, maxWidth: 480 }}>
+          <div style={{ 
+            display: 'inline-flex', 
+            padding: '1rem', 
+            background: 'rgba(255,255,255,0.12)', 
+            borderRadius: 'var(--radius-lg)', 
+            marginBottom: '2rem', 
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.15)' 
+          }}>
+             <GraduationCap size={44} />
           </div>
-          <h1 style={{ fontSize: '4.5rem', fontWeight: 800, lineHeight: 1, marginBottom: '2rem', letterSpacing: '-0.05em' }}>
-            Transformando o<br/>futuro da educação.
+          <h1 style={{ 
+            fontSize: '3.5rem', 
+            fontWeight: 900, 
+            lineHeight: 1.05, 
+            marginBottom: '1.5rem', 
+            letterSpacing: '-0.04em' 
+          }}>
+            Transformando<br/>a educação.
           </h1>
-          <p style={{ fontSize: '1.25rem', opacity: 0.9, lineHeight: 1.6, fontWeight: 500, letterSpacing: '-0.01em' }}>
-            Centralize a gestão acadêmica, comunique-se com precisão e acompanhe a evolução de cada aluno em tempo real no portal Educare.
+          <p style={{ fontSize: '1.1rem', opacity: 0.85, lineHeight: 1.7, fontWeight: 500 }}>
+            Centralize a gestão escolar, comunique-se com precisão e acompanhe a evolução de cada aluno em tempo real.
           </p>
         </div>
 
         <div style={{ marginTop: 'auto', zIndex: 1 }}>
-           <p style={{ opacity: 0.6, fontSize: '0.9rem', fontWeight: 600 }}>VERSÃO PROFISSIONAL 2.0</p>
+           <p style={{ opacity: 0.5, fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.04em' }}>EDUCARE · VERSÃO 3.0</p>
         </div>
       </div>
 
-      {/* Right Panel - Login Form */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem' }}>
-        <div className="animate-fade-in" style={{ width: '100%', maxWidth: '440px' }}>
+      {/* RIGHT PANEL — Login Form */}
+      <div style={{ 
+        flex: 1, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        padding: '2rem 1.5rem',
+        minHeight: '100dvh'
+      }}>
+        <div style={{ width: '100%', maxWidth: '400px' }}>
           
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'hsl(var(--text))', marginBottom: '0.75rem', letterSpacing: '-0.03em' }}>Acesso ao Portal</h2>
-            <p style={{ color: 'hsl(var(--text-light))', fontSize: '1.05rem', fontWeight: 500 }}>Insira suas credenciais corporativas abaixo.</p>
+          {/* Mobile Logo */}
+          <div className="mobile-only" style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            marginBottom: '2.5rem',
+            animation: 'fadeIn 0.5s ease-out'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              width: '64px', 
+              height: '64px', 
+              background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(260 85% 60%))',
+              borderRadius: 'var(--radius-lg)',
+              color: 'white',
+              marginBottom: '1rem',
+              boxShadow: '0 8px 24px -4px hsl(var(--primary) / 0.35)'
+            }}>
+              <GraduationCap size={32} />
+            </div>
+            <h2 style={{ 
+              fontSize: '1.5rem', 
+              fontWeight: 900, 
+              color: 'hsl(var(--text))', 
+              letterSpacing: '-0.03em' 
+            }}>
+              Educare
+            </h2>
+            <p style={{ 
+              fontSize: '0.8rem', 
+              color: 'hsl(var(--text-light))', 
+              fontWeight: 600 
+            }}>
+              Gestão Escolar Inteligente
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <label style={{ fontSize: '0.95rem', fontWeight: 700, color: 'hsl(var(--text))', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Mail size={16} /> E-mail Institucional
+          {/* Desktop Title */}
+          <div className="desktop-only" style={{ flexDirection: 'column', marginBottom: '2.5rem' }}>
+            <h2 style={{ 
+              fontSize: '2rem', 
+              fontWeight: 800, 
+              color: 'hsl(var(--text))', 
+              marginBottom: '0.5rem', 
+              letterSpacing: '-0.03em' 
+            }}>
+              Acessar Portal
+            </h2>
+            <p style={{ color: 'hsl(var(--text-light))', fontSize: '0.95rem', fontWeight: 500 }}>
+              Entre com suas credenciais.
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div style={{ animation: 'slideUp 0.4s ease-out 0.1s both' }}>
+              <label className="label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Mail size={14} /> E-mail
               </label>
               <input 
                 type="email" 
@@ -95,13 +171,14 @@ export const Login: React.FC = () => {
                 onChange={e => setEmail(e.target.value)}
                 className="input" 
                 placeholder="nome@educare.com"
-                style={{ height: '3.5rem', fontSize: '1rem' }}
+                autoComplete="email"
+                style={{ height: '52px' }}
               />
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <label style={{ fontSize: '0.95rem', fontWeight: 700, color: 'hsl(var(--text))', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Lock size={16} /> Senha de Segurança
+            <div style={{ animation: 'slideUp 0.4s ease-out 0.2s both' }}>
+              <label className="label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Lock size={14} /> Senha
               </label>
               <div style={{ position: 'relative' }}>
                 <input 
@@ -111,47 +188,63 @@ export const Login: React.FC = () => {
                   onChange={e => setPassword(e.target.value)}
                   className="input" 
                   placeholder="••••••••"
-                  style={{ height: '3.5rem', paddingRight: '3.5rem', fontSize: '1rem' }}
+                  autoComplete="current-password"
+                  style={{ height: '52px', paddingRight: '3.5rem' }}
                 />
                 <button 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'hsl(var(--text-light))', cursor: 'pointer', display: 'flex' }}
+                  style={{ 
+                    position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', 
+                    color: 'hsl(var(--text-light))', display: 'flex', padding: '0.25rem' 
+                  }}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '-0.5rem' }}>
-               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600, color: 'hsl(var(--text-light))' }}>
-                  <input type="checkbox" style={{ width: '1.1rem', height: '1.1rem' }} /> Lembrar acesso
+            <div style={{ 
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              animation: 'slideUp 0.4s ease-out 0.3s both'
+            }}>
+               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'hsl(var(--text-light))' }}>
+                 <input type="checkbox" style={{ width: '1rem', height: '1rem', accentColor: 'hsl(var(--primary))' }} /> Lembrar
                </label>
-               <button type="button" className="btn-ghost" style={{ fontSize: '0.9rem', fontWeight: 700, color: 'hsl(var(--primary))' }}>Esqueci a senha</button>
+               <button type="button" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'hsl(var(--primary))' }}>Esqueci a senha</button>
             </div>
 
             <button 
               type="submit" 
               disabled={loading}
               className="btn btn-primary" 
-              style={{ height: '3.75rem', fontSize: '1.1rem', fontWeight: 700, marginTop: '1rem', gap: '1rem' }}
+              style={{ 
+                height: '54px', 
+                fontSize: '1rem', 
+                fontWeight: 700,
+                marginTop: '0.5rem',
+                animation: 'slideUp 0.4s ease-out 0.4s both'
+              }}
             >
-              {loading ? (
-                <div className="spinner" style={{ width: 24, height: 24 }}></div>
-              ) : (
-                <><LogIn size={20} /> Entrar no Sistema</>
+              {loading ? <Loader2 className="animate-spin" size={22} /> : (
+                <><LogIn size={20} /> Entrar</>
               )}
             </button>
           </form>
 
-          <p style={{ textAlign: 'center', marginTop: '4rem', fontSize: '0.85rem', color: 'hsl(var(--text-light) / 0.6)', fontWeight: 600 }}>
-            © 2026 INTELIGÊNCIA EDUCACIONAL EDUCARE. <br/>DADOS PROTEGIDOS POR CRIPTOGRAFIA SSL.
+          <p style={{ 
+            textAlign: 'center', 
+            marginTop: '3rem', 
+            fontSize: '0.75rem', 
+            color: 'hsl(var(--text-light) / 0.5)', 
+            fontWeight: 600,
+            lineHeight: 1.5
+          }}>
+            © 2026 Educare · Dados protegidos
           </p>
 
         </div>
       </div>
-
     </div>
   )
 }
-
