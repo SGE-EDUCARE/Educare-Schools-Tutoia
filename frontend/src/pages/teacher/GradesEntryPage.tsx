@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
-import { ChevronLeft, Search, Loader2, Calendar, BookOpen, Trash2, Rocket, CheckCircle2, RefreshCw, Save } from 'lucide-react'
+import { ChevronLeft, ChevronDown, Search, Loader2, Calendar, BookOpen, Trash2, Rocket, CheckCircle2, RefreshCw, Save } from 'lucide-react'
 
 type GradeFields = { p1: string; p2: string; result: string; retry: string; final: string }
 
@@ -179,14 +179,14 @@ export const GradesEntryPage: React.FC = () => {
             </div>
 
             {/* Progress pill — desktop inline */}
-            <div className="grades-progress-pill card" style={{ padding: '0.85rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', minWidth: '280px' }}>
+            <div className="grades-progress-pill card" style={{ padding: '0.85rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', minWidth: '280px', borderRadius: '10px' }}>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                   <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase' }}>Progresso</span>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))' }}>{filledCount}/{students.length}</span>
                 </div>
-                <div style={{ width: '100%', height: '5px', backgroundColor: 'hsl(var(--primary) / 0.06)', borderRadius: '10px', overflow: 'hidden' }}>
-                  <div style={{ width: `${progress}%`, height: '100%', background: gradient, borderRadius: '10px', transition: 'width 0.5s ease' }}></div>
+                <div style={{ width: '100%', height: '5px', backgroundColor: 'hsl(var(--primary) / 0.06)', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ width: `${progress}%`, height: '100%', background: gradient, borderRadius: '4px', transition: 'width 0.5s ease' }}></div>
                 </div>
               </div>
             </div>
@@ -195,26 +195,32 @@ export const GradesEntryPage: React.FC = () => {
 
         {/* ============ CONTROLS ============ */}
         <section className="grades-controls" style={{ marginBottom: '1.5rem' }}>
-          <div className="card grades-control-item" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+          <div className="card grades-ctrl-bimestre" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', borderRadius: '10px' }}>
             <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Calendar size={10}/> Bimestre</div>
-            <select style={{ border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none', appearance: 'none' }}
-              value={bimester} onChange={e => setBimester(e.target.value)}>
-              <option value="1">1º Bimestre</option>
-              <option value="2">2º Bimestre</option>
-              <option value="3">3º Bimestre</option>
-              <option value="4">4º Bimestre</option>
-            </select>
+            <div style={{ position: 'relative' }}>
+              <select className="grades-select" style={{ width: '100%', border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none', appearance: 'none', paddingRight: '1.5rem', cursor: 'pointer' }}
+                value={bimester} onChange={e => setBimester(e.target.value)}>
+                <option value="1">1º Bimestre</option>
+                <option value="2">2º Bimestre</option>
+                <option value="3">3º Bimestre</option>
+                <option value="4">4º Bimestre</option>
+              </select>
+              <ChevronDown size={14} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'hsl(var(--text-light))' }} />
+            </div>
           </div>
-          <div className="card grades-control-item" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+          <div className="card grades-ctrl-disciplina" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', borderRadius: '10px' }}>
             <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><BookOpen size={10}/> Disciplina</div>
-            <select style={{ border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none', appearance: 'none', textOverflow: 'ellipsis', overflow: 'hidden' }}
-              value={subject} onChange={e => setSubject(e.target.value)}>
-              {subjects.length > 0 ? subjects.map(s => (
-                <option key={s} value={s}>{s}</option>
-              )) : <option value="">Nenhuma</option>}
-            </select>
+            <div style={{ position: 'relative' }}>
+              <select className="grades-select" style={{ width: '100%', border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none', appearance: 'none', paddingRight: '1.5rem', cursor: 'pointer' }}
+                value={subject} onChange={e => setSubject(e.target.value)}>
+                {subjects.length > 0 ? subjects.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                )) : <option value="">Nenhuma</option>}
+              </select>
+              <ChevronDown size={14} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'hsl(var(--text-light))' }} />
+            </div>
           </div>
-          <div className="card grades-control-search" style={{ padding: '0.7rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="card grades-ctrl-search" style={{ padding: '0.7rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderRadius: '10px' }}>
             <Search size={16} color="hsl(var(--text-light))" />
             <input placeholder="Pesquisar..." style={{ border: 'none', background: 'none', fontSize: '0.85rem', fontWeight: 600, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
               value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
@@ -451,8 +457,24 @@ export const GradesEntryPage: React.FC = () => {
           gap: 0.75rem;
           align-items: stretch;
         }
-        .grades-control-item { flex: 0 0 auto; min-width: 160px; }
-        .grades-control-search { flex: 1; }
+        .grades-ctrl-bimestre { flex: 0 0 auto; min-width: 155px; }
+        .grades-ctrl-disciplina { flex: 1 1 260px; min-width: 200px; }
+        .grades-ctrl-search { flex: 0 1 200px; min-width: 140px; }
+
+        /* Modern select dropdown styling */
+        .grades-select option {
+          font-family: 'Inter', sans-serif;
+          font-weight: 600;
+          font-size: 0.9rem;
+          padding: 0.75rem 1rem;
+          background: white;
+          color: #1B2559;
+        }
+        .grades-select option:checked {
+          background: linear-gradient(135deg, hsl(250 100% 55% / 0.1), hsl(250 100% 55% / 0.05));
+          color: hsl(250 100% 55%);
+          font-weight: 800;
+        }
 
         /* Desktop: show table, hide cards */
         .grades-desktop-table { display: block; }
@@ -468,11 +490,20 @@ export const GradesEntryPage: React.FC = () => {
             align-items: stretch;
             gap: 1rem;
           }
-          .grades-progress-pill { min-width: unset !important; }
+          .grades-progress-pill {
+            min-width: unset !important;
+            border-radius: var(--radius-lg) !important;
+          }
           .grades-controls {
             flex-direction: column;
           }
-          .grades-control-item { min-width: unset; }
+          .grades-ctrl-bimestre,
+          .grades-ctrl-disciplina,
+          .grades-ctrl-search {
+            flex: unset;
+            min-width: unset;
+            border-radius: var(--radius-lg) !important;
+          }
 
           /* Mobile: hide table, show cards */
           .grades-desktop-table { display: none !important; }
