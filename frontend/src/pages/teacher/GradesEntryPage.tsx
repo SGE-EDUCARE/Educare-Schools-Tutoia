@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
-import { ChevronLeft, Search, Loader2, Calendar, BookOpen, Trash2, Rocket } from 'lucide-react'
+import { ChevronLeft, Search, Loader2, Calendar, BookOpen, Trash2, Rocket, CheckCircle2, RefreshCw } from 'lucide-react'
 
 export const GradesEntryPage: React.FC = () => {
   const { classId } = useParams()
@@ -13,36 +13,40 @@ export const GradesEntryPage: React.FC = () => {
   const [subjects, setSubjects] = useState<string[]>([])
   const [subject, setSubject] = useState('')
   const [loading, setLoading] = useState(true)
+  const [loadingGrades, setLoadingGrades] = useState(false)
   const [savingId, setSavingId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [savedSuccess, setSavedSuccess] = useState(false)
+  const studentsRef = useRef<any[]>([])
 
   useEffect(() => {
     fetchData()
   }, [classId])
 
+  // Quando bimestre ou disciplina mudam, recarregar notas
   useEffect(() => {
-    if (students.length > 0 && subject) {
-      loadGrades()
+    if (studentsRef.current.length > 0 && subject) {
+      loadGradesExplicit(subject)
     }
   }, [bimester, subject])
 
-  const loadGrades = async () => {
-    if (!subject) return
-    await loadGradesExplicit(subject)
-  }
+  const loadGradesExplicit = useCallback(async (currentSubject: string) => {
+    const currentStudents = studentsRef.current
+    if (!currentSubject || currentStudents.length === 0) return
 
-  const loadGradesExplicit = async (currentSubject: string) => {
+    setLoadingGrades(true)
     try {
-      console.log(`Buscando notas para: ${currentSubject}, Bimestre: ${bimester}`)
-      const existingGrades = await api(`/teacher/classes/${classId}/grades?bimester=${bimester}&subject=${encodeURIComponent(currentSubject)}`)
-      console.log('Notas encontradas:', existingGrades)
+      const normalizedSubject = String(currentSubject).trim()
+      const existingGrades = await api(`/teacher/classes/${classId}/grades?bimester=${bimester}&subject=${encodeURIComponent(normalizedSubject)}`)
       
       const newGradesState: Record<string, { p1: string, p2: string, result: string, retry: string }> = {}
       
-      students.forEach(s => {
+      // Inicializar todos os alunos com campos vazios
+      currentStudents.forEach(s => {
         newGradesState[s.id] = { p1: '', p2: '', result: '', retry: '' }
       })
 
+      // Mapear labels do banco para campos do formulário
       const labelsMap: any = { '1ª Prova': 'p1', '2ª Prova': 'p2', 'Média': 'result', 'Superação': 'retry' }
 
       existingGrades.forEach((g: any) => {
@@ -55,6 +59,7 @@ export const GradesEntryPage: React.FC = () => {
         }
       })
 
+      // Recalcular média com os valores carregados
       Object.keys(newGradesState).forEach(id => {
         const s = newGradesState[id]
         if (s.p1 || s.p2) {
@@ -65,8 +70,11 @@ export const GradesEntryPage: React.FC = () => {
       setGrades(newGradesState)
     } catch (error) {
       console.error('Erro ao carregar notas salvas:', error)
+      toast.error('Erro ao carregar notas')
+    } finally {
+      setLoadingGrades(false)
     }
-  }
+  }, [classId, bimester])
 
   const fetchData = async () => {
     try {
@@ -77,8 +85,10 @@ export const GradesEntryPage: React.FC = () => {
       
       const sorted = studentsData.sort((a: any, b: any) => a.name.localeCompare(b.name))
       setStudents(sorted)
+      studentsRef.current = sorted
       setSubjects(subjectsData)
       
+      // Inicializar grades vazias
       const initial: Record<string, { p1: string, p2: string, result: string, retry: string }> = {}
       sorted.forEach((s: any) => {
         initial[s.id] = { p1: '', p2: '', result: '', retry: '' }
@@ -88,8 +98,6 @@ export const GradesEntryPage: React.FC = () => {
       if (subjectsData.length > 0) {
         const firstSubject = subjectsData[0]
         setSubject(firstSubject)
-        // Forçar carregamento imediato após definir a primeira disciplina
-        await loadGradesExplicit(firstSubject)
       }
     } finally {
       setLoading(false)
@@ -103,13 +111,14 @@ export const GradesEntryPage: React.FC = () => {
     }
     setSavingId(studentId)
     try {
+      const normalizedSubject = String(subject).trim()
       await api('/teacher/grades', {
         method: 'POST',
         body: JSON.stringify({
           studentId,
           classId,
           bimester,
-          subject,
+          subject: normalizedSubject,
           grades: grades[studentId]
         })
       })
@@ -128,17 +137,20 @@ export const GradesEntryPage: React.FC = () => {
     }
     setSavingId('all')
     try {
+      const normalizedSubject = String(subject).trim()
       await api('/teacher/grades/bulk', {
         method: 'POST',
         body: JSON.stringify({
           classId,
           bimester,
-          subject,
+          subject: normalizedSubject,
           grades
         })
       })
+      // Mostrar feedback de sucesso na própria tela (sem navegar)
+      setSavedSuccess(true)
       toast.success('Todas as notas salvas com sucesso!')
-      navigate('/teacher/dashboard')
+      setTimeout(() => setSavedSuccess(false), 3000)
     } catch (error: any) {
       toast.error('Erro ao salvar todas as notas')
     } finally {
@@ -191,6 +203,7 @@ export const GradesEntryPage: React.FC = () => {
   )
 
   const systemGradient = 'linear-gradient(135deg, #4318FF 0%, #7000FF 100%)'
+  const successGradient = 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
 
   return (
     <div style={{ margin: '0 auto', width: '100%', minHeight: '100vh', backgroundColor: '#F8FAFC', position: 'relative' }}>
@@ -293,8 +306,36 @@ export const GradesEntryPage: React.FC = () => {
            </div>
         </section>
 
+        {/* INDICADOR DE CARREGAMENTO DE NOTAS */}
+        {loadingGrades && (
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            gap: '0.75rem',
+            padding: '1.5rem', 
+            marginBottom: '2rem',
+            backgroundColor: 'hsl(var(--primary) / 0.05)', 
+            borderRadius: '20px',
+            border: '1px solid hsl(var(--primary) / 0.1)',
+            animation: 'pulse 1.5s infinite'
+          }}>
+            <RefreshCw size={18} color="hsl(var(--primary))" className="animate-spin" />
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'hsl(var(--primary))' }}>
+              Carregando notas salvas...
+            </span>
+          </div>
+        )}
+
         {/* LISTAGEM MASTER-DETAIL */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '2rem',
+          opacity: loadingGrades ? 0.4 : 1,
+          pointerEvents: loadingGrades ? 'none' : 'auto',
+          transition: 'opacity 0.3s ease'
+        }}>
           {filteredStudents.map((student) => {
             const sGrades = grades[student.id] || { p1: '', p2: '', result: '', retry: '' }
             
@@ -315,19 +356,21 @@ export const GradesEntryPage: React.FC = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                        <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))', marginLeft: '0.5rem' }}>1ª Prova</label>
                        <input 
-                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
+                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: `2px solid ${sGrades.p1 ? 'hsl(var(--primary) / 0.3)' : '#F1F5F9'}`, backgroundColor: sGrades.p1 ? 'hsl(var(--primary) / 0.03)' : '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none', transition: 'all 0.2s ease' }}
                          value={sGrades.p1}
                          onChange={e => handleGradeChange(student.id, 'p1', e.target.value)}
                          placeholder="—"
+                         inputMode="decimal"
                        />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                        <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))', marginLeft: '0.5rem' }}>2ª Prova</label>
                        <input 
-                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
+                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: `2px solid ${sGrades.p2 ? 'hsl(var(--primary) / 0.3)' : '#F1F5F9'}`, backgroundColor: sGrades.p2 ? 'hsl(var(--primary) / 0.03)' : '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none', transition: 'all 0.2s ease' }}
                          value={sGrades.p2}
                          onChange={e => handleGradeChange(student.id, 'p2', e.target.value)}
                          placeholder="—"
+                         inputMode="decimal"
                        />
                     </div>
                   </div>
@@ -338,7 +381,13 @@ export const GradesEntryPage: React.FC = () => {
                        <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))', marginLeft: '0.5rem' }}>Média</label>
                        <input 
                          readOnly
-                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F1F5F9', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--primary))', outline: 'none', opacity: 0.8 }}
+                         style={{ 
+                           width: '100%', height: '54px', borderRadius: '16px', 
+                           border: '2px solid #F1F5F9', backgroundColor: '#F1F5F9', 
+                           textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, 
+                           color: sGrades.result && parseFloat(sGrades.result) >= 6 ? '#10B981' : sGrades.result ? '#EF4444' : 'hsl(var(--primary))', 
+                           outline: 'none', opacity: 0.9 
+                         }}
                          value={sGrades.result}
                          placeholder="—"
                        />
@@ -346,10 +395,11 @@ export const GradesEntryPage: React.FC = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                        <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))', marginLeft: '0.5rem' }}>Superação</label>
                        <input 
-                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none' }}
+                         style={{ width: '100%', height: '54px', borderRadius: '16px', border: `2px solid ${sGrades.retry ? 'hsl(var(--primary) / 0.3)' : '#F1F5F9'}`, backgroundColor: sGrades.retry ? 'hsl(var(--primary) / 0.03)' : '#F8FAFC', textAlign: 'center', fontSize: '1.2rem', fontWeight: 900, color: 'hsl(var(--text))', outline: 'none', transition: 'all 0.2s ease' }}
                          value={sGrades.retry}
                          onChange={e => handleGradeChange(student.id, 'retry', e.target.value)}
                          placeholder="—"
+                         inputMode="decimal"
                        />
                     </div>
                   </div>
@@ -357,9 +407,9 @@ export const GradesEntryPage: React.FC = () => {
                   {/* AÇÕES DO CARD */}
                   <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid #F1F5F9', paddingTop: '1.5rem' }}>
                     <button 
-                      disabled={savingId === student.id}
+                      disabled={savingId === student.id || loadingGrades}
                       onClick={() => handleSaveStudent(student.id)}
-                      style={{ flex: 1, height: '52px', background: systemGradient, color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none', opacity: savingId === student.id ? 0.7 : 1, boxShadow: '0 10px 20px -5px rgba(67, 24, 255, 0.3)' }}
+                      style={{ flex: 1, height: '52px', background: systemGradient, color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none', opacity: (savingId === student.id || loadingGrades) ? 0.7 : 1, boxShadow: '0 10px 20px -5px rgba(67, 24, 255, 0.3)', transition: 'all 0.2s ease' }}
                     >
                       {savingId === student.id ? <Loader2 className="animate-spin" size={20} /> : <Rocket size={20} />}
                     </button>
@@ -390,15 +440,15 @@ export const GradesEntryPage: React.FC = () => {
         boxSizing: 'border-box'
       }}>
         <button 
-          disabled={savingId === 'all'}
+          disabled={savingId === 'all' || loadingGrades}
           onClick={handleSaveAll} 
           style={{ 
             width: '100%', 
             padding: '1.4rem', 
             borderRadius: '28px', 
-            background: systemGradient, 
+            background: savedSuccess ? successGradient : systemGradient, 
             color: 'white', 
-            boxShadow: '0 20px 40px -10px rgba(67, 24, 255, 0.4)', 
+            boxShadow: savedSuccess ? '0 20px 40px -10px rgba(16, 185, 129, 0.4)' : '0 20px 40px -10px rgba(67, 24, 255, 0.4)', 
             fontSize: '1.2rem', 
             display: 'flex', 
             justifyContent: 'center', 
@@ -408,10 +458,14 @@ export const GradesEntryPage: React.FC = () => {
             border: 'none', 
             cursor: 'pointer',
             letterSpacing: '-0.02em',
-            transition: 'all 0.3s ease'
+            transition: 'all 0.4s ease'
           }}
         >
-          {savingId === 'all' ? <Loader2 className="animate-spin" size={24} /> : (
+          {savingId === 'all' ? <Loader2 className="animate-spin" size={24} /> : savedSuccess ? (
+            <>
+              <CheckCircle2 size={24} /> SALVO COM SUCESSO!
+            </>
+          ) : (
             <>
               CONCLUIR LANÇAMENTO <div style={{ width: '2px', height: '20px', backgroundColor: 'rgba(255,255,255,0.2)' }}></div> {filledCount} ALUNOS
             </>

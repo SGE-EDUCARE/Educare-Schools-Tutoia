@@ -116,7 +116,8 @@ export class TeacherController {
 
   // Lançar Notas (Individual ou por Aluno Master-Detail)
   static async launchGrades(req: AuthRequest, res: Response) {
-    const { bimester, subject, label, grades } = req.body; // grades: { studentId: value } ou { p1: val, p2: val... }
+    const { bimester, subject, label, grades } = req.body;
+    const normalizedSubject = String(subject).trim();
     try {
       // Se for o novo formato Master-Detail vindo de salvamento individual por aluno
       if (req.body.studentId) {
@@ -132,7 +133,7 @@ export class TeacherController {
             where: {
               student_id: studentId,
               bimester: Number(bimester),
-              subject: String(subject).trim(),
+              subject: normalizedSubject,
               label: labelName
             }
           });
@@ -147,7 +148,7 @@ export class TeacherController {
               data: {
                 student_id: studentId,
                 bimester: Number(bimester),
-                subject: String(subject),
+                subject: normalizedSubject,
                 label: labelName,
                 value: numericValue
               }
@@ -155,17 +156,19 @@ export class TeacherController {
           }
         }
       } else {
-        // Formato legiado legado (compatibilidade)
+        // Formato legado (compatibilidade)
+        const legacySubject = String(subject).trim();
+        const legacyLabel = String(label).trim();
         for (const [studentId, value] of Object.entries(grades)) {
           const existing = await prisma.grade.findFirst({
-            where: { student_id: studentId, bimester: Number(bimester), subject, label }
+            where: { student_id: studentId, bimester: Number(bimester), subject: legacySubject, label: legacyLabel }
           });
 
           if (existing) {
             await prisma.grade.update({ where: { id: existing.id }, data: { value: Number(value) } });
           } else {
             await prisma.grade.create({
-              data: { student_id: studentId, bimester: Number(bimester), subject, label, value: Number(value) }
+              data: { student_id: studentId, bimester: Number(bimester), subject: legacySubject, label: legacyLabel, value: Number(value) }
             });
           }
         }
@@ -183,12 +186,15 @@ export class TeacherController {
 
     if (!bimester || !subject) return res.status(400).json({ message: 'Bimestre e disciplina são obrigatórios' });
 
+    const normalizedSubject = String(subject).trim();
+    const classIdStr = String(classId);
+
     try {
       const grades = await prisma.grade.findMany({
         where: {
-          student: { class_id: classId },
+          student: { class_id: classIdStr },
           bimester: Number(bimester),
-          subject: String(subject).trim()
+          subject: normalizedSubject
         }
       });
       res.json(grades);
@@ -199,7 +205,8 @@ export class TeacherController {
 
   // Lançamento em Massa (Todos os alunos da tela)
   static async bulkLaunchGrades(req: AuthRequest, res: Response) {
-    const { bimester, subject, grades, classId } = req.body; 
+    const { bimester, subject, grades, classId } = req.body;
+    const normalizedSubject = String(subject).trim();
     try {
       const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação' };
 
@@ -214,7 +221,7 @@ export class TeacherController {
             where: {
               student_id: studentId,
               bimester: Number(bimester),
-              subject: String(subject).trim(),
+              subject: normalizedSubject,
               label: labelName
             }
           });
@@ -229,7 +236,7 @@ export class TeacherController {
               data: {
                 student_id: studentId,
                 bimester: Number(bimester),
-                subject: String(subject),
+                subject: normalizedSubject,
                 label: labelName,
                 value: numericValue
               }
