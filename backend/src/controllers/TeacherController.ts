@@ -363,7 +363,7 @@ export class TeacherController {
       id, date, subject, bimester, month, type, classId,
       general_competencies, specific_competencies, knowledge_objects,
       programmatic_content, skills, methodology, evaluation, resources, references,
-      content 
+      content, bncc_skills_ids // Novo: Array de IDs das habilidades selecionadas
     } = req.body;
 
     try {
@@ -377,7 +377,7 @@ export class TeacherController {
         specific_competencies,
         knowledge_objects,
         programmatic_content,
-        skills,
+        skills, // Texto livre
         methodology,
         evaluation,
         resources,
@@ -386,6 +386,13 @@ export class TeacherController {
         class_id: classId,
         teacher_id: teacher_id!
       };
+
+      // Gerenciar relações Many-to-Many com habilidades BNCC
+      if (bncc_skills_ids && Array.isArray(bncc_skills_ids)) {
+        data.bncc_skills = {
+          set: bncc_skills_ids.map((skillId: string) => ({ id: skillId }))
+        };
+      }
 
       if (id) {
         const plan = await prisma.lessonPlan.update({
@@ -402,7 +409,7 @@ export class TeacherController {
     }
   }
 
-  // Listar Planos de Aula por Turma
+  // Listar Planos de Aula por Turma (incluindo habilidades BNCC)
   static async getLessonPlansByClass(req: AuthRequest, res: Response) {
     const { classId } = req.params;
     const teacher_id = req.user?.id;
@@ -413,9 +420,40 @@ export class TeacherController {
           class_id: String(classId), 
           teacher_id: teacher_id! 
         },
+        include: { bncc_skills: true }, // Incluir as habilidades
         orderBy: { date: 'desc' }
       });
       res.json(plans);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  // Buscar Habilidades BNCC (Dicionário)
+  static async searchBnccSkills(req: AuthRequest, res: Response) {
+    const { q, subject } = req.query;
+    
+    try {
+      const where: any = {};
+      
+      if (q) {
+        where.OR = [
+          { code: { contains: String(q), mode: 'insensitive' } },
+          { description: { contains: String(q), mode: 'insensitive' } }
+        ];
+      }
+
+      if (subject) {
+        where.subject = String(subject);
+      }
+
+      const skills = await prisma.bnccSkill.findMany({
+        where,
+        take: 50,
+        orderBy: { code: 'asc' }
+      });
+      
+      res.json(skills);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

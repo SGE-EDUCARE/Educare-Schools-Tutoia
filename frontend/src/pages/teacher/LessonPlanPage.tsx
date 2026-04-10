@@ -25,13 +25,21 @@ type LessonPlan = {
   general_competencies: string
   specific_competencies: string
   knowledge_objects: string
-  programmatic_content: string // Veremos se expandimos para semanas individuais
+  programmatic_content: string
   skills: string
+  bncc_skills?: BnccSkill[]
   methodology: string
   evaluation: string
   resources: string
   references: string
   type: string
+}
+
+type BnccSkill = {
+  id: string
+  code: string
+  description: string
+  subject?: string
 }
 
 export const LessonPlanPage: React.FC = () => {
@@ -45,6 +53,13 @@ export const LessonPlanPage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [subjects, setSubjects] = useState<string[]>([])
+  
+  // BNCC Search States
+  const [bnccSearch, setBnccSearch] = useState('')
+  const [bnccResults, setBnccResults] = useState<BnccSkill[]>([])
+  const [searchingBNCC, setSearchingBNCC] = useState(false)
+  const [selectedBnccIds, setSelectedBnccIds] = useState<string[]>([])
+  const [selectedBnccObjects, setSelectedBnccObjects] = useState<BnccSkill[]>([])
   
   // Custom Select States
   const [openSubject, setOpenSubject] = useState(false)
@@ -81,7 +96,6 @@ export const LessonPlanPage: React.FC = () => {
     try {
       const data = await api(`/teacher/classes/${classId}/allocations`)
       setSubjects(data)
-      // Se tiver só uma disciplina, já seleciona no novo plano se estiver criando
     } catch (e) { console.error(e) }
   }, [classId])
 
@@ -90,21 +104,57 @@ export const LessonPlanPage: React.FC = () => {
     fetchAllocations()
   }, [fetchPlans, fetchAllocations])
 
+  // Busca assíncrona da BNCC
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (bnccSearch.length < 2) {
+        setBnccResults([])
+        return
+      }
+      setSearchingBNCC(true)
+      try {
+        const query = new URLSearchParams({ q: bnccSearch })
+        if (currentPlan?.subject) query.append('subject', currentPlan.subject)
+        
+        const results = await api(`/teacher/bncc/search?${query.toString()}`)
+        setBnccResults(results)
+      } catch (e) { console.error(e) }
+      finally { setSearchingBNCC(false) }
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [bnccSearch, currentPlan?.subject])
+
   const handleCreateNew = () => {
     const fresh = emptyPlan()
     if (subjects.length === 1) fresh.subject = subjects[0]
     setCurrentPlan(fresh)
+    setSelectedBnccIds([])
+    setSelectedBnccObjects([])
     setIsEditing(true)
   }
 
   const handleEdit = (plan: LessonPlan) => {
-    // Normalizar nulos para strings vazias para o input
     const normalized = { ...plan } as any
     Object.keys(normalized).forEach(key => {
       if (normalized[key] === null) normalized[key] = ''
     })
     setCurrentPlan(normalized)
+    setSelectedBnccIds(plan.bncc_skills?.map(s => s.id) || [])
+    setSelectedBnccObjects(plan.bncc_skills || [])
     setIsEditing(true)
+  }
+
+  const addBnccSkill = (skill: BnccSkill) => {
+    if (selectedBnccIds.includes(skill.id)) return
+    setSelectedBnccIds([...selectedBnccIds, skill.id])
+    setSelectedBnccObjects([...selectedBnccObjects, skill])
+    setBnccSearch('')
+    setBnccResults([])
+  }
+
+  const removeBnccSkill = (id: string) => {
+    setSelectedBnccIds(selectedBnccIds.filter(i => i !== id))
+    setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id))
   }
 
   const handleSave = async () => {
@@ -117,7 +167,11 @@ export const LessonPlanPage: React.FC = () => {
     try {
       await api('/teacher/lesson-plans', {
         method: 'POST',
-        body: JSON.stringify({ ...currentPlan, classId })
+        body: JSON.stringify({ 
+          ...currentPlan, 
+          classId,
+          bncc_skills_ids: selectedBnccIds 
+        })
       })
       toast.success('Plano de aula salvo!')
       setIsEditing(false)
@@ -268,7 +322,60 @@ export const LessonPlanPage: React.FC = () => {
                   <FormGroup label="Objeto(s) de Conhecimento" placeholder="Principais conteúdos do bimestre..." 
                     value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} />
                   
-                  <FormGroup label="Habilidades (BNCC)" placeholder="Defina as habilidades (Ex: EF09LP04)..." 
+                  {/* MULTISELECT BNCC */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginLeft: '0.2rem' }}>Habilidades (BNCC - Dicionário)</label>
+                    <div className="input-container" style={{ position: 'relative' }}>
+                      <input 
+                        type="text" 
+                        className="input" 
+                        placeholder="Pesquise por código (ex: EF09) ou descrição..."
+                        value={bnccSearch}
+                        onChange={e => setBnccSearch(e.target.value)}
+                        style={{ padding: '0.75rem 1rem', borderRadius: '8px', width: '100%', backgroundColor: 'hsl(var(--background))' }}
+                      />
+                      {searchingBNCC && (
+                        <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
+                          <Loader2 size={16} className="animate-spin" color="hsl(var(--primary))" />
+                        </div>
+                      )}
+                      
+                      {bnccResults.length > 0 && (
+                        <div style={{
+                          position: 'absolute', top: '105%', left: 0, right: 0, backgroundColor: 'white',
+                          borderRadius: '12px', boxShadow: '0 12px 30px -4px rgba(0,0,0,0.2)',
+                          zIndex: 100, border: '1px solid hsl(var(--border) / 0.5)', overflow: 'hidden'
+                        }}>
+                          {bnccResults.map(res => (
+                            <div key={res.id} onClick={() => addBnccSkill(res)} style={{ 
+                              padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid hsl(var(--border) / 0.2)',
+                              transition: 'background 0.2s'
+                            }} className="bncc-search-result">
+                              <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.8rem' }}>{res.code}</div>
+                              <div style={{ fontSize: '0.75rem', fontWeight: 500, color: 'hsl(var(--text))', marginTop: '0.1rem', lineHeight: 1.3 }}>{res.description}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tags Selecionadas */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.5rem' }}>
+                      {selectedBnccObjects.map(skill => (
+                        <div key={skill.id} style={{ 
+                          backgroundColor: 'hsl(var(--primary) / 0.08)', color: 'hsl(var(--primary))', 
+                          padding: '0.4rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700,
+                          display: 'flex', alignItems: 'center', gap: '0.4rem', border: '1px solid hsl(var(--primary) / 0.1)'
+                        }}>
+                           {skill.code}
+                           <Trash2 size={12} onClick={() => removeBnccSkill(skill.id)} style={{ cursor: 'pointer', opacity: 0.6 }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Campo livre extra */}
+                  <FormGroup label="Outras Habilidades (Texto Livre)" placeholder="Habilidades específicas ou personalizadas..." 
                     value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} />
                 </div>
                 

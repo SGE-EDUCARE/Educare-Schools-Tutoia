@@ -1,0 +1,14 @@
+[
+  { "code": "EF06MA01", "description": "Resolver e elaborar problemas que envolvam a ideia de números inteiros em diferentes contextos.", "subject": "Matemática", "level": "Ensino Fundamental II" },
+  { "code": "EF06MA02", "description": "Reconhecer o sistema de numeração decimal como o que resultou de um processo histórico.", "subject": "Matemática", "level": "Ensino Fundamental II" },
+  { "code": "EF06LP01", "description": "Interpretar textos informativos e/ou de opinião em diferentes suportes.", "subject": "Língua Portuguesa", "level": "Ensino Fundamental II" },
+  { "code": "EF06LP02", "description": "Identificar marcadores de tempo e lugar em narrativas literárias.", "subject": "Língua Portuguesa", "level": "Ensino Fundamental II" },
+  { "code": "EF07MA01", "description": "Resolver e elaborar problemas com números naturais, envolvendo as quatro operações.", "subject": "Matemática", "level": "Ensino Fundamental II" },
+  { "code": "EF07CI01", "description": "Discutir a aplicação de diferentes tipos de máquinas no cotidiano.", "subject": "Ciências", "level": "Ensino Fundamental II" },
+  { "code": "EF08HI01", "description": "Identificar os principais aspectos conceituais do iluminismo e do liberalismo.", "subject": "História", "level": "Ensino Fundamental II" },
+  { "code": "EF09GE01", "description": "Analisar criticamente de que forma a hegemonia europeia foi exercida em diferentes épocas.", "subject": "Geografia", "level": "Ensino Fundamental II" },
+  { "code": "EF09LP04", "description": "Escrever textos corretamente, de acordo com a norma-padrão, com estruturas sintáticas complexas.", "subject": "Língua Portuguesa", "level": "Ensino Fundamental II" },
+  { "code": "EM13LP01", "description": "Relacionar textos populares e eruditos, nacionais e estrangeiros, de diferentes épocas.", "subject": "Língua Portuguesa", "level": "Ensino Médio" },
+  { "code": "EM13MA01", "description": "Interpretar e construir modelos para descrever situações reais que envolvem transformações.", "subject": "Matemática", "level": "Ensino Médio" },
+  { "code": "EM13CH01", "description": "Analisar o funcionamento da sociedade e as relações de poder em diferentes contextos.", "subject": "Ciências Humanas", "level": "Ensino Médio" }
+]

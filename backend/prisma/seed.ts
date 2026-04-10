@@ -76,14 +76,44 @@ async function main() {
   console.log('✅ Turnos criados')
 
   // 6. Turma de Exemplo
-  await prisma.class.create({
-    data: {
+  await prisma.class.upsert({
+    where: { id: 'turma-alfa-id' }, // Usando um ID fixo para o seed ser re-executável
+    update: {},
+    create: {
+      id: 'turma-alfa-id',
       name: 'Turma Alfa',
       grade_id: grade1.id,
       turn_id: matutino.id
     }
   })
   console.log('✅ Turma de exemplo criada')
+
+  // 7. Importar Habilidades BNCC
+  console.log('⏳ Importando habilidades BNCC...')
+  const fs = require('fs')
+  const path = require('path')
+  const bnccDataPath = path.join(__dirname, 'data', 'bncc-data.json')
+  
+  if (fs.existsSync(bnccDataPath)) {
+    const bnccData = JSON.parse(fs.readFileSync(bnccDataPath, 'utf8'))
+    for (const skill of bnccData) {
+      await prisma.bnccSkill.upsert({
+        where: { code: skill.code },
+        update: {
+          description: skill.description,
+          subject: skill.subject,
+          level: skill.level
+        },
+        create: {
+          code: skill.code,
+          description: skill.description,
+          subject: skill.subject,
+          level: skill.level
+        }
+      })
+    }
+    console.log(`✅ ${bnccData.length} habilidades BNCC importadas`)
+  }
 
   console.log('\nSeed concluído com sucesso! 🚀')
   console.log('Use admin@educare.com / admin123 para entrar.')
