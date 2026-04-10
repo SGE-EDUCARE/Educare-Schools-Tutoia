@@ -80,9 +80,8 @@ export const TeacherDashboard: React.FC = () => {
                 display: 'flex', 
                 gap: '1rem', 
                 overflowX: 'auto', 
-                paddingBottom: '1rem',
-                marginRight: '-2rem', /* Allow bleeding on mobile */
-                paddingRight: '2rem'
+                padding: '0.75rem 2rem 2rem 0.75rem',
+                margin: '-0.75rem -2rem -2rem -0.75rem'
               }}
             >
               {classes.map(cls => {
