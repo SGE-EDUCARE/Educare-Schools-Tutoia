@@ -19,5 +19,7 @@ router.post('/homework', TeacherController.launchHomework);
 router.post('/lesson-plans', TeacherController.createLessonPlan);
 router.get('/classes/:classId/lesson-plans', TeacherController.getLessonPlansByClass);
 router.get('/bncc/search', TeacherController.searchBnccSkills);
+router.get('/bncc/general-search', TeacherController.searchGeneralCompetencies);
+router.get('/bncc/specific-search', TeacherController.searchSpecificCompetencies);
 
 export default router;

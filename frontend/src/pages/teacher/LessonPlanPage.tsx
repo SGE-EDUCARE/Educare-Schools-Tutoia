@@ -22,12 +22,14 @@ type LessonPlan = {
   subject: string
   bimester: string
   month: string
-  general_competencies: string
-  specific_competencies: string
+  custom_general_comp: string
+  custom_specific_comp: string
   knowledge_objects: string
   programmatic_content: string
   skills: string
-  bncc_skills?: BnccSkill[]
+  bncc_skills?: any[]
+  bncc_general_comp?: any[]
+  bncc_specific_comp?: any[]
   methodology: string
   evaluation: string
   resources: string
@@ -35,11 +37,12 @@ type LessonPlan = {
   type: string
 }
 
-type BnccSkill = {
+type BnccRef = {
   id: string
-  code: string
+  code?: string
+  number?: number
+  title?: string
   description: string
-  subject?: string
 }
 
 export const LessonPlanPage: React.FC = () => {
@@ -54,13 +57,27 @@ export const LessonPlanPage: React.FC = () => {
   const [saving, setSaving] = useState(false)
   const [subjects, setSubjects] = useState<string[]>([])
   
-  // BNCC Search States
+  // BNCC Search States (Habilidades)
   const [bnccSearch, setBnccSearch] = useState('')
-  const [bnccResults, setBnccResults] = useState<BnccSkill[]>([])
+  const [bnccResults, setBnccResults] = useState<BnccRef[]>([])
   const [searchingBNCC, setSearchingBNCC] = useState(false)
   const [selectedBnccIds, setSelectedBnccIds] = useState<string[]>([])
-  const [selectedBnccObjects, setSelectedBnccObjects] = useState<BnccSkill[]>([])
-  
+  const [selectedBnccObjects, setSelectedBnccObjects] = useState<BnccRef[]>([])
+
+  // BNCC Search States (Gerais)
+  const [genCompSearch, setGenCompSearch] = useState('')
+  const [genCompResults, setGenCompResults] = useState<BnccRef[]>([])
+  const [searchingGen, setSearchingGen] = useState(false)
+  const [selectedGenIds, setSelectedGenIds] = useState<string[]>([])
+  const [selectedGenObjects, setSelectedGenObjects] = useState<BnccRef[]>([])
+
+  // BNCC Search States (Específicas)
+  const [specCompSearch, setSpecCompSearch] = useState('')
+  const [specCompResults, setSpecCompResults] = useState<BnccRef[]>([])
+  const [searchingSpec, setSearchingSpec] = useState(false)
+  const [selectedSpecIds, setSelectedSpecIds] = useState<string[]>([])
+  const [selectedSpecObjects, setSelectedSpecObjects] = useState<BnccRef[]>([])
+
   // Custom Select States
   const [openSubject, setOpenSubject] = useState(false)
   const [openBimester, setOpenBimester] = useState(false)
@@ -71,8 +88,8 @@ export const LessonPlanPage: React.FC = () => {
     subject: '',
     bimester: '1',
     month: new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(new Date()),
-    general_competencies: '',
-    specific_competencies: '',
+    custom_general_comp: '',
+    custom_specific_comp: '',
     knowledge_objects: '',
     programmatic_content: '',
     skills: '',
@@ -104,18 +121,14 @@ export const LessonPlanPage: React.FC = () => {
     fetchAllocations()
   }, [fetchPlans, fetchAllocations])
 
-  // Busca assíncrona da BNCC
+  // Busca assíncrona da BNCC: Habilidades
   useEffect(() => {
     const timer = setTimeout(async () => {
-      if (bnccSearch.length < 2) {
-        setBnccResults([])
-        return
-      }
+      if (bnccSearch.length < 2) { setBnccResults([]); return }
       setSearchingBNCC(true)
       try {
         const query = new URLSearchParams({ q: bnccSearch })
         if (currentPlan?.subject) query.append('subject', currentPlan.subject)
-        
         const results = await api(`/teacher/bncc/search?${query.toString()}`)
         setBnccResults(results)
       } catch (e) { console.error(e) }
@@ -124,42 +137,64 @@ export const LessonPlanPage: React.FC = () => {
     return () => clearTimeout(timer)
   }, [bnccSearch, currentPlan?.subject])
 
+  // Busca assíncrona da BNCC: Gerais (Puxa as 10 iniciais também)
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      setSearchingGen(true)
+      try {
+        const query = new URLSearchParams({ q: genCompSearch })
+        const results = await api(`/teacher/bncc/general-search?${query.toString()}`)
+        setGenCompResults(results)
+      } catch (e) { console.error(e) }
+      finally { setSearchingGen(false) }
+    }, genCompSearch ? 400 : 0)
+    return () => clearTimeout(timer)
+  }, [genCompSearch])
+
+  // Busca assíncrona da BNCC: Específicas
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (specCompSearch.length < 2) { setSpecCompResults([]); return }
+      setSearchingSpec(true)
+      try {
+        const query = new URLSearchParams({ q: specCompSearch })
+        const results = await api(`/teacher/bncc/specific-search?${query.toString()}`)
+        setSpecCompResults(results)
+      } catch (e) { console.error(e) }
+      finally { setSearchingSpec(false) }
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [specCompSearch])
+
   const handleCreateNew = () => {
     const fresh = emptyPlan()
     if (subjects.length === 1) fresh.subject = subjects[0]
     setCurrentPlan(fresh)
-    setSelectedBnccIds([])
-    setSelectedBnccObjects([])
+    setSelectedBnccIds([]); setSelectedBnccObjects([])
+    setSelectedGenIds([]); setSelectedGenObjects([])
+    setSelectedSpecIds([]); setSelectedSpecObjects([])
     setIsEditing(true)
   }
 
   const handleEdit = (plan: LessonPlan) => {
     const normalized = { ...plan } as any
-    Object.keys(normalized).forEach(key => {
-      if (normalized[key] === null) normalized[key] = ''
-    })
+    Object.keys(normalized).forEach(key => { if (normalized[key] === null) normalized[key] = '' })
     setCurrentPlan(normalized)
+    
+    // Sincronizar IDs selecionados
     setSelectedBnccIds(plan.bncc_skills?.map(s => s.id) || [])
     setSelectedBnccObjects(plan.bncc_skills || [])
+    setSelectedGenIds(plan.bncc_general_comp?.map(s => s.id) || [])
+    setSelectedGenObjects(plan.bncc_general_comp || [])
+    setSelectedSpecIds(plan.bncc_specific_comp?.map(s => s.id) || [])
+    setSelectedSpecObjects(plan.bncc_specific_comp || [])
+    
     setIsEditing(true)
-  }
-
-  const addBnccSkill = (skill: BnccSkill) => {
-    if (selectedBnccIds.includes(skill.id)) return
-    setSelectedBnccIds([...selectedBnccIds, skill.id])
-    setSelectedBnccObjects([...selectedBnccObjects, skill])
-    setBnccSearch('')
-    setBnccResults([])
-  }
-
-  const removeBnccSkill = (id: string) => {
-    setSelectedBnccIds(selectedBnccIds.filter(i => i !== id))
-    setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id))
   }
 
   const handleSave = async () => {
     if (!currentPlan?.subject) return toast.error('Informe a disciplina')
-    if (!currentPlan?.knowledge_objects && !currentPlan?.general_competencies) {
+    if (!currentPlan?.knowledge_objects && selectedGenIds.length === 0) {
       return toast.error('Preencha ao menos as competências ou objetos de conhecimento')
     }
 
@@ -170,27 +205,23 @@ export const LessonPlanPage: React.FC = () => {
         body: JSON.stringify({ 
           ...currentPlan, 
           classId,
-          bncc_skills_ids: selectedBnccIds 
+          bncc_skills_ids: selectedBnccIds,
+          bncc_general_comp_ids: selectedGenIds,
+          bncc_specific_comp_ids: selectedSpecIds
         })
       })
       toast.success('Plano de aula salvo!')
       setIsEditing(false)
       setCurrentPlan(null)
       fetchPlans()
-    } catch (error) {
-      toast.error('Erro ao salvar plano')
-    } finally {
-      setSaving(false)
-    }
+    } catch (error) { toast.error('Erro ao salvar plano') }
+    finally { setSaving(false) }
   }
 
   const bimesterOptions = [
-    { value: '1', label: '1º Bimestre' },
-    { value: '2', label: '2º Bimestre' },
-    { value: '3', label: '3º Bimestre' },
-    { value: '4', label: '4º Bimestre' },
+    { value: '1', label: '1º Bimestre' }, { value: '2', label: '2º Bimestre' },
+    { value: '3', label: '3º Bimestre' }, { value: '4', label: '4º Bimestre' },
   ]
-
   const monthOptions = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
@@ -204,6 +235,84 @@ export const LessonPlanPage: React.FC = () => {
 
   const gradient = 'linear-gradient(135deg, #4318FF 0%, #7000FF 100%)'
 
+  // Auxiliar para buscadores
+  const renderMultiselect = (
+    label: string, 
+    placeholder: string, 
+    search: string, 
+    setSearch: (v: string) => void,
+    results: any[],
+    searching: boolean,
+    selected: any[],
+    onAdd: (item: any) => void,
+    onRemove: (id: string) => void,
+    titleKey: string = 'code',
+    descKey: string = 'description'
+  ) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+      <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginLeft: '0.2rem' }}>{label}</label>
+      <div className="input-container" style={{ position: 'relative' }}>
+        <input 
+          type="text" 
+          className="input" 
+          placeholder={placeholder}
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          onFocus={() => { if(label.includes('Gerais')) setSearch('') }} // Trigger general comp list
+          style={{ padding: '0.75rem 1rem', borderRadius: '8px', width: '100%', backgroundColor: 'hsl(var(--background))' }}
+        />
+        {searching && (
+          <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
+            <Loader2 size={16} className="animate-spin" color="hsl(var(--primary))" />
+          </div>
+        )}
+        
+        {results.length > 0 && (
+          <div style={{
+            position: 'absolute', top: '105%', left: 0, right: 0, backgroundColor: 'white',
+            borderRadius: '12px', boxShadow: '0 12px 30px -4px rgba(0,0,0,0.2)',
+            zIndex: 100, border: '1px solid hsl(var(--border) / 0.5)', overflowY: 'auto', maxHeight: '300px'
+          }}>
+            {results.map(res => (
+              <div key={res.id} onClick={() => onAdd(res)} style={{ 
+                padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid hsl(var(--border) / 0.2)',
+                transition: 'background 0.2s'
+              }} className="search-result-item">
+                <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.8rem' }}>{res[titleKey] || res.number} {res.title}</div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 500, color: 'hsl(var(--text))', marginTop: '0.1rem', lineHeight: 1.3 }}>{res[descKey]}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.5rem' }}>
+        {selected.map(item => (
+          <div key={item.id} style={{ 
+            backgroundColor: 'hsl(var(--primary) / 0.05)', color: 'hsl(var(--text))', 
+            padding: '0.75rem 0.9rem', borderRadius: '10px', fontSize: '0.8rem',
+            display: 'flex', gap: '0.8rem', border: '1px solid hsl(var(--primary) / 0.1)',
+            position: 'relative'
+          }}>
+            <div style={{ 
+              backgroundColor: 'hsl(var(--primary))', color: 'white', 
+              padding: '0.15rem 0.4rem', borderRadius: '4px', fontSize: '0.65rem', 
+              fontWeight: 900, height: 'fit-content'
+            }}>
+              {item[titleKey] || item.number || 'BNCC'}
+            </div>
+            <div style={{ fontWeight: 500, lineHeight: 1.4, flex: 1, paddingRight: '1rem' }}>
+              <span style={{ fontWeight: 700 }}>{item.title}</span> {item[descKey]}
+            </div>
+            <button onClick={() => onRemove(item.id)} style={{ position: 'absolute', right: '0.5rem', top: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--destructive))', opacity: 0.5 }}>
+              <Trash2 size={14} />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'hsl(var(--background))' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.25rem 10rem' }}>
@@ -211,10 +320,8 @@ export const LessonPlanPage: React.FC = () => {
         {/* HEADER */}
         <header style={{ padding: '1.5rem 0 2rem' }}>
           <button onClick={() => isEditing ? setIsEditing(false) : navigate(-1)} style={{
-            display: 'flex', alignItems: 'center', gap: '0.4rem',
-            color: 'hsl(var(--primary))', fontSize: '0.8rem', fontWeight: 700,
-            marginBottom: '1rem', background: 'hsl(var(--primary) / 0.06)',
-            padding: '0.5rem 0.9rem', borderRadius: '8px', cursor: 'pointer', border: 'none'
+            display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'hsl(var(--primary))', fontSize: '0.8rem', fontWeight: 700,
+            marginBottom: '1rem', background: 'hsl(var(--primary) / 0.06)', padding: '0.5rem 0.9rem', borderRadius: '8px', cursor: 'pointer', border: 'none'
           }}>
             <ChevronLeft size={16} /> VOLTAR
           </button>
@@ -225,10 +332,9 @@ export const LessonPlanPage: React.FC = () => {
                 {isEditing ? (currentPlan?.id ? 'Editar Plano' : 'Novo Plano Mensal') : 'Meus Planos de Aula'}
               </h1>
               <p style={{ fontSize: '0.9rem', fontWeight: 500, color: 'hsl(var(--text-light))', marginTop: '0.3rem' }}>
-                {isEditing ? 'Preencha os campos conforme o modelo da BNCC.' : 'Gerencie seus planejamentos pedagógicos.'}
+                {isEditing ? 'Gestão pedagógica estruturada seguindo a BNCC.' : 'Gerencie seus planejamentos pedagógicos.'}
               </p>
             </div>
-            
             {!isEditing && (
               <button onClick={handleCreateNew} style={{
                 background: gradient, color: 'white', padding: '0.75rem 1.5rem',
@@ -246,66 +352,50 @@ export const LessonPlanPage: React.FC = () => {
             
             {/* 1. IDENTIFICAÇÃO */}
             <div className="card" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid hsl(var(--border) / 0.3)', paddingBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid hsl(var(--border) / 0.3)', paddingBottom: '0.75rem' }}>
                 <Calendar size={18} color="hsl(var(--primary))" />
                 <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Identificação</h3>
               </div>
-              
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                <CustomSelect 
-                  label="Disciplina"
-                  value={currentPlan.subject}
-                  options={subjects.map(s => ({ value: s, label: s }))}
-                  isOpen={openSubject}
-                  setIsOpen={setOpenSubject}
-                  onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })}
-                />
-                <CustomSelect 
-                  label="Bimestre"
-                  value={String(currentPlan.bimester)}
-                  options={bimesterOptions}
-                  isOpen={openBimester}
-                  setIsOpen={setOpenBimester}
-                  onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })}
-                />
-                <CustomSelect 
-                  label="Mês de Referência"
-                  value={currentPlan.month}
-                  options={monthOptions}
-                  isOpen={openMonth}
-                  setIsOpen={setOpenMonth}
-                  onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })}
-                />
+                <CustomSelect label="Disciplina" value={currentPlan.subject} options={subjects.map(s => ({ value: s, label: s }))} isOpen={openSubject} setIsOpen={setOpenSubject} onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} />
+                <CustomSelect label="Bimestre" value={String(currentPlan.bimester)} options={bimesterOptions} isOpen={openBimester} setIsOpen={setOpenBimester} onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} />
+                <CustomSelect label="Mês de Referência" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} />
               </div>
             </div>
 
-            {/* 2. PEDAGÓGICO (BNCC) */}
+            {/* 2. BASE PEDAGÓGICA (Dicionários BNCC) */}
             <div className="card" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid hsl(var(--border) / 0.3)', paddingBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid hsl(var(--border) / 0.3)', paddingBottom: '0.75rem' }}>
                 <Target size={18} color="hsl(var(--primary))" />
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Base Pedagógica</h3>
+                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Base Pedagógica (BNCC)</h3>
               </div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Competências Gerais</label>
-                  <textarea 
-                    className="input" 
-                    placeholder="Ex: Conhecimento, Pensamento científico, crítico e criativo..."
-                    style={{ minHeight: '120px', width: '100%', borderRadius: '8px', padding: '1rem', background: 'hsl(var(--background))' }}
-                    value={currentPlan.general_competencies}
-                    onChange={e => setCurrentPlan({ ...currentPlan, general_competencies: e.target.value })}
-                  />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2rem' }}>
+                
+                {/* Competências Gerais */}
+                <div style={{ backgroundColor: 'hsl(var(--background))', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.5)' }}>
+                  {renderMultiselect(
+                    "Competências Gerais", "Pesquise por texto ou selecione da lista...",
+                    genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects,
+                    (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]); setGenCompSearch(''); } },
+                    (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) },
+                    'title'
+                  )}
+                  <div style={{ marginTop: '1.5rem' }}>
+                    <FormGroup label="Complemento (Competências Gerais)" placeholder="Adicione observações customizadas..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="80px" />
+                  </div>
                 </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Competências Específicas da Área</label>
-                  <textarea 
-                    className="input" 
-                    placeholder="Conforme definido pela Base Nacional Comum Curricular (BNCC)..."
-                    style={{ minHeight: '120px', width: '100%', borderRadius: '8px', padding: '1rem', background: 'hsl(var(--background))' }}
-                    value={currentPlan.specific_competencies}
-                    onChange={e => setCurrentPlan({ ...currentPlan, specific_competencies: e.target.value })}
-                  />
+
+                {/* Competências Específicas */}
+                <div style={{ backgroundColor: 'hsl(var(--background))', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.5)' }}>
+                  {renderMultiselect(
+                    "Competências Específicas da Área", "Busque por tema ou área (ex: Matemática)...",
+                    specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects,
+                    (it) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]); setSpecCompSearch(''); } },
+                    (id) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }
+                  )}
+                  <div style={{ marginTop: '1.5rem' }}>
+                    <FormGroup label="Complemento (Específicas)" placeholder="Observações específicas não listadas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="80px" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -318,125 +408,24 @@ export const LessonPlanPage: React.FC = () => {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2rem' }}>
-                
-                {/* COLUNA ESQUERDA: CONTEÚDO E BNCC */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <FormGroup 
-                    label="Objeto(s) de Conhecimento" 
-                    placeholder="Principais conteúdos do bimestre..." 
-                    value={currentPlan.knowledge_objects} 
-                    onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })}
-                    height="120px"
-                  />
-                  
-                  <div style={{ 
-                    backgroundColor: 'hsl(var(--background))', 
-                    padding: '1.25rem', 
-                    borderRadius: '12px', 
-                    border: '1px solid hsl(var(--border) / 0.5)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '1rem'
-                  }}>
-                    {/* MULTISELECT BNCC */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase' }}>Habilidades (BNCC - Dicionário)</label>
-                      <div className="input-container" style={{ position: 'relative' }}>
-                        <input 
-                          type="text" 
-                          className="input" 
-                          placeholder="Pesquise por código (ex: EF09) ou descrição..."
-                          value={bnccSearch}
-                          onChange={e => setBnccSearch(e.target.value)}
-                          style={{ padding: '0.75rem 1rem', borderRadius: '8px', width: '100%', border: '1px solid hsl(var(--border))' }}
-                        />
-                        {searchingBNCC && (
-                          <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
-                            <Loader2 size={16} className="animate-spin" color="hsl(var(--primary))" />
-                          </div>
-                        )}
-                        
-                        {bnccResults.length > 0 && (
-                          <div style={{
-                            position: 'absolute', top: '105%', left: 0, right: 0, backgroundColor: 'white',
-                            borderRadius: '12px', boxShadow: '0 12px 30px -4px rgba(0,0,0,0.2)',
-                            zIndex: 100, border: '1px solid hsl(var(--border) / 0.5)', overflow: 'hidden',
-                            maxHeight: '300px', overflowY: 'auto'
-                          }}>
-                            {bnccResults.map(res => (
-                              <div key={res.id} onClick={() => addBnccSkill(res)} style={{ 
-                                padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid hsl(var(--border) / 0.2)',
-                                transition: 'background 0.2s'
-                              }} className="bncc-search-result">
-                                <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.8rem' }}>{res.code}</div>
-                                <div style={{ fontSize: '0.75rem', fontWeight: 500, color: 'hsl(var(--text))', marginTop: '0.1rem', lineHeight: 1.3 }}>{res.description}</div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Tags Selecionadas */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.5rem' }}>
-                        {selectedBnccObjects.map(skill => (
-                          <div key={skill.id} style={{ 
-                            backgroundColor: 'white', color: 'hsl(var(--text))', 
-                            padding: '0.7rem 0.9rem', borderRadius: '8px', fontSize: '0.8rem',
-                            display: 'flex', gap: '0.8rem', border: '1px solid hsl(var(--border))',
-                            position: 'relative', boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-                          }}>
-                            <div style={{ 
-                              backgroundColor: 'hsl(var(--primary))', color: 'white', 
-                              padding: '0.15rem 0.4rem', borderRadius: '4px', fontSize: '0.65rem', 
-                              fontWeight: 900, height: 'fit-content'
-                            }}>
-                              {skill.code}
-                            </div>
-                            <div style={{ fontWeight: 500, lineHeight: 1.4, flex: 1, paddingRight: '1rem' }}>
-                              {skill.description}
-                            </div>
-                            <button 
-                              onClick={() => removeBnccSkill(skill.id)}
-                              style={{ 
-                                position: 'absolute', right: '0.5rem', top: '0.5rem',
-                                background: 'none', border: 'none', cursor: 'pointer',
-                                color: 'hsl(var(--destructive))', opacity: 0.5
-                              }}
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
+                  <FormGroup label="Objeto(s) de Conhecimento" placeholder="Principais conteúdos do bimestre..." value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
+                  <div style={{ backgroundColor: 'hsl(var(--background))', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.5)' }}>
+                    {renderMultiselect(
+                      "Habilidades (BNCC - Dicionário)", "Pesquise por código (ex: EF09) ou descrição...",
+                      bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects,
+                      (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]); setBnccSearch(''); } },
+                      (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }
+                    )}
+                    <div style={{ marginTop: '1rem' }}>
+                      <FormGroup label="Outras Habilidades (Personalizadas)" placeholder="Habilidades específicas do colégio..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
                     </div>
-
-                    <FormGroup 
-                      label="Habilidades Complementares" 
-                      placeholder="Outras habilidades específicas..." 
-                      value={currentPlan.skills} 
-                      onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} 
-                      height="80px"
-                    />
                   </div>
                 </div>
 
-                {/* COLUNA DIREITA: CRONOGRAMA E METODOLOGIA */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <FormGroup 
-                    label="Cronograma (Conteúdos por Semana)" 
-                    placeholder="Semana 1: ... | Semana 2: ..." 
-                    value={currentPlan.programmatic_content} 
-                    onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} 
-                    height="180px" 
-                  />
-                  
-                  <FormGroup 
-                    label="Metodologia (Procedimentos)" 
-                    placeholder="Aulas expositivas, trabalhos em grupo..." 
-                    value={currentPlan.methodology} 
-                    onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} 
-                    height="160px"
-                  />
+                  <FormGroup label="Cronograma (Conteúdos por Semana)" placeholder="Semana 1: ... | Semana 2: ..." value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="180px" />
+                  <FormGroup label="Metodologia (Procedimentos)" placeholder="Aulas expositivas, trabalhos em grupo..." value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="160px" />
                 </div>
               </div>
             </div>

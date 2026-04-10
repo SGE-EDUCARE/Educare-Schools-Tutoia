@@ -115,6 +115,33 @@ async function main() {
     console.log(`✅ ${bnccData.length} habilidades BNCC importadas`)
   }
 
+  // 8. Importar Competências BNCC (Gerais e Específicas)
+  console.log('⏳ Importando competências BNCC...')
+  const compDataPath = path.join(__dirname, 'data', 'bncc-competencies-data.json')
+  
+  if (fs.existsSync(compDataPath)) {
+    const compData = JSON.parse(fs.readFileSync(compDataPath, 'utf8'))
+    
+    // Gerais
+    for (const item of compData.general) {
+      await prisma.bnccGeneralCompetency.upsert({
+        where: { number: item.number },
+        update: { title: item.title, description: item.description },
+        create: { number: item.number, title: item.title, description: item.description }
+      })
+    }
+    
+    // Específicas
+    for (const item of compData.specific) {
+      await prisma.bnccSpecificCompetency.upsert({
+        where: { code: item.code || `${item.area}-${item.description.slice(0, 20)}` },
+        update: { description: item.description, area: item.area },
+        create: { code: item.code, description: item.description, area: item.area }
+      })
+    }
+    console.log(`✅ ${compData.general.length} competências gerais e ${compData.specific.length} específicas importadas`)
+  }
+
   console.log('\nSeed concluído com sucesso! 🚀')
   console.log('Use admin@educare.com / admin123 para entrar.')
 }

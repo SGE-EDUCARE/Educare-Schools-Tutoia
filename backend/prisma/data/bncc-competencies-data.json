@@ -1,0 +1,20 @@
+{
+  "general": [
+    { "number": 1, "title": "Conhecimento", "description": "Valorizar e utilizar os conhecimentos historicamente construídos sobre o mundo físico, social, cultural e digital." },
+    { "number": 2, "title": "Pensamento científico, crítico e criativo", "description": "Exercitar a curiosidade intelectual e recorrer à abordagem própria das ciências para investigar causas, elaborar e testar hipóteses, formular e resolver problemas e criar soluções." },
+    { "number": 3, "title": "Repertório cultural", "description": "Valorizar e fruir as diversas manifestações artísticas e culturais, das locais às mundiais, e também participar de práticas diversificadas da produção artístico-cultural." },
+    { "number": 4, "title": "Comunicação", "description": "Utilizar diferentes linguagens – verbal (oral ou visual-motora, como Libras, e escrita), corporal, visual, sonora e digital." },
+    { "number": 5, "title": "Cultura digital", "description": "Compreender, utilizar e criar tecnologias digitais de informação e comunicação de forma crítica, significativa, reflexiva e ética." },
+    { "number": 6, "title": "Trabalho e projeto de vida", "description": "Valorizar a diversidade de saberes e vivências culturais e apropriar-se de conhecimentos e experiências que lhe possibilitem entender as relações próprias do mundo do trabalho." },
+    { "number": 7, "title": "Argumentação", "description": "Argumentar com base em fatos, dados e informações confiáveis, para formular, negociar e defender ideias, pontos de vista e decisões comuns." },
+    { "number": 8, "title": "Autoconhecimento e autocuidado", "description": "Conhecer-se, apreciar-se e cuidar de sua saúde física e emocional, compreendendo-se na diversidade humana e reconhecendo suas emoções e as dos outros." },
+    { "number": 9, "title": "Empatia e cooperação", "description": "Exercitar a empatia, o diálogo, a resolução de conflitos e a cooperação, fazendo-se respeitar e promovendo o respeito ao outro e aos direitos humanos." },
+    { "number": 10, "title": "Responsabilidade e cidadania", "description": "Agir pessoal e coletivamente com autonomia, responsabilidade, flexibilidade, resiliência e determinação." }
+  ],
+  "specific": [
+    { "area": "Matemática", "description": "Reconhecer que a Matemática é uma ciência humana, fruto da necessidade e preocupação de diferentes culturas, em diferentes momentos históricos.", "code": "CEM01" },
+    { "area": "Matemática", "description": "Estabelecer conexões entre conceitos e procedimentos de diferentes campos da Matemática e de outras áreas do conhecimento.", "code": "CEM02" },
+    { "area": "Linguagens", "description": "Compreender as linguagens como construção humana, histórica, social e cultural, de natureza dinâmica.", "code": "CEL01" },
+    { "area": "Ciências da Natureza", "description": "Analisar fenômenos naturais e processos tecnológicos, com base nas relações entre matéria e energia.", "code": "CEC01" }
+  ]
+}

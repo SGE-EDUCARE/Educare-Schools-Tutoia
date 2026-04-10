@@ -110,41 +110,69 @@ model Schedule {
 }
 
 model LessonPlan {
-  id                    String      @id @default(uuid())
-  date                  DateTime
-  subject               String?
-  bimester              Int?
-  month                 String?
-  general_competencies  String?     @db.Text
-  specific_competencies String?     @db.Text
-  knowledge_objects     String?     @db.Text
-  programmatic_content  String?     @db.Text
-  skills                String?     @db.Text // Texto livre (legado ou custom)
-  bncc_skills           BnccSkill[] @relation("LessonPlanBnccSkills")
-  methodology           String?     @db.Text
-  evaluation            String?     @db.Text
-  resources             String?     @db.Text
-  references            String?     @db.Text
-  content               String?     @db.Text
-  status                String      @default("PENDING")
-  type                  String?     @default("Mensal")
-  teacher_id            String
-  class_id              String
-  class                 Class       @relation(fields: [class_id], references: [id])
-  teacher               User        @relation(fields: [teacher_id], references: [id])
+  id                        String      @id @default(uuid())
+  date                      DateTime
+  subject                   String?
+  bimester                  Int?
+  month                     String?
+  knowledge_objects         String?     @db.Text
+  programmatic_content      String?     @db.Text
+  skills                    String?     @db.Text // Texto livre (habilidades custom)
+  bncc_skills               BnccSkill[] @relation("LessonPlanBnccSkills")
+  
+  // Novas Relações para Competências Estruturadas
+  bncc_general_comp         BnccGeneralCompetency[]  @relation("LessonPlanGeneralComp")
+  bncc_specific_comp        BnccSpecificCompetency[] @relation("LessonPlanSpecificComp")
+  
+  // Campos de Texto Custom (para flexibilidade extra)
+  custom_general_comp       String?     @db.Text
+  custom_specific_comp      String?     @db.Text
+  
+  methodology               String?     @db.Text
+  evaluation                String?     @db.Text
+  resources                 String?     @db.Text
+  references                String?     @db.Text
+  content                   String?     @db.Text
+  status                    String      @default("PENDING")
+  type                      String?     @default("Mensal")
+  teacher_id                String
+  class_id                  String
+  class                     Class       @relation(fields: [class_id], references: [id])
+  teacher                   User        @relation(fields: [teacher_id], references: [id])
 
   @@map("lesson_plans")
 }
 
 model BnccSkill {
   id           String       @id @default(uuid())
-  code         String       @unique // ex: EF09LP04
+  code         String       @unique
   description  String       @db.Text
   subject      String?
   level        String?
   lesson_plans LessonPlan[] @relation("LessonPlanBnccSkills")
 
   @@map("bncc_skills")
+}
+
+model BnccGeneralCompetency {
+  id           String       @id @default(uuid())
+  number       Int          @unique // 1 a 10
+  title        String
+  description  String       @db.Text
+  lesson_plans LessonPlan[] @relation("LessonPlanGeneralComp")
+
+  @@map("bncc_general_competencies")
+}
+
+model BnccSpecificCompetency {
+  id           String       @id @default(uuid())
+  code         String?      @unique // Algumas têm código, outras não
+  description  String       @db.Text
+  area         String?      // ex: Linguagens, Matemática
+  subject      String?      // ex: Língua Portuguesa (opcional)
+  lesson_plans LessonPlan[] @relation("LessonPlanSpecificComp")
+
+  @@map("bncc_specific_competencies")
 }
 
 model Attendance {

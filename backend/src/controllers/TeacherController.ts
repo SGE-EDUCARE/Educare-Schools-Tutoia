@@ -361,9 +361,12 @@ export class TeacherController {
     const teacher_id = req.user?.id;
     const { 
       id, date, subject, bimester, month, type, classId,
-      general_competencies, specific_competencies, knowledge_objects,
+      custom_general_comp, custom_specific_comp, knowledge_objects,
       programmatic_content, skills, methodology, evaluation, resources, references,
-      content, bncc_skills_ids // Novo: Array de IDs das habilidades selecionadas
+      content, 
+      bncc_skills_ids,
+      bncc_general_comp_ids,  // Novo
+      bncc_specific_comp_ids  // Novo
     } = req.body;
 
     try {
@@ -373,11 +376,11 @@ export class TeacherController {
         bimester: bimester ? Number(bimester) : null,
         month,
         type: type || 'Mensal',
-        general_competencies,
-        specific_competencies,
+        custom_general_comp,
+        custom_specific_comp,
         knowledge_objects,
         programmatic_content,
-        skills, // Texto livre
+        skills, 
         methodology,
         evaluation,
         resources,
@@ -387,11 +390,17 @@ export class TeacherController {
         teacher_id: teacher_id!
       };
 
-      // Gerenciar relações Many-to-Many com habilidades BNCC
+      // Gerenciar relações Many-to-Many
       if (bncc_skills_ids && Array.isArray(bncc_skills_ids)) {
-        data.bncc_skills = {
-          set: bncc_skills_ids.map((skillId: string) => ({ id: skillId }))
-        };
+        data.bncc_skills = { set: bncc_skills_ids.map((id: string) => ({ id })) };
+      }
+      
+      if (bncc_general_comp_ids && Array.isArray(bncc_general_comp_ids)) {
+        data.bncc_general_comp = { set: bncc_general_comp_ids.map((id: string) => ({ id })) };
+      }
+
+      if (bncc_specific_comp_ids && Array.isArray(bncc_specific_comp_ids)) {
+        data.bncc_specific_comp = { set: bncc_specific_comp_ids.map((id: string) => ({ id })) };
       }
 
       if (id) {
@@ -409,7 +418,7 @@ export class TeacherController {
     }
   }
 
-  // Listar Planos de Aula por Turma (incluindo habilidades BNCC)
+  // Listar Planos de Aula por Turma (incluindo habilidades e competências BNCC)
   static async getLessonPlansByClass(req: AuthRequest, res: Response) {
     const { classId } = req.params;
     const teacher_id = req.user?.id;
@@ -420,7 +429,11 @@ export class TeacherController {
           class_id: String(classId), 
           teacher_id: teacher_id! 
         },
-        include: { bncc_skills: true }, // Incluir as habilidades
+        include: { 
+          bncc_skills: true,
+          bncc_general_comp: true,
+          bncc_specific_comp: true
+        },
         orderBy: { date: 'desc' }
       });
       res.json(plans);
@@ -429,33 +442,60 @@ export class TeacherController {
     }
   }
 
-  // Buscar Habilidades BNCC (Dicionário)
+  // Buscar Habilidades BNCC
   static async searchBnccSkills(req: AuthRequest, res: Response) {
     const { q, subject } = req.query;
-    
     try {
       const where: any = {};
-      
       if (q) {
         where.OR = [
           { code: { contains: String(q), mode: 'insensitive' } },
           { description: { contains: String(q), mode: 'insensitive' } }
         ];
       }
-
-      if (subject) {
-        where.subject = String(subject);
-      }
-
-      const skills = await prisma.bnccSkill.findMany({
-        where,
-        take: 50,
-        orderBy: { code: 'asc' }
-      });
-      
+      if (subject) where.subject = String(subject);
+      const skills = await prisma.bnccSkill.findMany({ where, take: 50, orderBy: { code: 'asc' } });
       res.json(skills);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
+    } catch (error: any) { res.status(500).json({ message: error.message }); }
+  }
+
+  // Buscar Competências Gerais BNCC
+  static async searchGeneralCompetencies(req: AuthRequest, res: Response) {
+    const { q } = req.query;
+    try {
+      const where: any = {};
+      if (q) {
+        where.OR = [
+          { title: { contains: String(q), mode: 'insensitive' } },
+          { description: { contains: String(q), mode: 'insensitive' } }
+        ];
+      }
+      const comps = await prisma.bnccGeneralCompetency.findMany({ 
+        where, 
+        orderBy: { number: 'asc' } 
+      });
+      res.json(comps);
+    } catch (error: any) { res.status(500).json({ message: error.message }); }
+  }
+
+  // Buscar Competências Específicas BNCC
+  static async searchSpecificCompetencies(req: AuthRequest, res: Response) {
+    const { q, area } = req.query;
+    try {
+      const where: any = {};
+      if (q) {
+        where.OR = [
+          { code: { contains: String(q), mode: 'insensitive' } },
+          { description: { contains: String(q), mode: 'insensitive' } }
+        ];
+      }
+      if (area) where.area = String(area);
+      const comps = await prisma.bnccSpecificCompetency.findMany({ 
+        where, 
+        take: 50,
+        orderBy: { code: 'asc' } 
+      });
+      res.json(comps);
+    } catch (error: any) { res.status(500).json({ message: error.message }); }
   }
 }
