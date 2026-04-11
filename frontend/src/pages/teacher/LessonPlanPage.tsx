@@ -270,10 +270,18 @@ export const LessonPlanPage: React.FC = () => {
 
     setSaving(true)
     try {
+      // Limpar o payload para enviar apenas dados crus e IDs
+      const { 
+        bncc_skills, 
+        bncc_general_comp, 
+        bncc_specific_comp, 
+        ...cleanPlan 
+      } = currentPlan as any
+
       await api('/teacher/lesson-plans', {
         method: 'POST',
         body: JSON.stringify({ 
-          ...currentPlan, 
+          ...cleanPlan, 
           classId,
           bncc_skills_ids: selectedBnccIds,
           bncc_general_comp_ids: selectedGenIds,

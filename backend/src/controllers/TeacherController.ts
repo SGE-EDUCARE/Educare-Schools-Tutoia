@@ -412,16 +412,18 @@ export class TeacherController {
       };
 
       // Gerenciar relações Many-to-Many
+      const relOp = id ? 'set' : 'connect';
+
       if (bncc_skills_ids && Array.isArray(bncc_skills_ids)) {
-        data.bncc_skills = { set: bncc_skills_ids.map((id: string) => ({ id })) };
+        data.bncc_skills = { [relOp]: bncc_skills_ids.map((id: string) => ({ id })) };
       }
       
       if (bncc_general_comp_ids && Array.isArray(bncc_general_comp_ids)) {
-        data.bncc_general_comp = { set: bncc_general_comp_ids.map((id: string) => ({ id })) };
+        data.bncc_general_comp = { [relOp]: bncc_general_comp_ids.map((id: string) => ({ id })) };
       }
 
       if (bncc_specific_comp_ids && Array.isArray(bncc_specific_comp_ids)) {
-        data.bncc_specific_comp = { set: bncc_specific_comp_ids.map((id: string) => ({ id })) };
+        data.bncc_specific_comp = { [relOp]: bncc_specific_comp_ids.map((id: string) => ({ id })) };
       }
 
       if (id) {
