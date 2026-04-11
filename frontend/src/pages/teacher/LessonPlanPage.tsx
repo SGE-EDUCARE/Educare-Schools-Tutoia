@@ -245,8 +245,7 @@ export const LessonPlanPage: React.FC = () => {
     searching: boolean,
     selected: any[],
     onAdd: (item: any) => void,
-    onRemove: (id: string) => void,
-    titleField: 'code' | 'title' | 'number' = 'code'
+    onRemove: (id: string) => void
   ) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
       <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginLeft: '0.2rem' }}>{label}</label>
