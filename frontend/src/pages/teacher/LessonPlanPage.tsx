@@ -86,6 +86,14 @@ export const LessonPlanPage: React.FC = () => {
   // Controle explícito de qual dropdown BNCC está aberto
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
 
+  // Controle de responsividade dinâmica
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   const emptyPlan = (): LessonPlan => ({
     date: new Date().toISOString().split('T')[0],
     subject: '',
@@ -307,16 +315,19 @@ export const LessonPlanPage: React.FC = () => {
     selected: any[],
     onAdd: (item: any) => void,
     onRemove: (id: string) => void,
-    variantColor: string = 'hsl(var(--primary))'
+    variantColor: string = 'hsl(var(--primary))',
+    isMobile: boolean = false
   ) => {
     const isOpen = activeDropdown === dropdownKey
     const showResults = isOpen && results.length > 0
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.35rem' : '0.5rem' }}>
         <label style={{
-          fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text))',
-          textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: '0.2rem',
+          fontSize: isMobile ? '0.7rem' : '0.75rem', 
+          fontWeight: 800, color: 'hsl(var(--text))',
+          textTransform: 'uppercase', letterSpacing: '0.05em', 
+          marginLeft: isMobile ? '0.15rem' : '0.2rem',
           opacity: 0.8
         }}>{label}</label>
 
@@ -339,15 +350,19 @@ export const LessonPlanPage: React.FC = () => {
                 width: '100%', 
                 backgroundColor: 'white',
                 paddingRight: '3rem',
+                paddingTop: isMobile ? '0.85rem' : '1rem',
+                paddingBottom: isMobile ? '0.85rem' : '1rem',
+                fontSize: isMobile ? '0.9rem' : '1rem',
+                borderRadius: isMobile ? '16px' : '20px',
                 boxShadow: isOpen ? '0 0 0 4px ' + variantColor + '22' : 'none',
                 borderColor: isOpen ? variantColor : undefined
               }}
             />
             <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '0.5rem' }}>
               {searching ? (
-                <Loader2 size={16} className="animate-spin" color={variantColor} />
+                <Loader2 size={isMobile ? 14 : 16} className="animate-spin" color={variantColor} />
               ) : (
-                <Target size={16} color="hsl(var(--text-light) / 0.4)" />
+                <Target size={isMobile ? 14 : 16} color="hsl(var(--text-light) / 0.4)" />
               )}
             </div>
           </div>
@@ -371,7 +386,8 @@ export const LessonPlanPage: React.FC = () => {
                   onClick={() => { onAdd(res); setSearch(''); setActiveDropdown(null) }}
                   className="dropdown-item"
                   style={{ 
-                    padding: '1rem 1.25rem', cursor: 'pointer',
+                    padding: isMobile ? '0.8rem 1rem' : '1rem 1.25rem', 
+                    cursor: 'pointer',
                     borderBottom: '1px solid hsl(var(--border) / 0.2)',
                     transition: 'all 0.2s'
                   }}
@@ -381,16 +397,18 @@ export const LessonPlanPage: React.FC = () => {
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
                     <span style={{ 
                       backgroundColor: variantColor, color: 'white', 
-                      padding: '0.15rem 0.45rem', borderRadius: '6px', fontSize: '0.65rem', fontWeight: 900 
+                      padding: '0.15rem 0.45rem', borderRadius: '6px', 
+                      fontSize: isMobile ? '0.6rem' : '0.65rem', fontWeight: 900 
                     }}>
                       {res.code || res.number || 'BNCC'}
                     </span>
-                    <div style={{ fontWeight: 800, color: 'hsl(var(--text))', fontSize: '0.85rem' }}>
+                    <div style={{ fontWeight: 800, color: 'hsl(var(--text))', fontSize: isMobile ? '0.8rem' : '0.85rem' }}>
                       {res.title || ''}
                     </div>
                   </div>
                   <div style={{
-                    fontSize: '0.78rem', fontWeight: 500, color: 'hsl(var(--text-light))',
+                    fontSize: isMobile ? '0.75rem' : '0.78rem', 
+                    fontWeight: 500, color: 'hsl(var(--text-light))',
                     lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, 
                     WebkitBoxOrient: 'vertical', overflow: 'hidden'
                   }}>{res.description}</div>
@@ -401,12 +419,14 @@ export const LessonPlanPage: React.FC = () => {
         </div>
 
         {selected.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.5rem' : '0.75rem', marginTop: '0.5rem' }}>
             {selected.map(item => (
               <div key={item.id} className="animate-scale-in" style={{ 
                 backgroundColor: 'white', color: 'hsl(var(--text))', 
-                padding: '1rem 1.25rem', borderRadius: '16px', 
-                display: 'flex', gap: '1rem', alignItems: 'flex-start',
+                padding: isMobile ? '0.85rem 1rem' : '1rem 1.25rem', 
+                borderRadius: isMobile ? '16px' : '20px', 
+                display: 'flex', gap: isMobile ? '0.75rem' : '1rem', 
+                alignItems: 'flex-start',
                 border: '1px solid hsl(var(--border) / 0.6)',
                 boxShadow: '0 4px 12px -4px rgba(0,0,0,0.05)',
                 position: 'relative'
@@ -419,15 +439,19 @@ export const LessonPlanPage: React.FC = () => {
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
                     <span style={{ 
-                      fontSize: '0.7rem', fontWeight: 900, color: variantColor,
+                      fontSize: isMobile ? '0.65rem' : '0.7rem', 
+                      fontWeight: 900, color: variantColor,
                       textTransform: 'uppercase', letterSpacing: '0.05em'
                     }}>
                       {item.code || item.number || 'Referência'}
                     </span>
                     {item.title && <span style={{ width: '3px', height: '3px', backgroundColor: 'hsl(var(--text-light) / 0.3)', borderRadius: '50%' }} />}
-                    <span style={{ fontWeight: 800, fontSize: '0.8rem', color: 'hsl(var(--text))' }}>{item.title}</span>
+                    <span style={{ fontWeight: 800, fontSize: isMobile ? '0.75rem' : '0.8rem', color: 'hsl(var(--text))' }}>{item.title}</span>
                   </div>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 500, lineHeight: 1.5, color: 'hsl(var(--text))' }}>
+                  <div style={{ 
+                    fontSize: isMobile ? '0.75rem' : '0.8rem', 
+                    fontWeight: 500, lineHeight: 1.5, color: 'hsl(var(--text))' 
+                  }}>
                     {item.description}
                   </div>
                 </div>
@@ -437,11 +461,11 @@ export const LessonPlanPage: React.FC = () => {
                   className="btn-ghost"
                   style={{
                     alignSelf: 'flex-start', color: 'hsl(var(--error))',
-                    opacity: 0.6, padding: '8px', minWidth: '32px', minHeight: '32px',
-                    borderRadius: '10px'
+                    opacity: 0.6, padding: '4px', minWidth: '28px', minHeight: '28px',
+                    borderRadius: '8px'
                   }}
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={isMobile ? 14 : 16} />
                 </button>
               </div>
             ))}
@@ -453,7 +477,11 @@ export const LessonPlanPage: React.FC = () => {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'hsl(var(--background))' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem 10rem' }}>
+      <div style={{ 
+        maxWidth: '1200px', 
+        margin: '0 auto', 
+        padding: isMobile ? '0 0.75rem 6rem' : '0 2rem 10rem' 
+      }}>
 
         {/* ══════════ HEADER ══════════ */}
         <header style={{
@@ -498,86 +526,93 @@ export const LessonPlanPage: React.FC = () => {
 
         {/* ══════════ FORMULÁRIO DE EDIÇÃO ══════════ */}
         {isEditing && currentPlan ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }} className="animate-slide-up">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1.5rem' : '2.5rem' }} className="animate-slide-up">
 
             {/* ─── 1. IDENTIFICAÇÃO ─── */}
             <SectionCard 
-              icon={<Calendar size={20} color="hsl(var(--primary))" />} 
+              isMobile={isMobile}
+              icon={<Calendar color="hsl(var(--primary))" />} 
               title="Informações do Período"
               accent="linear-gradient(135deg, hsl(250 100% 98%) 0%, hsl(250 100% 95%) 100%)"
             >
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }} className="grid-mobile-1">
-                <CustomSelect label="Disciplina" icon={<FileText size={16}/>} value={currentPlan.subject} options={subjects.map(s => ({ value: s, label: s }))} isOpen={openSubject} setIsOpen={setOpenSubject} onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} />
-                <CustomSelect label="Bimestre" value={String(currentPlan.bimester)} options={bimesterOptions} isOpen={openBimester} setIsOpen={setOpenBimester} onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} />
-                <CustomSelect label="Mês de Referência" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: isMobile ? '0.75rem' : '1.25rem' }} className="grid-mobile-1">
+                <CustomSelect isMobile={isMobile} label="Disciplina" icon={<FileText size={isMobile ? 14 : 16}/>} value={currentPlan.subject} options={subjects.map(s => ({ value: s, label: s }))} isOpen={openSubject} setIsOpen={setOpenSubject} onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} />
+                <CustomSelect isMobile={isMobile} label="Bimestre" value={String(currentPlan.bimester)} options={bimesterOptions} isOpen={openBimester} setIsOpen={setOpenBimester} onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} />
+                <CustomSelect isMobile={isMobile} label="Mês de Referência" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} />
               </div>
             </SectionCard>
 
             {/* ─── 2. BASE PEDAGÓGICA (BNCC) ─── */}
             <SectionCard 
-              icon={<Target size={20} color="hsl(260 90% 60%)" />} 
+              isMobile={isMobile}
+              icon={<Target color="hsl(260 90% 60%)" />} 
               title="Competências BNCC"
               accent="linear-gradient(135deg, hsl(260 100% 98%) 0%, hsl(260 100% 95%) 100%)"
             >
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="grid-mobile-1">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '1.5rem' : '2rem' }} className="grid-mobile-1">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem' }}>
                   {renderMultiselect(
                     "gerais", "Competências Gerais", "Pesquise por tema...",
                     genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects,
                     (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]); setGenCompSearch(''); } },
                     (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) },
-                    'hsl(260 85% 60%)'
+                    'hsl(260 85% 60%)',
+                    isMobile
                   )}
-                  <FormGroup label="Anotações de Competências Gerais" placeholder="Complemente as competências..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="80px" />
+                  <FormGroup isMobile={isMobile} label="Anotações de Competências Gerais" placeholder="Complemente as competências..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="80px" />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem' }}>
                   {renderMultiselect(
                     "especificas", "Competências Específicas", "Busque por área...",
                     specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects,
                     (it) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]); setSpecCompSearch(''); } },
                     (id) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) },
-                    'hsl(230 85% 60%)'
+                    'hsl(230 85% 60%)',
+                    isMobile
                   )}
-                  <FormGroup label="Anotações de Competências Específicas" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="80px" />
+                  <FormGroup isMobile={isMobile} label="Anotações de Competências Específicas" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="80px" />
                 </div>
               </div>
             </SectionCard>
 
             {/* ─── 3. DESENVOLVIMENTO MENSAL ─── */}
             <SectionCard 
-              icon={<LayoutList size={20} color="hsl(210 90% 55%)" />} 
+              isMobile={isMobile}
+              icon={<LayoutList color="hsl(210 90% 55%)" />} 
               title="Planejamento e Desenvolvimento"
               accent="linear-gradient(135deg, hsl(210 100% 98%) 0%, hsl(210 100% 96%) 100%)"
             >
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr', gap: '2rem' }} className="grid-mobile-1">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <FormGroup label="Objeto(s) de Conhecimento" placeholder="O que será ensinado?" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr', gap: isMobile ? '1.5rem' : '2rem' }} className="grid-mobile-1">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem' }}>
+                  <FormGroup isMobile={isMobile} label="Objeto(s) de Conhecimento" placeholder="O que será ensinado?" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
                   {renderMultiselect(
                     "habilidades", "Habilidades (BNCC)", "Código ou descrição...",
                     bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects,
                     (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]); setBnccSearch(''); } },
                     (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) },
-                    'hsl(210 85% 55%)'
+                    'hsl(210 85% 55%)',
+                    isMobile
                   )}
-                  <FormGroup label="Habilidades Próprias" placeholder="Habilidades não previstas na BNCC..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
+                  <FormGroup isMobile={isMobile} label="Habilidades Próprias" placeholder="Habilidades não previstas na BNCC..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <FormGroup label="Cronograma Detalhado" placeholder="Distribuição do conteúdo pelas semanas..." value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="180px" />
-                  <FormGroup label="Metodologias e Estratégias" placeholder="Como o conteúdo será trabalhado?" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="180px" />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem' }}>
+                  <FormGroup isMobile={isMobile} label="Cronograma Detalhado" placeholder="Distribuição do conteúdo pelas semanas..." value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="180px" />
+                  <FormGroup isMobile={isMobile} label="Metodologias e Estratégias" placeholder="Como o conteúdo será trabalhado?" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="180px" />
                 </div>
               </div>
             </SectionCard>
 
             {/* ─── 4. AVALIAÇÃO E RECURSOS ─── */}
             <SectionCard 
-              icon={<CheckCircle2 size={20} color="hsl(160 80% 45%)" />} 
+              isMobile={isMobile}
+              icon={<CheckCircle2 color="hsl(160 80% 45%)" />} 
               title="Recursos e Avaliação"
               accent="linear-gradient(135deg, hsl(160 100% 98%) 0%, hsl(160 100% 96%) 100%)"
             >
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }} className="grid-mobile-1">
-                <FormGroup label="Critérios de Avaliação" placeholder="Como o aprendizado será verificado?"
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '1rem' : '1.5rem' }} className="grid-mobile-1">
+                <FormGroup isMobile={isMobile} label="Critérios de Avaliação" placeholder="Como o aprendizado será verificado?"
                   value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} height="120px" />
-                <FormGroup label="Ferramentas e Referências" placeholder="Recursos utilizados no bimestre..."
+                <FormGroup isMobile={isMobile} label="Ferramentas e Referências" placeholder="Recursos utilizados no bimestre..."
                   value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} height="120px" />
               </div>
             </SectionCard>
@@ -691,61 +726,52 @@ export const LessonPlanPage: React.FC = () => {
                       <Trash2 size={16} />
                     </button>
                   </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
-
-/* ══════════════════════════════════════
-   SUB-COMPONENTS (DEFINIDOS FORA PARA EVITAR REMOUNTS)
-   ══════════════════════════════════════ */
-
-const SectionCard = ({ icon, title, accent, children }: { icon: React.ReactNode; title: string; accent?: string; children: React.ReactNode }) => (
+const SectionCard = ({ icon, title, accent, children, isMobile }: { icon: React.ReactNode; title: string; accent?: string; children: React.ReactNode; isMobile?: boolean }) => (
   <section className="card" style={{
-    padding: 0, borderRadius: '28px',
+    padding: 0, borderRadius: isMobile ? '20px' : '28px',
     border: '1px solid hsl(var(--border) / 0.5)',
     boxShadow: 'var(--shadow-md)',
     overflow: 'visible',
     backgroundColor: 'white'
   }}>
     <div style={{
-      padding: '1.5rem 2rem',
+      padding: isMobile ? '1rem 1.25rem' : '1.5rem 2rem',
       background: accent || 'white',
       borderBottom: '1px solid hsl(var(--border) / 0.3)',
-      display: 'flex', alignItems: 'center', gap: '1.25rem',
-      borderRadius: '28px 28px 0 0'
+      display: 'flex', alignItems: 'center', gap: isMobile ? '0.75rem' : '1.25rem',
+      borderRadius: isMobile ? '20px 20px 0 0' : '28px 28px 0 0'
     }}>
       <div style={{
-        width: '50px', height: '50px', borderRadius: '16px',
+        width: isMobile ? '42px' : '50px', 
+        height: isMobile ? '42px' : '50px', 
+        borderRadius: isMobile ? '12px' : '16px',
         background: 'white',
         display: 'flex', alignItems: 'center', justifyContent: 'center', 
         flexShrink: 0, boxShadow: 'var(--shadow-sm)', border: '1px solid hsl(var(--border) / 0.4)'
       }}>
         {icon}
       </div>
-      <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: 'hsl(var(--text))', letterSpacing: '0.02em' }}>{title}</h3>
+      <h3 style={{ fontSize: isMobile ? '1rem' : '1.15rem', fontWeight: 900, color: 'hsl(var(--text))', letterSpacing: '0.02em' }}>{title}</h3>
     </div>
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: isMobile ? '1.25rem' : '2rem' }}>
       {children}
     </div>
   </section>
 )
 
-const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange }: any) => {
+const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange, isMobile }: any) => {
   const selectedLabel = options.find((o: any) => o.value === value)?.label || 'Selecione...'
 
   return (
     <div
       className={`input ${isOpen ? 'active' : ''}`}
       style={{
-        padding: '0.8rem 1.5rem', display: 'flex', flexDirection: 'column',
-        borderRadius: '20px', position: 'relative', cursor: 'pointer',
-        width: '100%', justifyContent: 'center', minHeight: '74px',
+        padding: isMobile ? '0.6rem 1.25rem' : '0.8rem 1.5rem', 
+        display: 'flex', flexDirection: 'column',
+        borderRadius: isMobile ? '16px' : '20px', 
+        position: 'relative', cursor: 'pointer',
+        width: '100%', justifyContent: 'center', 
+        minHeight: isMobile ? '64px' : '74px',
         borderColor: isOpen ? 'hsl(var(--primary))' : undefined,
         boxShadow: isOpen ? '0 0 0 5px hsl(var(--primary) / 0.1)' : undefined,
         backgroundColor: isOpen ? '#fff' : 'hsl(var(--background))'
@@ -753,15 +779,16 @@ const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange
       onClick={() => setIsOpen(!isOpen)}
     >
       <div style={{
-        fontSize: '0.75rem', fontWeight: 900, color: 'hsl(var(--text-light))',
+        fontSize: isMobile ? '0.7rem' : '0.75rem', 
+        fontWeight: 900, color: 'hsl(var(--text-light))',
         textTransform: 'uppercase', letterSpacing: '0.06em',
-        display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem'
+        display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem'
       }}>
-        {icon || <Calendar size={14} />} {label}
+        {icon || <Calendar size={isMobile ? 12 : 14} />} {label}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'hsl(var(--text))' }}>{selectedLabel}</span>
-        <ChevronDown size={22} color="hsl(var(--text-light))" style={{ transition: 'transform 0.3s', transform: isOpen ? 'rotate(180deg)' : 'none' }} />
+        <span style={{ fontSize: isMobile ? '1rem' : '1.1rem', fontWeight: 700, color: 'hsl(var(--text))' }}>{selectedLabel}</span>
+        <ChevronDown size={isMobile ? 18 : 22} color="hsl(var(--text-light))" style={{ transition: 'transform 0.3s', transform: isOpen ? 'rotate(180deg)' : 'none' }} />
       </div>
 
       {isOpen && (
@@ -798,20 +825,25 @@ const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange
   )
 }
 
-const FormGroup = ({ label, value, onChange, placeholder, height = '120px' }: any) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+const FormGroup = ({ label, value, onChange, placeholder, height = '120px', isMobile }: any) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.45rem' : '0.65rem' }}>
     <label style={{
-      fontSize: '0.9rem', fontWeight: 850, color: 'hsl(var(--text))',
-      textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: '0.3rem',
+      fontSize: isMobile ? '0.8rem' : '0.9rem', 
+      fontWeight: 850, color: 'hsl(var(--text))',
+      textTransform: 'uppercase', letterSpacing: '0.05em', 
+      marginLeft: isMobile ? '0.2rem' : '0.3rem',
       opacity: 0.8
     }}>{label}</label>
     <textarea
       className="input"
       placeholder={placeholder}
       style={{
-        minHeight: height, width: '100%', padding: '1.25rem 1.5rem',
+        minHeight: isMobile ? '80px' : height, 
+        width: '100%', 
+        padding: isMobile ? '1rem 1.25rem' : '1.25rem 1.5rem',
         resize: 'vertical', lineHeight: 1.6, backgroundColor: 'white',
-        fontSize: '1.1rem', borderRadius: '20px'
+        fontSize: isMobile ? '0.95rem' : '1.1rem', 
+        borderRadius: isMobile ? '16px' : '20px'
       }}
       value={value}
       onChange={e => onChange(e.target.value)}
