@@ -256,7 +256,9 @@ export const LessonPlanPage: React.FC = () => {
           value={search}
           onChange={e => setSearch(e.target.value)}
           onFocus={() => { 
-            if(label.includes('Gerais') && search === '') setSearch(' ') // Espaço para disparar busca de todas
+            if ((label.includes('Gerais') || label.includes('Específicas')) && search === '') {
+              setSearch(' ') // Espaço para disparar busca de todas ao focar
+            }
           }} 
           onBlur={() => setTimeout(() => setSearch(''), 200)} // Limpa para fechar, mas com delay para o clique funcionar
           style={{ width: '100%' }}
