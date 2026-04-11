@@ -126,9 +126,9 @@ export const LessonPlanPage: React.FC = () => {
 
   // Busca assíncrona da BNCC: Habilidades
   useEffect(() => {
-    if (activeDropdown !== 'habilidades' && bnccSearch.length < 2) { setBnccResults([]); return }
+    if (activeDropdown !== 'habilidades' && bnccSearch.trim().length < 2) { setBnccResults([]); return }
+    const isInitial = bnccSearch === ' '
     const timer = setTimeout(async () => {
-      if (bnccSearch.length < 2 && activeDropdown !== 'habilidades') { setBnccResults([]); return }
       setSearchingBNCC(true)
       try {
         const query = new URLSearchParams({ q: bnccSearch.trim() })
@@ -137,13 +137,14 @@ export const LessonPlanPage: React.FC = () => {
         setBnccResults(results)
       } catch (e) { console.error(e) }
       finally { setSearchingBNCC(false) }
-    }, bnccSearch ? 400 : 0)
+    }, isInitial ? 0 : 400)
     return () => clearTimeout(timer)
   }, [bnccSearch, currentPlan?.subject, activeDropdown])
 
   // Busca assíncrona da BNCC: Gerais
   useEffect(() => {
-    if (activeDropdown !== 'gerais' && genCompSearch.length < 2) { setGenCompResults([]); return }
+    if (activeDropdown !== 'gerais' && genCompSearch.trim().length < 2) { setGenCompResults([]); return }
+    const isInitial = genCompSearch === ' '
     const timer = setTimeout(async () => {
       setSearchingGen(true)
       try {
@@ -152,13 +153,14 @@ export const LessonPlanPage: React.FC = () => {
         setGenCompResults(results)
       } catch (e) { console.error(e) }
       finally { setSearchingGen(false) }
-    }, genCompSearch ? 400 : 0)
+    }, isInitial ? 0 : 400)
     return () => clearTimeout(timer)
   }, [genCompSearch, activeDropdown])
 
   // Busca assíncrona da BNCC: Específicas
   useEffect(() => {
-    if (activeDropdown !== 'especificas' && specCompSearch.length < 2) { setSpecCompResults([]); return }
+    if (activeDropdown !== 'especificas' && specCompSearch.trim().length < 2) { setSpecCompResults([]); return }
+    const isInitial = specCompSearch === ' '
     const timer = setTimeout(async () => {
       setSearchingSpec(true)
       try {
@@ -167,7 +169,7 @@ export const LessonPlanPage: React.FC = () => {
         setSpecCompResults(results)
       } catch (e) { console.error(e) }
       finally { setSearchingSpec(false) }
-    }, specCompSearch ? 400 : 0)
+    }, isInitial ? 0 : 400)
     return () => clearTimeout(timer)
   }, [specCompSearch, activeDropdown])
 
@@ -273,10 +275,15 @@ export const LessonPlanPage: React.FC = () => {
             type="text" 
             className="input" 
             placeholder={placeholder}
-            value={search.trim()}
+            value={search}
             onChange={e => setSearch(e.target.value)}
-            onClick={() => setActiveDropdown(dropdownKey)}
-            style={{ width: '100%' }}
+            onClick={(e) => { e.stopPropagation(); setActiveDropdown(dropdownKey) }}
+            style={{ 
+              width: '100%', 
+              position: 'relative', 
+              zIndex: isOpen ? 201 : 1,
+              backgroundColor: 'white'
+            }}
           />
           {searching && (
             <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
