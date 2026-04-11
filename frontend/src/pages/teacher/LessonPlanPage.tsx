@@ -835,28 +835,43 @@ const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange
   )
 }
 
-const FormGroup = ({ label, value, onChange, placeholder, height = '120px', isMobile }: any) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.45rem' : '0.65rem' }}>
-    <label style={{
-      fontSize: isMobile ? '0.8rem' : '0.9rem', 
-      fontWeight: 850, color: 'hsl(var(--text))',
-      textTransform: 'uppercase', letterSpacing: '0.05em', 
-      marginLeft: isMobile ? '0.2rem' : '0.3rem',
-      opacity: 0.8
-    }}>{label}</label>
-    <textarea
-      className="input"
-      placeholder={placeholder}
-      style={{
-        minHeight: isMobile ? '80px' : height, 
-        width: '100%', 
-        padding: isMobile ? '1rem 1.25rem' : '1.25rem 1.5rem',
-        resize: 'vertical', lineHeight: 1.6, backgroundColor: 'white',
-        fontSize: isMobile ? '0.95rem' : '1.1rem', 
-        borderRadius: isMobile ? '16px' : '20px'
-      }}
-      value={value}
-      onChange={e => onChange(e.target.value)}
-    />
-  </div>
-)
+const FormGroup = ({ label, value, onChange, placeholder, height = '120px', isMobile }: any) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }, [value])
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.45rem' : '0.65rem' }}>
+      <label style={{
+        fontSize: isMobile ? '0.8rem' : '0.9rem', 
+        fontWeight: 850, color: 'hsl(var(--text))',
+        textTransform: 'uppercase', letterSpacing: '0.05em', 
+        marginLeft: isMobile ? '0.2rem' : '0.3rem',
+        opacity: 0.8
+      }}>{label}</label>
+      <textarea
+        ref={textareaRef}
+        className="input"
+        placeholder={placeholder}
+        style={{
+          minHeight: isMobile ? '80px' : height, 
+          width: '100%', 
+          padding: isMobile ? '1rem 1.25rem' : '1.25rem 1.5rem',
+          resize: 'none', 
+          lineHeight: 1.6, 
+          backgroundColor: 'white',
+          fontSize: isMobile ? '0.95rem' : '1.1rem', 
+          borderRadius: isMobile ? '16px' : '20px',
+          overflow: 'hidden'
+        }}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+      />
+    </div>
+  )
+}
