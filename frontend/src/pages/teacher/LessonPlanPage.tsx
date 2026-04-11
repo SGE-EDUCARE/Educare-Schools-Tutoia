@@ -154,7 +154,10 @@ export const LessonPlanPage: React.FC = () => {
   // Busca assíncrona da BNCC: Específicas
   useEffect(() => {
     const timer = setTimeout(async () => {
-      if (specCompSearch.length < 2) { setSpecCompResults([]); return }
+      if (specCompSearch.length < 1) { setSpecCompResults([]); return }
+      // Para o caso do 'espaço' no onFocus, permitimos busca mesmo com length 1
+      if (specCompSearch.length < 2 && specCompSearch !== ' ') { setSpecCompResults([]); return }
+      
       setSearchingSpec(true)
       try {
         const query = new URLSearchParams({ q: specCompSearch })
@@ -162,7 +165,7 @@ export const LessonPlanPage: React.FC = () => {
         setSpecCompResults(results)
       } catch (e) { console.error(e) }
       finally { setSearchingSpec(false) }
-    }, 400)
+    }, specCompSearch === ' ' ? 0 : 400)
     return () => clearTimeout(timer)
   }, [specCompSearch])
 
