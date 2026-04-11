@@ -83,6 +83,9 @@ export const LessonPlanPage: React.FC = () => {
   const [openBimester, setOpenBimester] = useState(false)
   const [openMonth, setOpenMonth] = useState(false)
 
+  // Controle explícito de qual dropdown BNCC está aberto
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+
   const emptyPlan = (): LessonPlan => ({
     date: new Date().toISOString().split('T')[0],
     subject: '',
@@ -123,9 +126,9 @@ export const LessonPlanPage: React.FC = () => {
 
   // Busca assíncrona da BNCC: Habilidades
   useEffect(() => {
+    if (activeDropdown !== 'habilidades' && bnccSearch.length < 2) { setBnccResults([]); return }
     const timer = setTimeout(async () => {
-      if (bnccSearch.length < 1) { setBnccResults([]); return }
-      if (bnccSearch.length < 2 && bnccSearch !== ' ') { setBnccResults([]); return }
+      if (bnccSearch.length < 2 && activeDropdown !== 'habilidades') { setBnccResults([]); return }
       setSearchingBNCC(true)
       try {
         const query = new URLSearchParams({ q: bnccSearch.trim() })
@@ -134,12 +137,13 @@ export const LessonPlanPage: React.FC = () => {
         setBnccResults(results)
       } catch (e) { console.error(e) }
       finally { setSearchingBNCC(false) }
-    }, bnccSearch === ' ' ? 0 : 400)
+    }, bnccSearch ? 400 : 0)
     return () => clearTimeout(timer)
-  }, [bnccSearch, currentPlan?.subject])
+  }, [bnccSearch, currentPlan?.subject, activeDropdown])
 
-  // Busca assíncrona da BNCC: Gerais (Puxa as 10 iniciais também)
+  // Busca assíncrona da BNCC: Gerais
   useEffect(() => {
+    if (activeDropdown !== 'gerais' && genCompSearch.length < 2) { setGenCompResults([]); return }
     const timer = setTimeout(async () => {
       setSearchingGen(true)
       try {
@@ -150,15 +154,12 @@ export const LessonPlanPage: React.FC = () => {
       finally { setSearchingGen(false) }
     }, genCompSearch ? 400 : 0)
     return () => clearTimeout(timer)
-  }, [genCompSearch])
+  }, [genCompSearch, activeDropdown])
 
   // Busca assíncrona da BNCC: Específicas
   useEffect(() => {
+    if (activeDropdown !== 'especificas' && specCompSearch.length < 2) { setSpecCompResults([]); return }
     const timer = setTimeout(async () => {
-      if (specCompSearch.length < 1) { setSpecCompResults([]); return }
-      // Para o caso do 'espaço' no onFocus, permitimos busca mesmo com length 1
-      if (specCompSearch.length < 2 && specCompSearch !== ' ') { setSpecCompResults([]); return }
-      
       setSearchingSpec(true)
       try {
         const query = new URLSearchParams({ q: specCompSearch.trim() })
@@ -166,9 +167,16 @@ export const LessonPlanPage: React.FC = () => {
         setSpecCompResults(results)
       } catch (e) { console.error(e) }
       finally { setSearchingSpec(false) }
-    }, specCompSearch === ' ' ? 0 : 400)
+    }, specCompSearch ? 400 : 0)
     return () => clearTimeout(timer)
-  }, [specCompSearch])
+  }, [specCompSearch, activeDropdown])
+
+  // Carrega resultados iniciais quando abre um dropdown
+  useEffect(() => {
+    if (activeDropdown === 'gerais' && genCompSearch === '') setGenCompSearch(' ')
+    if (activeDropdown === 'especificas' && specCompSearch === '') setSpecCompSearch(' ')
+    if (activeDropdown === 'habilidades' && bnccSearch === '') setBnccSearch(' ')
+  }, [activeDropdown])
 
   const handleCreateNew = () => {
     const fresh = emptyPlan()
@@ -237,13 +245,9 @@ export const LessonPlanPage: React.FC = () => {
     </div>
   )
 
-  // Fecha todos os dropdowns BNCC de uma vez
-  const closeAllBnccDropdowns = () => {
-    setBnccSearch(''); setGenCompSearch(''); setSpecCompSearch('')
-  }
-
   // Auxiliar para buscadores BNCC
   const renderMultiselect = (
+    dropdownKey: string,
     label: string, 
     placeholder: string, 
     search: string, 
@@ -254,7 +258,8 @@ export const LessonPlanPage: React.FC = () => {
     onAdd: (item: any) => void,
     onRemove: (id: string) => void
   ) => {
-    const showResults = search.length > 0 && results.length > 0
+    const isOpen = activeDropdown === dropdownKey
+    const showResults = isOpen && results.length > 0
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
@@ -268,13 +273,9 @@ export const LessonPlanPage: React.FC = () => {
             type="text" 
             className="input" 
             placeholder={placeholder}
-            value={search === ' ' ? '' : search}
+            value={search.trim()}
             onChange={e => setSearch(e.target.value)}
-            onFocus={() => {
-              closeAllBnccDropdowns()
-              setTimeout(() => setSearch(' '), 50)
-            }}
-            onBlur={() => setTimeout(() => setSearch(''), 250)}
+            onClick={() => setActiveDropdown(dropdownKey)}
             style={{ width: '100%' }}
           />
           {searching && (
@@ -284,37 +285,44 @@ export const LessonPlanPage: React.FC = () => {
           )}
           
           {showResults && (
-            <div style={{
-              position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
-              backgroundColor: 'white', borderRadius: '12px',
-              boxShadow: '0 8px 32px -4px rgba(0,0,0,0.18)',
-              zIndex: 200, border: '1px solid hsl(var(--border) / 0.4)',
-              overflowY: 'auto', maxHeight: '260px',
-              WebkitOverflowScrolling: 'touch'
-            }}>
-              {results.map(res => (
-                <div
-                  key={res.id}
-                  onMouseDown={(e) => { e.preventDefault(); onAdd(res); setSearch('') }}
-                  style={{ 
-                    padding: '0.75rem 1rem', cursor: 'pointer',
-                    borderBottom: '1px solid hsl(var(--border) / 0.15)',
-                    minHeight: '44px', display: 'flex', flexDirection: 'column', justifyContent: 'center'
-                  }}
-                >
-                  <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.78rem' }}>
-                    {res.number ? `${res.number}. ` : ''}
-                    {res.code ? `[${res.code}] ` : ''}
-                    {res.title || ''}
+            <>
+              {/* Overlay para fechar ao clicar fora */}
+              <div 
+                style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 199 }} 
+                onClick={() => { setActiveDropdown(null); setSearch('') }}
+              />
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
+                backgroundColor: 'white', borderRadius: '12px',
+                boxShadow: '0 8px 32px -4px rgba(0,0,0,0.18)',
+                zIndex: 200, border: '1px solid hsl(var(--border) / 0.4)',
+                overflowY: 'auto', maxHeight: '260px',
+                WebkitOverflowScrolling: 'touch'
+              }}>
+                {results.map(res => (
+                  <div
+                    key={res.id}
+                    onClick={() => { onAdd(res); setSearch('') }}
+                    style={{ 
+                      padding: '0.75rem 1rem', cursor: 'pointer',
+                      borderBottom: '1px solid hsl(var(--border) / 0.15)',
+                      minHeight: '44px', display: 'flex', flexDirection: 'column', justifyContent: 'center'
+                    }}
+                  >
+                    <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.78rem' }}>
+                      {res.number ? `${res.number}. ` : ''}
+                      {res.code ? `[${res.code}] ` : ''}
+                      {res.title || ''}
+                    </div>
+                    <div style={{
+                      fontSize: '0.72rem', fontWeight: 500, color: 'hsl(var(--text))',
+                      marginTop: '0.15rem', lineHeight: 1.35,
+                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                    }}>{res.description}</div>
                   </div>
-                  <div style={{
-                    fontSize: '0.72rem', fontWeight: 500, color: 'hsl(var(--text))',
-                    marginTop: '0.15rem', lineHeight: 1.35,
-                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
-                  }}>{res.description}</div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
 
@@ -451,7 +459,7 @@ export const LessonPlanPage: React.FC = () => {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }} className="grid-mobile-1">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   {renderMultiselect(
-                    "Competências Gerais", "Pesquise ou selecione da lista...",
+                    "gerais", "Competências Gerais", "Pesquise ou selecione da lista...",
                     genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects,
                     (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]); setGenCompSearch(''); } },
                     (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }
@@ -460,7 +468,7 @@ export const LessonPlanPage: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   {renderMultiselect(
-                    "Competências Específicas", "Busque por tema ou área...",
+                    "especificas", "Competências Específicas", "Busque por tema ou área...",
                     specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects,
                     (it) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]); setSpecCompSearch(''); } },
                     (id) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }
@@ -477,7 +485,7 @@ export const LessonPlanPage: React.FC = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <FormGroup label="Objeto(s) de Conhecimento" placeholder="Conteúdos do bimestre..." value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="110px" />
                   {renderMultiselect(
-                    "Habilidades (BNCC)", "Pesquise por código ou descrição...",
+                    "habilidades", "Habilidades (BNCC)", "Pesquise por código ou descrição...",
                     bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects,
                     (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]); setBnccSearch(''); } },
                     (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }
