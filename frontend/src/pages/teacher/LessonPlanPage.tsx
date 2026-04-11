@@ -129,8 +129,6 @@ export const LessonPlanPage: React.FC = () => {
     const isActive = activeDropdown === 'habilidades'
     if (!isActive && bnccSearch.trim().length < 2) { setBnccResults([]); return }
     
-    // Se estiver ativo mas vazio, busca instantânea. Se estiver digitando, debounce.
-    const isInitial = isActive && bnccSearch === ''
     const timer = setTimeout(async () => {
       setSearchingBNCC(true)
       try {
@@ -140,7 +138,7 @@ export const LessonPlanPage: React.FC = () => {
         setBnccResults(results)
       } catch (e) { console.error(e) }
       finally { setSearchingBNCC(false) }
-    }, isInitial ? 0 : 400)
+    }, isActive && bnccSearch === '' ? 0 : 400)
     return () => clearTimeout(timer)
   }, [bnccSearch, currentPlan?.subject, activeDropdown])
 
@@ -149,7 +147,6 @@ export const LessonPlanPage: React.FC = () => {
     const isActive = activeDropdown === 'gerais'
     if (!isActive && genCompSearch.trim().length < 2) { setGenCompResults([]); return }
     
-    const isInitial = isActive && genCompSearch === ''
     const timer = setTimeout(async () => {
       setSearchingGen(true)
       try {
@@ -158,7 +155,7 @@ export const LessonPlanPage: React.FC = () => {
         setGenCompResults(results)
       } catch (e) { console.error(e) }
       finally { setSearchingGen(false) }
-    }, isInitial ? 0 : 400)
+    }, isActive && genCompSearch === '' ? 0 : 400)
     return () => clearTimeout(timer)
   }, [genCompSearch, activeDropdown])
 
@@ -167,7 +164,6 @@ export const LessonPlanPage: React.FC = () => {
     const isActive = activeDropdown === 'especificas'
     if (!isActive && specCompSearch.trim().length < 2) { setSpecCompResults([]); return }
     
-    const isInitial = isActive && specCompSearch === ''
     const timer = setTimeout(async () => {
       setSearchingSpec(true)
       try {
@@ -176,7 +172,7 @@ export const LessonPlanPage: React.FC = () => {
         setSpecCompResults(results)
       } catch (e) { console.error(e) }
       finally { setSearchingSpec(false) }
-    }, isInitial ? 0 : 400)
+    }, isActive && specCompSearch === '' ? 0 : 400)
     return () => clearTimeout(timer)
   }, [specCompSearch, activeDropdown])
 
@@ -279,59 +275,51 @@ export const LessonPlanPage: React.FC = () => {
             placeholder={placeholder}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            onClick={(e) => { e.stopPropagation(); setActiveDropdown(dropdownKey) }}
+            onFocus={() => setActiveDropdown(dropdownKey)}
+            onBlur={() => setTimeout(() => setActiveDropdown(null), 250)}
             style={{ 
               width: '100%', 
-              position: 'relative', 
-              zIndex: isOpen ? 201 : 1,
               backgroundColor: 'white'
             }}
           />
           {searching && (
-            <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
+            <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', zIndex: 10 }}>
               <Loader2 size={16} className="animate-spin" color="hsl(var(--primary))" />
             </div>
           )}
           
           {showResults && (
-            <>
-              {/* Overlay para fechar ao clicar fora */}
-              <div 
-                style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 199 }} 
-                onClick={() => { setActiveDropdown(null); setSearch('') }}
-              />
-              <div style={{
-                position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
-                backgroundColor: 'white', borderRadius: '12px',
-                boxShadow: '0 8px 32px -4px rgba(0,0,0,0.18)',
-                zIndex: 200, border: '1px solid hsl(var(--border) / 0.4)',
-                overflowY: 'auto', maxHeight: '260px',
-                WebkitOverflowScrolling: 'touch'
-              }}>
-                {results.map(res => (
-                  <div
-                    key={res.id}
-                    onClick={() => { onAdd(res); setSearch(''); setActiveDropdown(null) }}
-                    style={{ 
-                      padding: '0.75rem 1rem', cursor: 'pointer',
-                      borderBottom: '1px solid hsl(var(--border) / 0.15)',
-                      minHeight: '44px', display: 'flex', flexDirection: 'column', justifyContent: 'center'
-                    }}
-                  >
-                    <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.78rem' }}>
-                      {res.number ? `${res.number}. ` : ''}
-                      {res.code ? `[${res.code}] ` : ''}
-                      {res.title || ''}
-                    </div>
-                    <div style={{
-                      fontSize: '0.72rem', fontWeight: 500, color: 'hsl(var(--text))',
-                      marginTop: '0.15rem', lineHeight: 1.35,
-                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
-                    }}>{res.description}</div>
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
+              backgroundColor: 'white', borderRadius: '12px',
+              boxShadow: '0 8px 32px -4px rgba(0,0,0,0.18)',
+              zIndex: 500, border: '1px solid hsl(var(--border) / 0.4)',
+              overflowY: 'auto', maxHeight: '260px',
+              WebkitOverflowScrolling: 'touch'
+            }}>
+              {results.map(res => (
+                <div
+                  key={res.id}
+                  onClick={() => { onAdd(res); setSearch(''); setActiveDropdown(null) }}
+                  style={{ 
+                    padding: '0.75rem 1rem', cursor: 'pointer',
+                    borderBottom: '1px solid hsl(var(--border) / 0.15)',
+                    minHeight: '44px', display: 'flex', flexDirection: 'column', justifyContent: 'center'
+                  }}
+                >
+                  <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.78rem' }}>
+                    {res.number ? `${res.number}. ` : ''}
+                    {res.code ? `[${res.code}] ` : ''}
+                    {res.title || ''}
                   </div>
-                ))}
-              </div>
-            </>
+                  <div style={{
+                    fontSize: '0.72rem', fontWeight: 500, color: 'hsl(var(--text))',
+                    marginTop: '0.15rem', lineHeight: 1.35,
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                  }}>{res.description}</div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
