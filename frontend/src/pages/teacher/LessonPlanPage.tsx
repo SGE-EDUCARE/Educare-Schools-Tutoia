@@ -124,16 +124,17 @@ export const LessonPlanPage: React.FC = () => {
   // Busca assíncrona da BNCC: Habilidades
   useEffect(() => {
     const timer = setTimeout(async () => {
-      if (bnccSearch.length < 2) { setBnccResults([]); return }
+      if (bnccSearch.length < 1) { setBnccResults([]); return }
+      if (bnccSearch.length < 2 && bnccSearch !== ' ') { setBnccResults([]); return }
       setSearchingBNCC(true)
       try {
-        const query = new URLSearchParams({ q: bnccSearch })
+        const query = new URLSearchParams({ q: bnccSearch.trim() })
         if (currentPlan?.subject) query.append('subject', currentPlan.subject)
         const results = await api(`/teacher/bncc/search?${query.toString()}`)
         setBnccResults(results)
       } catch (e) { console.error(e) }
       finally { setSearchingBNCC(false) }
-    }, 400)
+    }, bnccSearch === ' ' ? 0 : 400)
     return () => clearTimeout(timer)
   }, [bnccSearch, currentPlan?.subject])
 
@@ -142,7 +143,7 @@ export const LessonPlanPage: React.FC = () => {
     const timer = setTimeout(async () => {
       setSearchingGen(true)
       try {
-        const query = new URLSearchParams({ q: genCompSearch })
+        const query = new URLSearchParams({ q: genCompSearch.trim() })
         const results = await api(`/teacher/bncc/general-search?${query.toString()}`)
         setGenCompResults(results)
       } catch (e) { console.error(e) }
@@ -160,7 +161,7 @@ export const LessonPlanPage: React.FC = () => {
       
       setSearchingSpec(true)
       try {
-        const query = new URLSearchParams({ q: specCompSearch })
+        const query = new URLSearchParams({ q: specCompSearch.trim() })
         const results = await api(`/teacher/bncc/specific-search?${query.toString()}`)
         setSpecCompResults(results)
       } catch (e) { console.error(e) }
@@ -236,8 +237,7 @@ export const LessonPlanPage: React.FC = () => {
     </div>
   )
 
-
-  // Auxiliar para buscadores
+  // Auxiliar para buscadores BNCC
   const renderMultiselect = (
     label: string, 
     placeholder: string, 
@@ -248,80 +248,110 @@ export const LessonPlanPage: React.FC = () => {
     selected: any[],
     onAdd: (item: any) => void,
     onRemove: (id: string) => void
-  ) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-      <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginLeft: '0.2rem' }}>{label}</label>
-      <div className="input-container" style={{ position: 'relative' }}>
-        <input 
-          type="text" 
-          className="input" 
-          placeholder={placeholder}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          onFocus={() => { 
-            if ((label.includes('Gerais') || label.includes('Específicas')) && search === '') {
-              setSearch(' ') // Espaço para disparar busca de todas ao focar
-            }
-          }} 
-          onBlur={() => setTimeout(() => setSearch(''), 200)} // Limpa para fechar, mas com delay para o clique funcionar
-          style={{ width: '100%' }}
-        />
-        {searching && (
-          <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
-            <Loader2 size={16} className="animate-spin" color="hsl(var(--primary))" />
-          </div>
-        )}
-        
-        {results.length > 0 && search !== '' && (
-          <div style={{
-            position: 'absolute', top: '105%', left: 0, right: 0, backgroundColor: 'white',
-            borderRadius: '12px', boxShadow: '0 12px 30px -4px rgba(0,0,0,0.2)',
-            zIndex: 100, border: '1px solid hsl(var(--border) / 0.5)', overflowY: 'auto', maxHeight: '300px'
-          }}>
-            {results.map(res => (
-              <div key={res.id} onMouseDown={() => onAdd(res)} style={{ 
-                padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid hsl(var(--border) / 0.2)',
-                transition: 'background 0.2s'
-              }} className="search-result-item">
-                <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.8rem' }}>
-                  {res.number ? `${res.number}. ` : ''}
-                  {res.code ? `[${res.code}] ` : ''}
-                  {res.title || ''}
+  ) => {
+    const isOpen = search.length > 0
+    const showResults = isOpen && results.length > 0
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+        <label style={{
+          fontSize: '0.7rem', fontWeight: 800, color: 'hsl(var(--text-light))',
+          textTransform: 'uppercase', letterSpacing: '0.04em', marginLeft: '0.15rem'
+        }}>{label}</label>
+
+        <div style={{ position: 'relative' }}>
+          <input 
+            type="text" 
+            className="input" 
+            placeholder={placeholder}
+            value={search === ' ' ? '' : search}
+            onChange={e => setSearch(e.target.value || ' ')}
+            onFocus={() => { if (search === '') setSearch(' ') }}
+            onBlur={() => setTimeout(() => setSearch(''), 300)}
+            style={{ width: '100%' }}
+          />
+          {searching && (
+            <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
+              <Loader2 size={16} className="animate-spin" color="hsl(var(--primary))" />
+            </div>
+          )}
+          
+          {showResults && (
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
+              backgroundColor: 'white', borderRadius: '12px',
+              boxShadow: '0 8px 32px -4px rgba(0,0,0,0.18)',
+              zIndex: 200, border: '1px solid hsl(var(--border) / 0.4)',
+              overflowY: 'auto', maxHeight: '260px',
+              WebkitOverflowScrolling: 'touch'
+            }}>
+              {results.map(res => (
+                <div
+                  key={res.id}
+                  onMouseDown={(e) => { e.preventDefault(); onAdd(res) }}
+                  onTouchEnd={(e) => { e.preventDefault(); onAdd(res) }}
+                  style={{ 
+                    padding: '0.75rem 1rem', cursor: 'pointer',
+                    borderBottom: '1px solid hsl(var(--border) / 0.15)',
+                    minHeight: '44px', display: 'flex', flexDirection: 'column', justifyContent: 'center'
+                  }}
+                >
+                  <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.78rem' }}>
+                    {res.number ? `${res.number}. ` : ''}
+                    {res.code ? `[${res.code}] ` : ''}
+                    {res.title || ''}
+                  </div>
+                  <div style={{
+                    fontSize: '0.72rem', fontWeight: 500, color: 'hsl(var(--text))',
+                    marginTop: '0.15rem', lineHeight: 1.35,
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                  }}>{res.description}</div>
                 </div>
-                <div style={{ fontSize: '0.75rem', fontWeight: 500, color: 'hsl(var(--text))', marginTop: '0.1rem', lineHeight: 1.3 }}>{res.description}</div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {selected.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.4rem' }}>
+            {selected.map(item => (
+              <div key={item.id} style={{ 
+                backgroundColor: 'hsl(var(--primary) / 0.04)', color: 'hsl(var(--text))', 
+                padding: '0.7rem 0.85rem', borderRadius: '10px', fontSize: '0.78rem',
+                display: 'flex', gap: '0.6rem', alignItems: 'flex-start',
+                border: '1px solid hsl(var(--primary) / 0.1)',
+                position: 'relative', minHeight: '44px'
+              }}>
+                <span style={{ 
+                  backgroundColor: 'hsl(var(--primary))', color: 'white', 
+                  padding: '0.15rem 0.4rem', borderRadius: '4px', fontSize: '0.6rem', 
+                  fontWeight: 900, whiteSpace: 'nowrap', flexShrink: 0, marginTop: '0.1rem'
+                }}>
+                  {item.number || item.code || 'BNCC'}
+                </span>
+                <div style={{ fontWeight: 500, lineHeight: 1.4, flex: 1, paddingRight: '1.5rem', fontSize: '0.75rem' }}>
+                  {item.title && <span style={{ fontWeight: 800, color: 'hsl(var(--primary))', display: 'block', marginBottom: '0.1rem' }}>{item.title}</span>}
+                  {item.description}
+                </div>
+                <button 
+                  onClick={() => onRemove(item.id)} 
+                  style={{
+                    position: 'absolute', right: '0.5rem', top: '0.5rem',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    color: 'hsl(var(--error))', opacity: 0.45, padding: '4px',
+                    minWidth: '28px', minHeight: '28px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}
+                >
+                  <Trash2 size={13} />
+                </button>
               </div>
             ))}
           </div>
         )}
       </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.5rem' }}>
-        {selected.map(item => (
-          <div key={item.id} style={{ 
-            backgroundColor: 'hsl(var(--primary) / 0.05)', color: 'hsl(var(--text))', 
-            padding: '0.8rem 1rem', borderRadius: '10px', fontSize: '0.8rem',
-            display: 'flex', gap: '0.8rem', border: '1px solid hsl(var(--primary) / 0.1)',
-            position: 'relative'
-          }}>
-            <div style={{ 
-              backgroundColor: 'hsl(var(--primary))', color: 'white', 
-              padding: '0.15rem 0.4rem', borderRadius: '4px', fontSize: '0.65rem', 
-              fontWeight: 900, height: 'fit-content', whiteSpace: 'nowrap'
-            }}>
-              {item.number || item.code || 'BNCC'}
-            </div>
-            <div style={{ fontWeight: 500, lineHeight: 1.4, flex: 1, paddingRight: '1rem' }}>
-              {item.title && <span style={{ fontWeight: 800, color: 'hsl(var(--primary))', display: 'block', marginBottom: '0.2rem' }}>{item.title}</span>}
-              {item.description}
-            </div>
-            <button onClick={() => onRemove(item.id)} style={{ position: 'absolute', right: '0.6rem', top: '0.6rem', background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--destructive))', opacity: 0.5 }}>
-              <Trash2 size={14} />
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
+    )
+  }
 
   /* ——— Section Card wrapper ——— */
   const SectionCard = ({ icon, title, accent, children }: { icon: React.ReactNode; title: string; accent?: string; children: React.ReactNode }) => (
