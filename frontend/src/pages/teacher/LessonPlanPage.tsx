@@ -246,8 +246,7 @@ export const LessonPlanPage: React.FC = () => {
     selected: any[],
     onAdd: (item: any) => void,
     onRemove: (id: string) => void,
-    titleKey: string = 'code',
-    descKey: string = 'description'
+    titleField: 'code' | 'title' | 'number' = 'code'
   ) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
       <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginLeft: '0.2rem' }}>{label}</label>
@@ -258,7 +257,10 @@ export const LessonPlanPage: React.FC = () => {
           placeholder={placeholder}
           value={search}
           onChange={e => setSearch(e.target.value)}
-          onFocus={() => { if(label.includes('Gerais')) setSearch('') }} // Trigger general comp list
+          onFocus={() => { 
+            if(label.includes('Gerais') && search === '') setSearch(' ') // Espaço para disparar busca de todas
+          }} 
+          onBlur={() => setTimeout(() => setSearch(''), 200)} // Limpa para fechar, mas com delay para o clique funcionar
           style={{ padding: '0.75rem 1rem', borderRadius: '8px', width: '100%', backgroundColor: 'hsl(var(--background))' }}
         />
         {searching && (
@@ -267,19 +269,23 @@ export const LessonPlanPage: React.FC = () => {
           </div>
         )}
         
-        {results.length > 0 && (
+        {results.length > 0 && search !== '' && (
           <div style={{
             position: 'absolute', top: '105%', left: 0, right: 0, backgroundColor: 'white',
             borderRadius: '12px', boxShadow: '0 12px 30px -4px rgba(0,0,0,0.2)',
             zIndex: 100, border: '1px solid hsl(var(--border) / 0.5)', overflowY: 'auto', maxHeight: '300px'
           }}>
             {results.map(res => (
-              <div key={res.id} onClick={() => onAdd(res)} style={{ 
+              <div key={res.id} onMouseDown={() => onAdd(res)} style={{ 
                 padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid hsl(var(--border) / 0.2)',
                 transition: 'background 0.2s'
               }} className="search-result-item">
-                <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.8rem' }}>{res[titleKey] || res.number} {res.title}</div>
-                <div style={{ fontSize: '0.75rem', fontWeight: 500, color: 'hsl(var(--text))', marginTop: '0.1rem', lineHeight: 1.3 }}>{res[descKey]}</div>
+                <div style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '0.8rem' }}>
+                  {res.number ? `${res.number}. ` : ''}
+                  {res.code ? `[${res.code}] ` : ''}
+                  {res.title || ''}
+                </div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 500, color: 'hsl(var(--text))', marginTop: '0.1rem', lineHeight: 1.3 }}>{res.description}</div>
               </div>
             ))}
           </div>
@@ -290,21 +296,22 @@ export const LessonPlanPage: React.FC = () => {
         {selected.map(item => (
           <div key={item.id} style={{ 
             backgroundColor: 'hsl(var(--primary) / 0.05)', color: 'hsl(var(--text))', 
-            padding: '0.75rem 0.9rem', borderRadius: '10px', fontSize: '0.8rem',
+            padding: '0.8rem 1rem', borderRadius: '10px', fontSize: '0.8rem',
             display: 'flex', gap: '0.8rem', border: '1px solid hsl(var(--primary) / 0.1)',
             position: 'relative'
           }}>
             <div style={{ 
               backgroundColor: 'hsl(var(--primary))', color: 'white', 
               padding: '0.15rem 0.4rem', borderRadius: '4px', fontSize: '0.65rem', 
-              fontWeight: 900, height: 'fit-content'
+              fontWeight: 900, height: 'fit-content', whiteSpace: 'nowrap'
             }}>
-              {item[titleKey] || item.number || 'BNCC'}
+              {item.number || item.code || 'BNCC'}
             </div>
             <div style={{ fontWeight: 500, lineHeight: 1.4, flex: 1, paddingRight: '1rem' }}>
-              <span style={{ fontWeight: 700 }}>{item.title}</span> {item[descKey]}
+              {item.title && <span style={{ fontWeight: 800, color: 'hsl(var(--primary))', display: 'block', marginBottom: '0.2rem' }}>{item.title}</span>}
+              {item.description}
             </div>
-            <button onClick={() => onRemove(item.id)} style={{ position: 'absolute', right: '0.5rem', top: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--destructive))', opacity: 0.5 }}>
+            <button onClick={() => onRemove(item.id)} style={{ position: 'absolute', right: '0.6rem', top: '0.6rem', background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--destructive))', opacity: 0.5 }}>
               <Trash2 size={14} />
             </button>
           </div>
@@ -377,8 +384,7 @@ export const LessonPlanPage: React.FC = () => {
                     "Competências Gerais", "Pesquise por texto ou selecione da lista...",
                     genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects,
                     (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]); setGenCompSearch(''); } },
-                    (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) },
-                    'title'
+                    (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }
                   )}
                   <div style={{ marginTop: '1.5rem' }}>
                     <FormGroup label="Complemento (Competências Gerais)" placeholder="Adicione observações customizadas..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="80px" />
