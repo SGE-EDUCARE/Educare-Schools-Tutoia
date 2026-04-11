@@ -126,8 +126,11 @@ export const LessonPlanPage: React.FC = () => {
 
   // Busca assíncrona da BNCC: Habilidades
   useEffect(() => {
-    if (activeDropdown !== 'habilidades' && bnccSearch.trim().length < 2) { setBnccResults([]); return }
-    const isInitial = bnccSearch === ' '
+    const isActive = activeDropdown === 'habilidades'
+    if (!isActive && bnccSearch.trim().length < 2) { setBnccResults([]); return }
+    
+    // Se estiver ativo mas vazio, busca instantânea. Se estiver digitando, debounce.
+    const isInitial = isActive && bnccSearch === ''
     const timer = setTimeout(async () => {
       setSearchingBNCC(true)
       try {
@@ -143,8 +146,10 @@ export const LessonPlanPage: React.FC = () => {
 
   // Busca assíncrona da BNCC: Gerais
   useEffect(() => {
-    if (activeDropdown !== 'gerais' && genCompSearch.trim().length < 2) { setGenCompResults([]); return }
-    const isInitial = genCompSearch === ' '
+    const isActive = activeDropdown === 'gerais'
+    if (!isActive && genCompSearch.trim().length < 2) { setGenCompResults([]); return }
+    
+    const isInitial = isActive && genCompSearch === ''
     const timer = setTimeout(async () => {
       setSearchingGen(true)
       try {
@@ -159,8 +164,10 @@ export const LessonPlanPage: React.FC = () => {
 
   // Busca assíncrona da BNCC: Específicas
   useEffect(() => {
-    if (activeDropdown !== 'especificas' && specCompSearch.trim().length < 2) { setSpecCompResults([]); return }
-    const isInitial = specCompSearch === ' '
+    const isActive = activeDropdown === 'especificas'
+    if (!isActive && specCompSearch.trim().length < 2) { setSpecCompResults([]); return }
+    
+    const isInitial = isActive && specCompSearch === ''
     const timer = setTimeout(async () => {
       setSearchingSpec(true)
       try {
@@ -173,12 +180,7 @@ export const LessonPlanPage: React.FC = () => {
     return () => clearTimeout(timer)
   }, [specCompSearch, activeDropdown])
 
-  // Carrega resultados iniciais quando abre um dropdown
-  useEffect(() => {
-    if (activeDropdown === 'gerais' && genCompSearch === '') setGenCompSearch(' ')
-    if (activeDropdown === 'especificas' && specCompSearch === '') setSpecCompSearch(' ')
-    if (activeDropdown === 'habilidades' && bnccSearch === '') setBnccSearch(' ')
-  }, [activeDropdown])
+  // (Removido o truque do espaço em branco que causava glitch no texto)
 
   const handleCreateNew = () => {
     const fresh = emptyPlan()
