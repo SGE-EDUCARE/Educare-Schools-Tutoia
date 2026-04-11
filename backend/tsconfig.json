@@ -8,6 +8,7 @@
     // Environment Settings
     "module": "CommonJS",
     "moduleResolution": "Node",
+    "ignoreDeprecations": "5.0",
     "target": "esnext",
     "types": [],
     // For nodejs:
