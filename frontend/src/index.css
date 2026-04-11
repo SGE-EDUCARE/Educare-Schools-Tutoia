@@ -148,24 +148,31 @@ input, select, textarea {
 .input {
   width: 100%;
   padding: 0.875rem 1.25rem;
-  border: 2px solid hsl(var(--border));
+  border: 1.5px solid hsl(var(--border));
   border-radius: var(--radius-md);
   background-color: hsl(var(--surface));
   color: hsl(var(--text));
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   outline: none;
-  transition: var(--transition-all);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+}
+
+.input:hover {
+  border-color: hsl(var(--text-light) / 0.4);
 }
 
 .input:focus {
   border-color: hsl(var(--primary));
-  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.08);
+  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.12), var(--shadow-md);
+  background-color: #fff;
 }
 
 .input::placeholder {
   color: hsl(var(--text-light));
   font-weight: 400;
+  opacity: 0.7;
 }
 
 /* =================== BUTTON SYSTEM =================== */

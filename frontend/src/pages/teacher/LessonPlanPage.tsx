@@ -260,7 +260,7 @@ export const LessonPlanPage: React.FC = () => {
             if(label.includes('Gerais') && search === '') setSearch(' ') // Espaço para disparar busca de todas
           }} 
           onBlur={() => setTimeout(() => setSearch(''), 200)} // Limpa para fechar, mas com delay para o clique funcionar
-          style={{ padding: '0.75rem 1rem', borderRadius: '8px', width: '100%', backgroundColor: 'hsl(var(--background))' }}
+          style={{ width: '100%' }}
         />
         {searching && (
           <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
@@ -378,7 +378,7 @@ export const LessonPlanPage: React.FC = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2rem' }}>
                 
                 {/* Competências Gerais */}
-                <div style={{ backgroundColor: 'hsl(var(--background))', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.5)' }}>
+                <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.6)', boxShadow: 'var(--shadow-sm)' }}>
                   {renderMultiselect(
                     "Competências Gerais", "Pesquise por texto ou selecione da lista...",
                     genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects,
@@ -391,7 +391,7 @@ export const LessonPlanPage: React.FC = () => {
                 </div>
 
                 {/* Competências Específicas */}
-                <div style={{ backgroundColor: 'hsl(var(--background))', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.5)' }}>
+                <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.6)', boxShadow: 'var(--shadow-sm)' }}>
                   {renderMultiselect(
                     "Competências Específicas da Área", "Busque por tema ou área (ex: Matemática)...",
                     specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects,
@@ -415,7 +415,7 @@ export const LessonPlanPage: React.FC = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   <FormGroup label="Objeto(s) de Conhecimento" placeholder="Principais conteúdos do bimestre..." value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
-                  <div style={{ backgroundColor: 'hsl(var(--background))', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.5)' }}>
+                  <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.6)', boxShadow: 'var(--shadow-sm)' }}>
                     {renderMultiselect(
                       "Habilidades (BNCC - Dicionário)", "Pesquise por código (ex: EF09) ou descrição...",
                       bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects,
@@ -447,16 +447,14 @@ export const LessonPlanPage: React.FC = () => {
               </div>
             </div>
 
-            {/* BOTÕES DE AÇÃO */}
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
               <button 
                 onClick={handleSave} 
                 disabled={saving} 
+                className="btn btn-primary"
                 style={{
-                  flex: 2, height: '56px', background: gradient, color: 'white',
-                  borderRadius: '8px', fontSize: '1rem', fontWeight: 800,
+                  flex: 2, height: '56px', fontSize: '1rem', fontWeight: 800,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
-                  boxShadow: '0 12px 24px -8px hsl(var(--primary) / 0.4)', cursor: 'pointer', border: 'none',
                   opacity: saving ? 0.7 : 1
                 }}
               >
@@ -465,11 +463,8 @@ export const LessonPlanPage: React.FC = () => {
               <button 
                 onClick={() => setIsEditing(false)} 
                 disabled={saving}
-                style={{
-                  flex: 1, padding: '0 1.5rem', border: '2px solid hsl(var(--border))',
-                  background: 'transparent', color: 'hsl(var(--text-light))',
-                  borderRadius: '8px', fontWeight: 700, cursor: 'pointer'
-                }}
+                className="btn btn-secondary"
+                style={{ flex: 1, padding: '0 1.5rem' }}
               >
                 CANCELAR
               </button>
@@ -545,16 +540,24 @@ const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange
   const selectedLabel = options.find((o: any) => o.value === value)?.label || 'Selecione...'
   
   return (
-    <div className="card" style={{ 
-      padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', 
-      borderRadius: '8px', position: 'relative', cursor: 'pointer', height: '100%', width: '100%', justifyContent: 'center'
-    }} onClick={() => setIsOpen(!isOpen)}>
-      <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-        {icon || <Calendar size={10} />} {label}
+    <div 
+      className={`input ${isOpen ? 'active' : ''}`} 
+      style={{ 
+        padding: '0.6rem 1rem', display: 'flex', flexDirection: 'column', 
+        borderRadius: '10px', position: 'relative', cursor: 'pointer', height: '100%', 
+        width: '100%', justifyContent: 'center', minHeight: '60px',
+        borderColor: isOpen ? 'hsl(var(--primary))' : undefined,
+        boxShadow: isOpen ? '0 0 0 4px hsl(var(--primary) / 0.12)' : undefined,
+        backgroundColor: '#fff'
+      }} 
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.1rem' }}>
+        {icon || <Calendar size={11} />} {label}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'hsl(var(--text))' }}>{selectedLabel}</span>
-        <ChevronDown size={14} color="hsl(var(--text-light))" style={{ transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'none' }} />
+        <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'hsl(var(--text))' }}>{selectedLabel}</span>
+        <ChevronDown size={16} color="hsl(var(--text-light))" style={{ transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'none' }} />
       </div>
 
       {isOpen && (
@@ -587,7 +590,7 @@ const FormGroup = ({ label, value, onChange, placeholder, height = "100px" }: an
     <textarea 
       className="input" 
       placeholder={placeholder}
-      style={{ minHeight: height, width: '100%', borderRadius: '8px', padding: '1rem', background: 'hsl(var(--background))', border: '1px solid hsl(var(--border) / 0.3)' }}
+      style={{ minHeight: height, width: '100%', padding: '1rem' }}
       value={value}
       onChange={e => onChange(e.target.value)}
     />
