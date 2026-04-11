@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
@@ -326,7 +326,7 @@ export const LessonPlanPage: React.FC = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             onFocus={() => setActiveDropdown(dropdownKey)}
-            onBlur={(e) => {
+            onBlur={() => {
               // Pequeno delay para permitir o clique nos resultados
               setTimeout(() => {
                 setActiveDropdown(current => current === dropdownKey ? null : current)
