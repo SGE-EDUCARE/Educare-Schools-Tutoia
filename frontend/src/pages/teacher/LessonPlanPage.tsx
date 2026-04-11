@@ -233,7 +233,6 @@ export const LessonPlanPage: React.FC = () => {
     </div>
   )
 
-  const gradient = 'linear-gradient(135deg, #4318FF 0%, #7000FF 100%)'
 
   // Auxiliar para buscadores
   const renderMultiselect = (
@@ -394,7 +393,10 @@ export const LessonPlanPage: React.FC = () => {
                   )}
                   <FormGroup label="Complemento (Específicas)" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="80px" />
                 </div>
-                       {/* 3. DESENVOLVIMENTO MENSAL */}
+              </div>
+            </section>
+
+            {/* 3. DESENVOLVIMENTO MENSAL */}
             <section>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.2rem' }}>
                 <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'hsl(var(--primary) / 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
