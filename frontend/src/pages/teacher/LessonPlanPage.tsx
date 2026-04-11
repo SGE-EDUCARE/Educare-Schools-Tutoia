@@ -324,151 +324,140 @@ export const LessonPlanPage: React.FC = () => {
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.25rem 10rem' }}>
         
         {/* HEADER */}
-        <header style={{ padding: '1.5rem 0 2rem' }}>
-          <button onClick={() => isEditing ? setIsEditing(false) : navigate(-1)} style={{
-            display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'hsl(var(--primary))', fontSize: '0.8rem', fontWeight: 700,
-            marginBottom: '1rem', background: 'hsl(var(--primary) / 0.06)', padding: '0.5rem 0.9rem', borderRadius: '8px', cursor: 'pointer', border: 'none'
-          }}>
-            <ChevronLeft size={16} /> VOLTAR
-          </button>
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <h1 style={{ fontSize: '2rem', fontWeight: 900, color: 'hsl(var(--text))', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
-                {isEditing ? (currentPlan?.id ? 'Editar Plano' : 'Novo Plano Mensal') : 'Meus Planos de Aula'}
-              </h1>
-              <p style={{ fontSize: '0.9rem', fontWeight: 500, color: 'hsl(var(--text-light))', marginTop: '0.3rem' }}>
-                {isEditing ? 'Gestão pedagógica estruturada seguindo a BNCC.' : 'Gerencie seus planejamentos pedagógicos.'}
-              </p>
-            </div>
-            {!isEditing && (
-              <button onClick={handleCreateNew} style={{
-                background: gradient, color: 'white', padding: '0.75rem 1.5rem',
-                borderRadius: '8px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem',
-                boxShadow: '0 8px 20px -6px hsl(var(--primary) / 0.4)', cursor: 'pointer', border: 'none'
-              }}>
-                <Plus size={20} /> CRIAR NOVO PLANO
-              </button>
-            )}
+        <header style={{ padding: '1rem 0 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid hsl(var(--border) / 0.4)', marginBottom: '2rem' }}>
+          <div>
+            <button onClick={() => isEditing ? setIsEditing(false) : navigate(-1)} style={{
+              display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'hsl(var(--text-light))', fontSize: '0.75rem', fontWeight: 700,
+              background: 'none', padding: '0.4rem 0', cursor: 'pointer', border: 'none', transition: 'color 0.2s'
+            }} className="hover:text-primary">
+              <ChevronLeft size={14} /> VOLTAR
+            </button>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: 'hsl(var(--text))', letterSpacing: '-0.04em', lineHeight: 1.1, marginTop: '0.2rem' }}>
+              {isEditing ? (currentPlan?.id ? 'Editar Plano' : 'Novo Plano Mensal') : 'Meus Planos de Aula'}
+            </h1>
           </div>
+          
+          {!isEditing && (
+            <button onClick={handleCreateNew} className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', minHeight: 'auto' }}>
+              <Plus size={20} /> CRIAR NOVO PLANO
+            </button>
+          )}
         </header>
 
         {isEditing && currentPlan ? (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
             
-            {/* 1. IDENTIFICAÇÃO */}
-            <div className="card" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid hsl(var(--border) / 0.3)', paddingBottom: '0.75rem' }}>
-                <Calendar size={18} color="hsl(var(--primary))" />
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Identificação</h3>
+            {/* 1. IDENTIFICAÇÃO (Linha única elegante) */}
+            <section>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.2rem' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'hsl(var(--primary) / 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Calendar size={18} color="hsl(var(--primary))" />
+                </div>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Identificação do Plano</h3>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }} className="grid-mobile-1">
                 <CustomSelect label="Disciplina" value={currentPlan.subject} options={subjects.map(s => ({ value: s, label: s }))} isOpen={openSubject} setIsOpen={setOpenSubject} onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} />
                 <CustomSelect label="Bimestre" value={String(currentPlan.bimester)} options={bimesterOptions} isOpen={openBimester} setIsOpen={setOpenBimester} onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} />
                 <CustomSelect label="Mês de Referência" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} />
               </div>
-            </div>
+            </section>
 
-            {/* 2. BASE PEDAGÓGICA (Dicionários BNCC) */}
-            <div className="card" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid hsl(var(--border) / 0.3)', paddingBottom: '0.75rem' }}>
-                <Target size={18} color="hsl(var(--primary))" />
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Base Pedagógica (BNCC)</h3>
+            {/* 2. BASE PEDAGÓGICA (BNCC Desktop) */}
+            <section>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.2rem' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'hsl(var(--primary) / 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Target size={18} color="hsl(var(--primary))" />
+                </div>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Base Pedagógica (BNCC)</h3>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2rem' }}>
-                
-                {/* Competências Gerais */}
-                <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.6)', boxShadow: 'var(--shadow-sm)' }}>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="grid-mobile-1">
+                {/* Coluna 1: Gerais */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {renderMultiselect(
-                    "Competências Gerais", "Pesquise por texto ou selecione da lista...",
+                    "Competências Gerais", "Pesquise ou selecione da lista...",
                     genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects,
                     (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]); setGenCompSearch(''); } },
                     (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }
                   )}
-                  <div style={{ marginTop: '1.5rem' }}>
-                    <FormGroup label="Complemento (Competências Gerais)" placeholder="Adicione observações customizadas..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="80px" />
-                  </div>
+                  <FormGroup label="Complemento (Competências Gerais)" placeholder="Observações customizadas..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="80px" />
                 </div>
 
-                {/* Competências Específicas */}
-                <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.6)', boxShadow: 'var(--shadow-sm)' }}>
+                {/* Coluna 2: Específicas */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {renderMultiselect(
-                    "Competências Específicas da Área", "Busque por tema ou área (ex: Matemática)...",
+                    "Competências Específicas", "Busque por tema ou área...",
                     specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects,
                     (it) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]); setSpecCompSearch(''); } },
                     (id) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }
                   )}
-                  <div style={{ marginTop: '1.5rem' }}>
-                    <FormGroup label="Complemento (Específicas)" placeholder="Observações específicas não listadas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="80px" />
-                  </div>
+                  <FormGroup label="Complemento (Específicas)" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="80px" />
                 </div>
+                       {/* 3. DESENVOLVIMENTO MENSAL */}
+            <section>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.2rem' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'hsl(var(--primary) / 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <LayoutList size={18} color="hsl(var(--primary))" />
+                </div>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Desenvolvimento Mensal</h3>
               </div>
-            </div>
 
-            {/* 3. DESENVOLVIMENTO MENSAL */}
-            <div className="card" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid hsl(var(--border) / 0.3)', paddingBottom: '0.75rem' }}>
-                <LayoutList size={18} color="hsl(var(--primary))" />
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Desenvolvimento Mensal</h3>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <FormGroup label="Objeto(s) de Conhecimento" placeholder="Principais conteúdos do bimestre..." value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
-                  <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid hsl(var(--border) / 0.6)', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="grid-mobile-1">
+                {/* Coluna 1: O Que Ensinar */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                  <FormGroup label="Objeto(s) de Conhecimento" placeholder="Conteúdos do bimestre..." value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                     {renderMultiselect(
-                      "Habilidades (BNCC - Dicionário)", "Pesquise por código (ex: EF09) ou descrição...",
+                      "Habilidades (BNCC)", "Pesquise por código ou descrição...",
                       bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects,
                       (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]); setBnccSearch(''); } },
                       (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }
                     )}
-                    <div style={{ marginTop: '1rem' }}>
-                      <FormGroup label="Outras Habilidades (Personalizadas)" placeholder="Habilidades específicas do colégio..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
-                    </div>
+                    <FormGroup label="Outras Habilidades (Customizadas)" placeholder="Habilidades específicas..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {/* Coluna 2: Como e Quando Ensinar */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                   <FormGroup label="Cronograma (Conteúdos por Semana)" placeholder="Semana 1: ... | Semana 2: ..." value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="180px" />
-                  <FormGroup label="Metodologia (Procedimentos)" placeholder="Aulas expositivas, trabalhos em grupo..." value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="160px" />
+                  <FormGroup label="Metodologia (Procedimentos)" placeholder="Aulas expositivas, trabalhos..." value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="180px" />
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* 4. AVALIAÇÃO E RECURSOS */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-              <div className="card" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-                <FormGroup label="Procedimentos Avaliativos" placeholder="Como o desempenho será avaliado..." 
-                  value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} />
-              </div>
-              <div className="card" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-                <FormGroup label="Recursos e Referências" placeholder="Livros, quadro, internet, projetor..." 
-                  value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} />
-              </div>
-            </div>
+             {/* 4. AVALIAÇÃO E RECURSOS */}
+            <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="grid-mobile-1">
+              <FormGroup label="Procedimentos Avaliativos" placeholder="Como o desempenho será avaliado..." 
+                value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} height="120px" />
+              <FormGroup label="Recursos e Referências" placeholder="Livros, quadro, internet, projetor..." 
+                value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} height="120px" />
+            </section>
 
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            {/* BOTÕES DE AÇÃO (Rodapé Limpo) */}
+            <footer style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid hsl(var(--border) / 0.4)' }}>
+              <button 
+                onClick={() => setIsEditing(false)} 
+                disabled={saving}
+                className="btn btn-secondary"
+                style={{ padding: '0.8rem 2.5rem', fontWeight: 700 }}
+              >
+                CANCELAR
+              </button>
               <button 
                 onClick={handleSave} 
                 disabled={saving} 
                 className="btn btn-primary"
                 style={{
-                  flex: 2, height: '56px', fontSize: '1rem', fontWeight: 800,
+                  padding: '0.8rem 3rem', fontSize: '1rem', fontWeight: 800,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
                   opacity: saving ? 0.7 : 1
                 }}
               >
-                {saving ? <Loader2 className="animate-spin" size={24} /> : <><CheckCircle2 size={24} /> SALVAR PLANEJAMENTO</>}
+                {saving ? <Loader2 className="animate-spin" size={24} /> : <><CheckCircle2 size={22} /> SALVAR PLANEJAMENTO</>}
               </button>
-              <button 
-                onClick={() => setIsEditing(false)} 
-                disabled={saving}
-                className="btn btn-secondary"
-                style={{ flex: 1, padding: '0 1.5rem' }}
-              >
-                CANCELAR
-              </button>
-            </div>
+            </footer>
 
           </div>
         ) : (
