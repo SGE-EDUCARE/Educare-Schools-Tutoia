@@ -9,7 +9,6 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "target": "esnext",
-    "ignoreDeprecations": "6.0",
     "types": [],
     // For nodejs:
     // "lib": ["esnext"],
@@ -35,11 +34,9 @@
 
     // Recommended Options
     "strict": true,
-    "jsx": "react-jsx",
     "esModuleInterop": true,
     "verbatimModuleSyntax": false,
     "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true
   },
