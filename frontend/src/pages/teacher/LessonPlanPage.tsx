@@ -124,55 +124,105 @@ export const LessonPlanPage: React.FC = () => {
     fetchAllocations()
   }, [fetchPlans, fetchAllocations])
 
+  // Refs para controle de versão de requisição (evita race conditions)
+  const bnccRequestId = useRef(0)
+  const genRequestId = useRef(0)
+  const specRequestId = useRef(0)
+
   // Busca assíncrona da BNCC: Habilidades
   useEffect(() => {
     const isActive = activeDropdown === 'habilidades'
-    if (!isActive && bnccSearch.trim().length < 2) { setBnccResults([]); return }
+    const queryTerm = bnccSearch.trim()
+    
+    // Se não estiver ativo ou termo curto demais (e não for busca vazia ao abrir), limpa e sai
+    if (!isActive && queryTerm.length < 2) {
+      setBnccResults([])
+      return
+    }
+
+    const requestId = ++bnccRequestId.current
     
     const timer = setTimeout(async () => {
       setSearchingBNCC(true)
       try {
-        const query = new URLSearchParams({ q: bnccSearch.trim() })
-        if (currentPlan?.subject) query.append('subject', currentPlan.subject)
-        const results = await api(`/teacher/bncc/search?${query.toString()}`)
-        setBnccResults(results)
-      } catch (e) { console.error(e) }
-      finally { setSearchingBNCC(false) }
-    }, isActive && bnccSearch === '' ? 0 : 400)
+        const queryParams = new URLSearchParams({ q: queryTerm })
+        if (currentPlan?.subject) queryParams.append('subject', currentPlan.subject)
+        
+        const results = await api(`/teacher/bncc/search?${queryParams.toString()}`)
+        
+        if (requestId === bnccRequestId.current) {
+          setBnccResults(results)
+        }
+      } catch (e) {
+        if (requestId === bnccRequestId.current) console.error(e)
+      } finally {
+        if (requestId === bnccRequestId.current) setSearchingBNCC(false)
+      }
+    }, isActive && queryTerm === '' ? 0 : 400)
+
     return () => clearTimeout(timer)
   }, [bnccSearch, currentPlan?.subject, activeDropdown])
+
 
   // Busca assíncrona da BNCC: Gerais
   useEffect(() => {
     const isActive = activeDropdown === 'gerais'
-    if (!isActive && genCompSearch.trim().length < 2) { setGenCompResults([]); return }
-    
+    const queryTerm = genCompSearch.trim()
+
+    if (!isActive && queryTerm.length < 2) {
+      setGenCompResults([])
+      return
+    }
+
+    const requestId = ++genRequestId.current
+
     const timer = setTimeout(async () => {
       setSearchingGen(true)
       try {
-        const query = new URLSearchParams({ q: genCompSearch.trim() })
-        const results = await api(`/teacher/bncc/general-search?${query.toString()}`)
-        setGenCompResults(results)
-      } catch (e) { console.error(e) }
-      finally { setSearchingGen(false) }
-    }, isActive && genCompSearch === '' ? 0 : 400)
+        const queryParams = new URLSearchParams({ q: queryTerm })
+        const results = await api(`/teacher/bncc/general-search?${queryParams.toString()}`)
+        
+        if (requestId === genRequestId.current) {
+          setGenCompResults(results)
+        }
+      } catch (e) {
+        if (requestId === genRequestId.current) console.error(e)
+      } finally {
+        if (requestId === genRequestId.current) setSearchingGen(false)
+      }
+    }, isActive && queryTerm === '' ? 0 : 400)
+
     return () => clearTimeout(timer)
   }, [genCompSearch, activeDropdown])
 
   // Busca assíncrona da BNCC: Específicas
   useEffect(() => {
     const isActive = activeDropdown === 'especificas'
-    if (!isActive && specCompSearch.trim().length < 2) { setSpecCompResults([]); return }
-    
+    const queryTerm = specCompSearch.trim()
+
+    if (!isActive && queryTerm.length < 2) {
+      setSpecCompResults([])
+      return
+    }
+
+    const requestId = ++specRequestId.current
+
     const timer = setTimeout(async () => {
       setSearchingSpec(true)
       try {
-        const query = new URLSearchParams({ q: specCompSearch.trim() })
-        const results = await api(`/teacher/bncc/specific-search?${query.toString()}`)
-        setSpecCompResults(results)
-      } catch (e) { console.error(e) }
-      finally { setSearchingSpec(false) }
-    }, isActive && specCompSearch === '' ? 0 : 400)
+        const queryParams = new URLSearchParams({ q: queryTerm })
+        const results = await api(`/teacher/bncc/specific-search?${queryParams.toString()}`)
+        
+        if (requestId === specRequestId.current) {
+          setSpecCompResults(results)
+        }
+      } catch (e) {
+        if (requestId === specRequestId.current) console.error(e)
+      } finally {
+        if (requestId === specRequestId.current) setSearchingSpec(false)
+      }
+    }, isActive && queryTerm === '' ? 0 : 400)
+
     return () => clearTimeout(timer)
   }, [specCompSearch, activeDropdown])
 
@@ -276,7 +326,12 @@ export const LessonPlanPage: React.FC = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             onFocus={() => setActiveDropdown(dropdownKey)}
-            onBlur={() => setTimeout(() => setActiveDropdown(null), 250)}
+            onBlur={(e) => {
+              // Pequeno delay para permitir o clique nos resultados
+              setTimeout(() => {
+                setActiveDropdown(current => current === dropdownKey ? null : current)
+              }, 300)
+            }}
             style={{ 
               width: '100%', 
               backgroundColor: 'white'
@@ -289,18 +344,25 @@ export const LessonPlanPage: React.FC = () => {
           )}
           
           {showResults && (
-            <div style={{
-              position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
-              backgroundColor: 'white', borderRadius: '12px',
-              boxShadow: '0 8px 32px -4px rgba(0,0,0,0.18)',
-              zIndex: 500, border: '1px solid hsl(var(--border) / 0.4)',
-              overflowY: 'auto', maxHeight: '260px',
-              WebkitOverflowScrolling: 'touch'
-            }}>
+            <div 
+              onMouseDown={(e) => e.preventDefault()} // Impede o blur de fechar a lista ao clicar nela
+              style={{
+                position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
+                backgroundColor: 'white', borderRadius: '12px',
+                boxShadow: '0 8px 32px -4px rgba(0,0,0,0.18)',
+                zIndex: 500, border: '1px solid hsl(var(--border) / 0.4)',
+                overflowY: 'auto', maxHeight: '260px',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
               {results.map(res => (
                 <div
                   key={res.id}
-                  onClick={() => { onAdd(res); setSearch(''); setActiveDropdown(null) }}
+                  onClick={() => { 
+                    onAdd(res)
+                    setSearch('')
+                    setActiveDropdown(null) 
+                  }}
                   style={{ 
                     padding: '0.75rem 1rem', cursor: 'pointer',
                     borderBottom: '1px solid hsl(var(--border) / 0.15)',
