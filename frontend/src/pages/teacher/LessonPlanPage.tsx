@@ -237,6 +237,11 @@ export const LessonPlanPage: React.FC = () => {
     </div>
   )
 
+  // Fecha todos os dropdowns BNCC de uma vez
+  const closeAllBnccDropdowns = () => {
+    setBnccSearch(''); setGenCompSearch(''); setSpecCompSearch('')
+  }
+
   // Auxiliar para buscadores BNCC
   const renderMultiselect = (
     label: string, 
@@ -249,8 +254,7 @@ export const LessonPlanPage: React.FC = () => {
     onAdd: (item: any) => void,
     onRemove: (id: string) => void
   ) => {
-    const isOpen = search.length > 0
-    const showResults = isOpen && results.length > 0
+    const showResults = search.length > 0 && results.length > 0
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
@@ -265,9 +269,12 @@ export const LessonPlanPage: React.FC = () => {
             className="input" 
             placeholder={placeholder}
             value={search === ' ' ? '' : search}
-            onChange={e => setSearch(e.target.value || ' ')}
-            onFocus={() => { if (search === '') setSearch(' ') }}
-            onBlur={() => setTimeout(() => setSearch(''), 300)}
+            onChange={e => setSearch(e.target.value)}
+            onFocus={() => {
+              closeAllBnccDropdowns()
+              setTimeout(() => setSearch(' '), 50)
+            }}
+            onBlur={() => setTimeout(() => setSearch(''), 250)}
             style={{ width: '100%' }}
           />
           {searching && (
@@ -288,8 +295,7 @@ export const LessonPlanPage: React.FC = () => {
               {results.map(res => (
                 <div
                   key={res.id}
-                  onMouseDown={(e) => { e.preventDefault(); onAdd(res) }}
-                  onTouchEnd={(e) => { e.preventDefault(); onAdd(res) }}
+                  onMouseDown={(e) => { e.preventDefault(); onAdd(res); setSearch('') }}
                   style={{ 
                     padding: '0.75rem 1rem', cursor: 'pointer',
                     borderBottom: '1px solid hsl(var(--border) / 0.15)',
@@ -356,15 +362,17 @@ export const LessonPlanPage: React.FC = () => {
   /* ——— Section Card wrapper ——— */
   const SectionCard = ({ icon, title, accent, children }: { icon: React.ReactNode; title: string; accent?: string; children: React.ReactNode }) => (
     <section className="card" style={{
-      padding: 0, overflow: 'hidden', borderRadius: '16px',
+      padding: 0, borderRadius: '16px',
       border: '1px solid hsl(var(--border) / 0.35)',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)'
+      boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)',
+      overflow: 'visible'
     }}>
       <div style={{
         padding: '1rem 1.5rem',
         background: accent || 'linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, hsl(var(--primary) / 0.02) 100%)',
         borderBottom: '1px solid hsl(var(--border) / 0.3)',
-        display: 'flex', alignItems: 'center', gap: '0.75rem'
+        display: 'flex', alignItems: 'center', gap: '0.75rem',
+        borderRadius: '16px 16px 0 0'
       }}>
         <div style={{
           width: '36px', height: '36px', borderRadius: '10px',
