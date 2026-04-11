@@ -426,35 +426,6 @@ export const LessonPlanPage: React.FC = () => {
     )
   }
 
-  /* ——— Section Card wrapper ——— */
-  const SectionCard = ({ icon, title, accent, children }: { icon: React.ReactNode; title: string; accent?: string; children: React.ReactNode }) => (
-    <section className="card" style={{
-      padding: 0, borderRadius: '16px',
-      border: '1px solid hsl(var(--border) / 0.35)',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)',
-      overflow: 'visible'
-    }}>
-      <div style={{
-        padding: '1rem 1.5rem',
-        background: accent || 'linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, hsl(var(--primary) / 0.02) 100%)',
-        borderBottom: '1px solid hsl(var(--border) / 0.3)',
-        display: 'flex', alignItems: 'center', gap: '0.75rem',
-        borderRadius: '16px 16px 0 0'
-      }}>
-        <div style={{
-          width: '36px', height: '36px', borderRadius: '10px',
-          background: 'hsl(var(--primary) / 0.12)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-        }}>
-          {icon}
-        </div>
-        <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{title}</h3>
-      </div>
-      <div style={{ padding: '1.5rem' }}>
-        {children}
-      </div>
-    </section>
-  )
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'hsl(var(--background))' }}>
@@ -672,8 +643,37 @@ export const LessonPlanPage: React.FC = () => {
 }
 
 /* ══════════════════════════════════════
-   SUB-COMPONENTS
+   SUB-COMPONENTS (DEFINIDOS FORA PARA EVITAR REMOUNTS)
    ══════════════════════════════════════ */
+
+const SectionCard = ({ icon, title, accent, children }: { icon: React.ReactNode; title: string; accent?: string; children: React.ReactNode }) => (
+  <section className="card" style={{
+    padding: 0, borderRadius: '16px',
+    border: '1px solid hsl(var(--border) / 0.35)',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)',
+    overflow: 'visible'
+  }}>
+    <div style={{
+      padding: '1rem 1.5rem',
+      background: accent || 'linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, hsl(var(--primary) / 0.02) 100%)',
+      borderBottom: '1px solid hsl(var(--border) / 0.3)',
+      display: 'flex', alignItems: 'center', gap: '0.75rem',
+      borderRadius: '16px 16px 0 0'
+    }}>
+      <div style={{
+        width: '36px', height: '36px', borderRadius: '10px',
+        background: 'hsl(var(--primary) / 0.12)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+      }}>
+        {icon}
+      </div>
+      <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{title}</h3>
+    </div>
+    <div style={{ padding: '1.5rem' }}>
+      {children}
+    </div>
+  </section>
+)
 
 const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange }: any) => {
   const selectedLabel = options.find((o: any) => o.value === value)?.label || 'Selecione...'
