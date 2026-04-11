@@ -27,24 +27,32 @@ export const GradesEntryPage: React.FC = () => {
   const [openBimester, setOpenBimester] = useState(false)
   const [openSubject, setOpenSubject] = useState(false)
 
-  useEffect(() => { fetchData() }, [classId])
-
-  useEffect(() => {
-    if (studentsRef.current.length > 0 && subject) {
-      loadGradesExplicit(subject)
-    }
-  }, [bimester, subject])
+  const lastRequestId = useRef(0)
 
   const loadGradesExplicit = useCallback(async (currentSubject: string) => {
     const currentStudents = studentsRef.current
     if (!currentSubject || currentStudents.length === 0) return
+    
+    const requestId = ++lastRequestId.current
     setLoadingGrades(true)
+    
     try {
       const normalizedSubject = String(currentSubject).trim()
       const existingGrades = await api(`/teacher/classes/${classId}/grades?bimester=${bimester}&subject=${encodeURIComponent(normalizedSubject)}`)
+      
+      if (requestId !== lastRequestId.current) return
+
       const newGradesState: Record<string, GradeFields> = {}
       currentStudents.forEach(s => { newGradesState[s.id] = emptyGrade() })
-      const labelsMap: any = { '1ª Prova': 'p1', '2ª Prova': 'p2', 'Média': 'result', 'Superação': 'retry', 'Resultado Final': 'final' }
+      
+      const labelsMap: any = { 
+        '1ª Prova': 'p1', 
+        '2ª Prova': 'p2', 
+        'Média': 'result', 
+        'Superação': 'retry', 
+        'Resultado Final': 'final' 
+      }
+      
       existingGrades.forEach((g: any) => {
         if (newGradesState[g.student_id]) {
           const field = labelsMap[g.label]
@@ -54,19 +62,27 @@ export const GradesEntryPage: React.FC = () => {
           }
         }
       })
+      
       Object.keys(newGradesState).forEach(id => {
         const s = newGradesState[id]
         if (s.p1 || s.p2) { s.result = calculateMedia(s.p1, s.p2) }
         s.final = computeFinal(s.result, s.retry)
       })
+      
       setGrades(newGradesState)
     } catch (error) {
-      console.error('Erro ao carregar notas salvas:', error)
-      toast.error('Erro ao carregar notas')
-    } finally { setLoadingGrades(false) }
+      if (requestId === lastRequestId.current) {
+        console.error('Erro ao carregar notas salvas:', error)
+        toast.error('Erro ao carregar notas')
+      }
+    } finally { 
+      if (requestId === lastRequestId.current) {
+        setLoadingGrades(false) 
+      }
+    }
   }, [classId, bimester])
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [studentsData, subjectsData] = await Promise.all([
         api(`/teacher/classes/${classId}/students`),
@@ -76,12 +92,31 @@ export const GradesEntryPage: React.FC = () => {
       setStudents(sorted)
       studentsRef.current = sorted
       setSubjects(subjectsData)
+      
       const initial: Record<string, GradeFields> = {}
       sorted.forEach((s: any) => { initial[s.id] = emptyGrade() })
       setGrades(initial)
-      if (subjectsData.length > 0) setSubject(subjectsData[0])
-    } finally { setLoading(false) }
-  }
+
+      if (subjectsData.length > 0) {
+        const firstSubject = subjectsData[0]
+        setSubject(prev => prev || firstSubject)
+        loadGradesExplicit(firstSubject)
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados iniciais:', error)
+      toast.error('Erro ao carregar alunos/disciplinas')
+    } finally { 
+      setLoading(false) 
+    }
+  }, [classId, loadGradesExplicit])
+
+  useEffect(() => { fetchData() }, [fetchData])
+
+  useEffect(() => {
+    if (studentsRef.current.length > 0 && subject) {
+      loadGradesExplicit(subject)
+    }
+  }, [bimester, subject, loadGradesExplicit])
 
   const handleSaveStudent = async (studentId: string) => {
     if (!subject) return toast.error('Informe a disciplina')

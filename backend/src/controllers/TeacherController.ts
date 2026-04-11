@@ -1,8 +1,6 @@
-import { Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 
 export class TeacherController {
   // Listar turmas do professor
@@ -125,10 +123,22 @@ export class TeacherController {
         const labelsMap: any = { p1: '1ª Prova', p2: '2ª Prova', result: 'Média', retry: 'Superação', final: 'Resultado Final' };
         
         for (const [key, value] of Object.entries(studentGrades)) {
-          if (value === '' || value === null) continue;
           const labelName = labelsMap[key] || key;
-          const numericValue = Number(String(value).replace(',', '.'));
+          const numericValue = value === '' || value === null ? null : Number(String(value).replace(',', '.'));
           
+          if (numericValue === null) {
+            // Se o valor estiver vazio, removemos a nota existente para este rótulo
+            await prisma.grade.deleteMany({
+              where: {
+                student_id: studentId,
+                bimester: Number(bimester),
+                subject: normalizedSubject,
+                label: labelName
+              }
+            });
+            continue;
+          }
+
           const existing = await prisma.grade.findFirst({
             where: {
               student_id: studentId,
@@ -213,9 +223,20 @@ export class TeacherController {
       for (const [studentId, studentGrades] of Object.entries(grades)) {
         const sGrades = studentGrades as any;
         for (const [key, value] of Object.entries(sGrades)) {
-          if (value === '' || value === null) continue;
           const labelName = labelsMap[key] || key;
-          const numericValue = Number(String(value).replace(',', '.'));
+          const numericValue = value === '' || value === null ? null : Number(String(value).replace(',', '.'));
+
+          if (numericValue === null) {
+            await prisma.grade.deleteMany({
+              where: {
+                student_id: studentId,
+                bimester: Number(bimester),
+                subject: normalizedSubject,
+                label: labelName
+              }
+            });
+            continue;
+          }
 
           const existing = await prisma.grade.findFirst({
             where: {
