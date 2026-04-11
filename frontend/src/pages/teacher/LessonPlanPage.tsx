@@ -302,7 +302,7 @@ export const LessonPlanPage: React.FC = () => {
                 {results.map(res => (
                   <div
                     key={res.id}
-                    onClick={() => { onAdd(res); setSearch('') }}
+                    onClick={() => { onAdd(res); setSearch(''); setActiveDropdown(null) }}
                     style={{ 
                       padding: '0.75rem 1rem', cursor: 'pointer',
                       borderBottom: '1px solid hsl(var(--border) / 0.15)',
