@@ -329,6 +329,7 @@ export const LessonPlanPage: React.FC = () => {
               value={search}
               onChange={e => setSearch(e.target.value)}
               onFocus={() => setActiveDropdown(dropdownKey)}
+              onClick={() => setActiveDropdown(dropdownKey)}
               onBlur={() => {
                 setTimeout(() => {
                   setActiveDropdown(current => current === dropdownKey ? null : current)
