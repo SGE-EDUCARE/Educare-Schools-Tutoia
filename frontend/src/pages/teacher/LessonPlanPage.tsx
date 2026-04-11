@@ -726,6 +726,16 @@ export const LessonPlanPage: React.FC = () => {
                       <Trash2 size={16} />
                     </button>
                   </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 const SectionCard = ({ icon, title, accent, children, isMobile }: { icon: React.ReactNode; title: string; accent?: string; children: React.ReactNode; isMobile?: boolean }) => (
   <section className="card" style={{
     padding: 0, borderRadius: isMobile ? '20px' : '28px',
