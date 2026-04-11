@@ -323,200 +323,237 @@ export const LessonPlanPage: React.FC = () => {
     </div>
   )
 
+  /* ——— Section Card wrapper ——— */
+  const SectionCard = ({ icon, title, accent, children }: { icon: React.ReactNode; title: string; accent?: string; children: React.ReactNode }) => (
+    <section className="card" style={{
+      padding: 0, overflow: 'hidden', borderRadius: '16px',
+      border: '1px solid hsl(var(--border) / 0.35)',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)'
+    }}>
+      <div style={{
+        padding: '1rem 1.5rem',
+        background: accent || 'linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, hsl(var(--primary) / 0.02) 100%)',
+        borderBottom: '1px solid hsl(var(--border) / 0.3)',
+        display: 'flex', alignItems: 'center', gap: '0.75rem'
+      }}>
+        <div style={{
+          width: '36px', height: '36px', borderRadius: '10px',
+          background: 'hsl(var(--primary) / 0.12)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+        }}>
+          {icon}
+        </div>
+        <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{title}</h3>
+      </div>
+      <div style={{ padding: '1.5rem' }}>
+        {children}
+      </div>
+    </section>
+  )
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'hsl(var(--background))' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.25rem 10rem' }}>
-        
-        {/* HEADER */}
-        <header style={{ padding: '1rem 0 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid hsl(var(--border) / 0.4)', marginBottom: '2rem' }}>
-          <div>
-            <button onClick={() => isEditing ? setIsEditing(false) : navigate(-1)} style={{
-              display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'hsl(var(--text-light))', fontSize: '0.75rem', fontWeight: 700,
-              background: 'none', padding: '0.4rem 0', cursor: 'pointer', border: 'none', transition: 'color 0.2s'
-            }} className="hover:text-primary">
-              <ChevronLeft size={14} /> VOLTAR
+      <div style={{ maxWidth: '960px', margin: '0 auto', padding: '0 1.25rem 8rem' }}>
+
+        {/* ══════════ HEADER ══════════ */}
+        <header style={{
+          padding: '1.5rem 0', display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', gap: '1rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button
+              onClick={() => isEditing ? setIsEditing(false) : navigate(-1)}
+              style={{
+                width: '40px', height: '40px', borderRadius: '12px',
+                border: '1.5px solid hsl(var(--border))',
+                background: 'hsl(var(--surface))',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0
+              }}
+            >
+              <ChevronLeft size={20} color="hsl(var(--text))" />
             </button>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: 'hsl(var(--text))', letterSpacing: '-0.04em', lineHeight: 1.1, marginTop: '0.2rem' }}>
-              {isEditing ? (currentPlan?.id ? 'Editar Plano' : 'Novo Plano Mensal') : 'Meus Planos de Aula'}
-            </h1>
+            <div>
+              <h1 style={{
+                fontSize: '1.5rem', fontWeight: 900, color: 'hsl(var(--text))',
+                letterSpacing: '-0.03em', lineHeight: 1.15
+              }}>
+                {isEditing ? (currentPlan?.id ? 'Editar Plano' : 'Novo Plano Mensal') : 'Planos de Aula'}
+              </h1>
+              {isEditing && (
+                <p style={{ fontSize: '0.8rem', color: 'hsl(var(--text-light))', fontWeight: 500, marginTop: '0.15rem' }}>
+                  Preencha as seções abaixo seguindo a BNCC
+                </p>
+              )}
+            </div>
           </div>
-          
+
           {!isEditing && (
-            <button onClick={handleCreateNew} className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', minHeight: 'auto' }}>
-              <Plus size={20} /> CRIAR NOVO PLANO
+            <button onClick={handleCreateNew} className="btn btn-primary" style={{ padding: '0.65rem 1.25rem', minHeight: 'auto', fontSize: '0.85rem' }}>
+              <Plus size={18} /> Novo Plano
             </button>
           )}
         </header>
 
+        {/* ══════════ FORMULÁRIO DE EDIÇÃO ══════════ */}
         {isEditing && currentPlan ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-            
-            {/* 1. IDENTIFICAÇÃO (Linha única elegante) */}
-            <section>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.2rem' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'hsl(var(--primary) / 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Calendar size={18} color="hsl(var(--primary))" />
-                </div>
-                <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Identificação do Plano</h3>
-              </div>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }} className="grid-mobile-1">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+            {/* ─── 1. IDENTIFICAÇÃO ─── */}
+            <SectionCard icon={<Calendar size={18} color="hsl(var(--primary))" />} title="Identificação">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }} className="grid-mobile-1">
                 <CustomSelect label="Disciplina" value={currentPlan.subject} options={subjects.map(s => ({ value: s, label: s }))} isOpen={openSubject} setIsOpen={setOpenSubject} onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} />
                 <CustomSelect label="Bimestre" value={String(currentPlan.bimester)} options={bimesterOptions} isOpen={openBimester} setIsOpen={setOpenBimester} onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} />
                 <CustomSelect label="Mês de Referência" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} />
               </div>
-            </section>
+            </SectionCard>
 
-            {/* 2. BASE PEDAGÓGICA (BNCC Desktop) */}
-            <section>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.2rem' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'hsl(var(--primary) / 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Target size={18} color="hsl(var(--primary))" />
-                </div>
-                <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Base Pedagógica (BNCC)</h3>
-              </div>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="grid-mobile-1">
-                {/* Coluna 1: Gerais */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* ─── 2. BASE PEDAGÓGICA (BNCC) ─── */}
+            <SectionCard icon={<Target size={18} color="hsl(var(--primary))" />} title="Base Pedagógica (BNCC)">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }} className="grid-mobile-1">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   {renderMultiselect(
                     "Competências Gerais", "Pesquise ou selecione da lista...",
                     genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects,
                     (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]); setGenCompSearch(''); } },
                     (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }
                   )}
-                  <FormGroup label="Complemento (Competências Gerais)" placeholder="Observações customizadas..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="80px" />
+                  <FormGroup label="Complemento (Gerais)" placeholder="Observações customizadas..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="70px" />
                 </div>
-
-                {/* Coluna 2: Específicas */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   {renderMultiselect(
                     "Competências Específicas", "Busque por tema ou área...",
                     specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects,
                     (it) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]); setSpecCompSearch(''); } },
                     (id) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }
                   )}
-                  <FormGroup label="Complemento (Específicas)" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="80px" />
+                  <FormGroup label="Complemento (Específicas)" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="70px" />
                 </div>
               </div>
-            </section>
+            </SectionCard>
 
-            {/* 3. DESENVOLVIMENTO MENSAL */}
-            <section>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.2rem' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'hsl(var(--primary) / 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <LayoutList size={18} color="hsl(var(--primary))" />
+            {/* ─── 3. DESENVOLVIMENTO MENSAL ─── */}
+            <SectionCard icon={<LayoutList size={18} color="hsl(var(--primary))" />} title="Desenvolvimento Mensal">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }} className="grid-mobile-1">
+                {/* Coluna esquerda */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  <FormGroup label="Objeto(s) de Conhecimento" placeholder="Conteúdos do bimestre..." value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="110px" />
+                  {renderMultiselect(
+                    "Habilidades (BNCC)", "Pesquise por código ou descrição...",
+                    bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects,
+                    (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]); setBnccSearch(''); } },
+                    (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }
+                  )}
+                  <FormGroup label="Outras Habilidades" placeholder="Habilidades específicas da escola..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="70px" />
                 </div>
-                <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Desenvolvimento Mensal</h3>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="grid-mobile-1">
-                {/* Coluna 1: O Que Ensinar */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                  <FormGroup label="Objeto(s) de Conhecimento" placeholder="Conteúdos do bimestre..." value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                    {renderMultiselect(
-                      "Habilidades (BNCC)", "Pesquise por código ou descrição...",
-                      bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects,
-                      (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]); setBnccSearch(''); } },
-                      (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }
-                    )}
-                    <FormGroup label="Outras Habilidades (Customizadas)" placeholder="Habilidades específicas..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
-                  </div>
-                </div>
-
-                {/* Coluna 2: Como e Quando Ensinar */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                  <FormGroup label="Cronograma (Conteúdos por Semana)" placeholder="Semana 1: ... | Semana 2: ..." value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="180px" />
-                  <FormGroup label="Metodologia (Procedimentos)" placeholder="Aulas expositivas, trabalhos..." value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="180px" />
+                {/* Coluna direita */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  <FormGroup label="Cronograma Semanal" placeholder="Semana 1: ...&#10;Semana 2: ...&#10;Semana 3: ...&#10;Semana 4: ..." value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="160px" />
+                  <FormGroup label="Metodologia" placeholder="Aulas expositivas, trabalhos em grupo, projetos..." value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="160px" />
                 </div>
               </div>
-            </section>
+            </SectionCard>
 
-             {/* 4. AVALIAÇÃO E RECURSOS */}
-            <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="grid-mobile-1">
-              <FormGroup label="Procedimentos Avaliativos" placeholder="Como o desempenho será avaliado..." 
-                value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} height="120px" />
-              <FormGroup label="Recursos e Referências" placeholder="Livros, quadro, internet, projetor..." 
-                value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} height="120px" />
-            </section>
+            {/* ─── 4. AVALIAÇÃO E RECURSOS ─── */}
+            <SectionCard icon={<CheckCircle2 size={18} color="hsl(var(--primary))" />} title="Avaliação e Recursos">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }} className="grid-mobile-1">
+                <FormGroup label="Procedimentos Avaliativos" placeholder="Como o desempenho será avaliado..."
+                  value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} height="110px" />
+                <FormGroup label="Recursos e Referências" placeholder="Livros, quadro, internet, projetor..."
+                  value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} height="110px" />
+              </div>
+            </SectionCard>
 
-            {/* BOTÕES DE AÇÃO (Rodapé Limpo) */}
-            <footer style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid hsl(var(--border) / 0.4)' }}>
-              <button 
-                onClick={() => setIsEditing(false)} 
+            {/* ─── AÇÕES ─── */}
+            <div style={{
+              display: 'flex', justifyContent: 'flex-end', gap: '0.75rem',
+              paddingTop: '1rem'
+            }}>
+              <button
+                onClick={() => setIsEditing(false)}
                 disabled={saving}
                 className="btn btn-secondary"
-                style={{ padding: '0.8rem 2.5rem', fontWeight: 700 }}
+                style={{ padding: '0.75rem 2rem', fontWeight: 700, fontSize: '0.85rem' }}
               >
-                CANCELAR
+                Cancelar
               </button>
-              <button 
-                onClick={handleSave} 
-                disabled={saving} 
+              <button
+                onClick={handleSave}
+                disabled={saving}
                 className="btn btn-primary"
                 style={{
-                  padding: '0.8rem 3rem', fontSize: '1rem', fontWeight: 800,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
+                  padding: '0.75rem 2.5rem', fontSize: '0.85rem', fontWeight: 800,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem',
                   opacity: saving ? 0.7 : 1
                 }}
               >
-                {saving ? <Loader2 className="animate-spin" size={24} /> : <><CheckCircle2 size={22} /> SALVAR PLANEJAMENTO</>}
+                {saving ? <Loader2 className="animate-spin" size={20} /> : <><CheckCircle2 size={18} /> Salvar Planejamento</>}
               </button>
-            </footer>
-
+            </div>
           </div>
+
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
+          /* ══════════ LISTA DE PLANOS ══════════ */
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
             {plans.length === 0 ? (
-              <div style={{ gridColumn: '1 / -1', padding: '6rem 2rem', textAlign: 'center' }}>
-                <div style={{ width: '80px', height: '80px', backgroundColor: 'hsl(var(--primary) / 0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                  <FileText size={40} color="hsl(var(--primary))" opacity={0.3} />
-                </div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'hsl(var(--text))' }}>Nenhum plano encontrado</h2>
-                <p style={{ color: 'hsl(var(--text-light))', maxWidth: '300px', margin: '0.5rem auto 1.5rem' }}>Comece a planejar suas aulas seguindo o novo modelo mensal.</p>
-                <button onClick={handleCreateNew} style={{ 
-                  backgroundColor: 'hsl(var(--primary) / 0.1)', color: 'hsl(var(--primary))', 
-                  padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 700, border: 'none', cursor: 'pointer'
+              <div style={{ gridColumn: '1 / -1', padding: '5rem 2rem', textAlign: 'center' }}>
+                <div style={{
+                  width: '72px', height: '72px', borderRadius: '50%',
+                  background: 'hsl(var(--primary) / 0.06)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  margin: '0 auto 1.25rem'
                 }}>
-                  Criar Primeiro Plano
+                  <FileText size={32} color="hsl(var(--primary))" style={{ opacity: 0.4 }} />
+                </div>
+                <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'hsl(var(--text))' }}>Nenhum plano encontrado</h2>
+                <p style={{ color: 'hsl(var(--text-light))', maxWidth: '280px', margin: '0.4rem auto 1.25rem', fontSize: '0.85rem' }}>
+                  Comece a planejar suas aulas seguindo o modelo mensal.
+                </p>
+                <button onClick={handleCreateNew} className="btn btn-primary" style={{ padding: '0.6rem 1.25rem', minHeight: 'auto', fontSize: '0.85rem' }}>
+                  <Plus size={18} /> Criar Primeiro Plano
                 </button>
               </div>
             ) : (
               plans.map(plan => (
-                <div key={plan.id} className="card" style={{ 
-                  borderRadius: '12px', padding: '1.25rem', border: '1px solid hsl(var(--border) / 0.4)',
-                  display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'all 0.2s'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div style={{ backgroundColor: 'hsl(var(--primary) / 0.05)', padding: '0.4rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))' }}>
+                <div key={plan.id} className="card" style={{
+                  borderRadius: '14px', padding: '1.25rem',
+                  border: '1px solid hsl(var(--border) / 0.35)',
+                  display: 'flex', flexDirection: 'column', gap: '0.75rem',
+                  transition: 'box-shadow 0.2s, transform 0.2s',
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleEdit(plan)}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{
+                      background: 'hsl(var(--primary) / 0.08)', color: 'hsl(var(--primary))',
+                      padding: '0.3rem 0.7rem', borderRadius: '6px',
+                      fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase'
+                    }}>
                       {plan.month}
-                    </div>
-                    <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'hsl(var(--text-light) / 0.6)' }}>
-                       {new Date(plan.date).toLocaleDateString('pt-BR')}
-                    </div>
+                    </span>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'hsl(var(--text-light) / 0.5)' }}>
+                      {new Date(plan.date).toLocaleDateString('pt-BR')}
+                    </span>
                   </div>
-                  
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'hsl(var(--text))', lineHeight: 1.2 }}>{plan.subject}</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'hsl(var(--text-light))', fontWeight: 500 }}>{plan.bimester}º Bimestre • {plan.type}</p>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'hsl(var(--text))', lineHeight: 1.25 }}>{plan.subject}</h3>
+                    <p style={{ fontSize: '0.78rem', color: 'hsl(var(--text-light))', fontWeight: 500, marginTop: '0.1rem' }}>{plan.bimester}º Bimestre • {plan.type}</p>
                   </div>
-
-                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                    <button onClick={() => handleEdit(plan)} style={{
-                      flex: 1, padding: '0.6rem', backgroundColor: 'hsl(var(--primary) / 0.06)', 
-                      color: 'hsl(var(--primary))', borderRadius: '8px', border: 'none', 
-                      fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem'
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+                    <button onClick={(e) => { e.stopPropagation(); handleEdit(plan) }} style={{
+                      flex: 1, padding: '0.55rem', background: 'hsl(var(--primary) / 0.06)',
+                      color: 'hsl(var(--primary))', borderRadius: '8px', border: 'none',
+                      fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem'
                     }}>
-                      <Edit3 size={16} /> EDITAR
+                      <Edit3 size={14} /> Editar
                     </button>
-                    <button style={{
-                      padding: '0.6rem', backgroundColor: 'hsl(var(--error) / 0.06)', 
-                      color: 'hsl(var(--error))', borderRadius: '8px', border: 'none', 
-                      cursor: 'pointer'
+                    <button onClick={(e) => e.stopPropagation()} style={{
+                      padding: '0.55rem 0.7rem', background: 'hsl(var(--error) / 0.06)',
+                      color: 'hsl(var(--error))', borderRadius: '8px', border: 'none', cursor: 'pointer'
                     }}>
-                      <Trash2 size={16} />
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </div>
@@ -524,50 +561,64 @@ export const LessonPlanPage: React.FC = () => {
             )}
           </div>
         )}
-
       </div>
     </div>
   )
 }
 
-/* =================== SUB-COMPONENTS =================== */
+/* ══════════════════════════════════════
+   SUB-COMPONENTS
+   ══════════════════════════════════════ */
 
 const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange }: any) => {
   const selectedLabel = options.find((o: any) => o.value === value)?.label || 'Selecione...'
-  
+
   return (
-    <div 
-      className={`input ${isOpen ? 'active' : ''}`} 
-      style={{ 
-        padding: '0.6rem 1rem', display: 'flex', flexDirection: 'column', 
-        borderRadius: '10px', position: 'relative', cursor: 'pointer', height: '100%', 
-        width: '100%', justifyContent: 'center', minHeight: '60px',
+    <div
+      className={`input ${isOpen ? 'active' : ''}`}
+      style={{
+        padding: '0.55rem 1rem', display: 'flex', flexDirection: 'column',
+        borderRadius: '12px', position: 'relative', cursor: 'pointer',
+        width: '100%', justifyContent: 'center', minHeight: '56px',
         borderColor: isOpen ? 'hsl(var(--primary))' : undefined,
-        boxShadow: isOpen ? '0 0 0 4px hsl(var(--primary) / 0.12)' : undefined,
+        boxShadow: isOpen ? '0 0 0 3px hsl(var(--primary) / 0.1)' : undefined,
         backgroundColor: isOpen ? '#fff' : 'hsl(var(--background))'
-      }} 
+      }}
       onClick={() => setIsOpen(!isOpen)}
     >
-      <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.1rem' }}>
-        {icon || <Calendar size={11} />} {label}
+      <div style={{
+        fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))',
+        textTransform: 'uppercase', letterSpacing: '0.06em',
+        display: 'flex', alignItems: 'center', gap: '0.2rem', marginBottom: '0.15rem'
+      }}>
+        {icon || <Calendar size={10} />} {label}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'hsl(var(--text))' }}>{selectedLabel}</span>
-        <ChevronDown size={16} color="hsl(var(--text-light))" style={{ transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'none' }} />
+        <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'hsl(var(--text))' }}>{selectedLabel}</span>
+        <ChevronDown size={15} color="hsl(var(--text-light))" style={{ transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'none' }} />
       </div>
 
       {isOpen && (
         <>
           <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 90 }} onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} />
-          <div className="grades-select-popover" style={{
-            position: 'absolute', top: '110%', left: 0, right: 0, backgroundColor: 'white',
-            borderRadius: '12px', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15)',
-            border: '1px solid hsl(var(--border) / 0.4)', zIndex: 100, overflow: 'hidden', padding: '0.4rem'
+          <div style={{
+            position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0,
+            backgroundColor: 'white', borderRadius: '12px',
+            boxShadow: '0 8px 32px -6px rgba(0,0,0,0.15)',
+            border: '1px solid hsl(var(--border) / 0.35)',
+            zIndex: 100, overflow: 'hidden', padding: '0.35rem',
+            maxHeight: '220px', overflowY: 'auto'
           }}>
             {options.map((opt: any) => (
-              <div key={opt.value} 
-                className="grades-select-option"
-                style={{ padding: '0.75rem 1rem', fontSize: '0.85rem', fontWeight: 600, borderRadius: '8px', cursor: 'pointer' }}
+              <div key={opt.value}
+                style={{
+                  padding: '0.65rem 0.9rem', fontSize: '0.85rem', fontWeight: 600,
+                  borderRadius: '8px', cursor: 'pointer', transition: 'background 0.15s',
+                  backgroundColor: opt.value === value ? 'hsl(var(--primary) / 0.06)' : 'transparent',
+                  color: opt.value === value ? 'hsl(var(--primary))' : 'hsl(var(--text))'
+                }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'hsl(225 60% 96%)')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = opt.value === value ? 'hsl(250 100% 96%)' : 'transparent')}
                 onClick={(e) => { e.stopPropagation(); onChange(opt.value); setIsOpen(false); }}
               >
                 {opt.label}
@@ -580,13 +631,19 @@ const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange
   )
 }
 
-const FormGroup = ({ label, value, onChange, placeholder, height = "100px" }: any) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', marginLeft: '0.2rem' }}>{label}</label>
-    <textarea 
-      className="input" 
+const FormGroup = ({ label, value, onChange, placeholder, height = '100px' }: any) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+    <label style={{
+      fontSize: '0.7rem', fontWeight: 800, color: 'hsl(var(--text-light))',
+      textTransform: 'uppercase', letterSpacing: '0.04em', marginLeft: '0.15rem'
+    }}>{label}</label>
+    <textarea
+      className="input"
       placeholder={placeholder}
-      style={{ minHeight: height, width: '100%', padding: '1rem' }}
+      style={{
+        minHeight: height, width: '100%', padding: '0.85rem 1rem',
+        resize: 'vertical', lineHeight: 1.5
+      }}
       value={value}
       onChange={e => onChange(e.target.value)}
     />
