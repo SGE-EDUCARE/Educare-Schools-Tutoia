@@ -453,7 +453,7 @@ export const LessonPlanPage: React.FC = () => {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'hsl(var(--background))' }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 1.5rem 8rem' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem 10rem' }}>
 
         {/* ══════════ HEADER ══════════ */}
         <header style={{
@@ -465,24 +465,24 @@ export const LessonPlanPage: React.FC = () => {
               onClick={() => isEditing ? setIsEditing(false) : navigate(-1)}
               className="card-interactive"
               style={{
-                width: '44px', height: '44px', borderRadius: '14px',
+                width: '52px', height: '52px', borderRadius: '16px',
                 border: '1px solid hsl(var(--border) / 0.6)',
                 background: 'white',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 boxShadow: 'var(--shadow-sm)'
               }}
             >
-              <ChevronLeft size={22} color="hsl(var(--text))" />
+              <ChevronLeft size={26} color="hsl(var(--text))" />
             </button>
             <div>
               <h1 style={{
-                fontSize: '1.75rem', fontWeight: 950, color: 'hsl(var(--text))',
+                fontSize: '2.1rem', fontWeight: 950, color: 'hsl(var(--text))',
                 letterSpacing: '-0.04em', lineHeight: 1.1
               }}>
                 {isEditing ? (currentPlan?.id ? 'Editar Planejamento' : 'Novo Plano Mensal') : 'Planos de Aula'}
               </h1>
               {isEditing && (
-                <p style={{ fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 500, marginTop: '0.25rem' }}>
+                <p style={{ fontSize: '1rem', color: 'hsl(var(--text-light))', fontWeight: 500, marginTop: '0.35rem' }}>
                   Organize sua prática pedagógica seguindo as diretrizes da BNCC
                 </p>
               )}
@@ -490,15 +490,15 @@ export const LessonPlanPage: React.FC = () => {
           </div>
 
           {!isEditing && (
-            <button onClick={handleCreateNew} className="btn btn-primary" style={{ padding: '0.75rem 1.5rem', borderRadius: '14px' }}>
-              <Plus size={20} /> <span className="desktop-only" style={{ marginLeft: '0.2rem' }}>Novo Plano</span>
+            <button onClick={handleCreateNew} className="btn btn-primary" style={{ padding: '0.9rem 2rem', borderRadius: '16px', fontSize: '1.05rem' }}>
+              <Plus size={24} /> <span className="desktop-only" style={{ marginLeft: '0.3rem' }}>Novo Plano</span>
             </button>
           )}
         </header>
 
         {/* ══════════ FORMULÁRIO DE EDIÇÃO ══════════ */}
         {isEditing && currentPlan ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }} className="animate-slide-up">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }} className="animate-slide-up">
 
             {/* ─── 1. IDENTIFICAÇÃO ─── */}
             <SectionCard 
@@ -707,30 +707,30 @@ export const LessonPlanPage: React.FC = () => {
 
 const SectionCard = ({ icon, title, accent, children }: { icon: React.ReactNode; title: string; accent?: string; children: React.ReactNode }) => (
   <section className="card" style={{
-    padding: 0, borderRadius: '24px',
+    padding: 0, borderRadius: '28px',
     border: '1px solid hsl(var(--border) / 0.5)',
     boxShadow: 'var(--shadow-md)',
     overflow: 'visible',
     backgroundColor: 'white'
   }}>
     <div style={{
-      padding: '1.25rem 1.75rem',
+      padding: '1.5rem 2rem',
       background: accent || 'white',
       borderBottom: '1px solid hsl(var(--border) / 0.3)',
-      display: 'flex', alignItems: 'center', gap: '1rem',
-      borderRadius: '24px 24px 0 0'
+      display: 'flex', alignItems: 'center', gap: '1.25rem',
+      borderRadius: '28px 28px 0 0'
     }}>
       <div style={{
-        width: '42px', height: '42px', borderRadius: '14px',
+        width: '50px', height: '50px', borderRadius: '16px',
         background: 'white',
         display: 'flex', alignItems: 'center', justifyContent: 'center', 
         flexShrink: 0, boxShadow: 'var(--shadow-sm)', border: '1px solid hsl(var(--border) / 0.4)'
       }}>
         {icon}
       </div>
-      <h3 style={{ fontSize: '0.95rem', fontWeight: 900, color: 'hsl(var(--text))', letterSpacing: '0.02em' }}>{title}</h3>
+      <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: 'hsl(var(--text))', letterSpacing: '0.02em' }}>{title}</h3>
     </div>
-    <div style={{ padding: '1.75rem' }}>
+    <div style={{ padding: '2rem' }}>
       {children}
     </div>
   </section>
@@ -743,25 +743,25 @@ const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange
     <div
       className={`input ${isOpen ? 'active' : ''}`}
       style={{
-        padding: '0.65rem 1.25rem', display: 'flex', flexDirection: 'column',
-        borderRadius: '16px', position: 'relative', cursor: 'pointer',
-        width: '100%', justifyContent: 'center', minHeight: '62px',
+        padding: '0.8rem 1.5rem', display: 'flex', flexDirection: 'column',
+        borderRadius: '20px', position: 'relative', cursor: 'pointer',
+        width: '100%', justifyContent: 'center', minHeight: '74px',
         borderColor: isOpen ? 'hsl(var(--primary))' : undefined,
-        boxShadow: isOpen ? '0 0 0 4px hsl(var(--primary) / 0.1)' : undefined,
+        boxShadow: isOpen ? '0 0 0 5px hsl(var(--primary) / 0.1)' : undefined,
         backgroundColor: isOpen ? '#fff' : 'hsl(var(--background))'
       }}
       onClick={() => setIsOpen(!isOpen)}
     >
       <div style={{
-        fontSize: '0.65rem', fontWeight: 900, color: 'hsl(var(--text-light))',
+        fontSize: '0.75rem', fontWeight: 900, color: 'hsl(var(--text-light))',
         textTransform: 'uppercase', letterSpacing: '0.06em',
-        display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.2rem'
+        display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem'
       }}>
-        {icon || <Calendar size={12} />} {label}
+        {icon || <Calendar size={14} />} {label}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'hsl(var(--text))' }}>{selectedLabel}</span>
-        <ChevronDown size={18} color="hsl(var(--text-light))" style={{ transition: 'transform 0.3s', transform: isOpen ? 'rotate(180deg)' : 'none' }} />
+        <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'hsl(var(--text))' }}>{selectedLabel}</span>
+        <ChevronDown size={22} color="hsl(var(--text-light))" style={{ transition: 'transform 0.3s', transform: isOpen ? 'rotate(180deg)' : 'none' }} />
       </div>
 
       {isOpen && (
@@ -798,19 +798,20 @@ const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange
   )
 }
 
-const FormGroup = ({ label, value, onChange, placeholder, height = '100px' }: any) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+const FormGroup = ({ label, value, onChange, placeholder, height = '120px' }: any) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
     <label style={{
-      fontSize: '0.75rem', fontWeight: 850, color: 'hsl(var(--text))',
-      textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: '0.2rem',
+      fontSize: '0.9rem', fontWeight: 850, color: 'hsl(var(--text))',
+      textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: '0.3rem',
       opacity: 0.8
     }}>{label}</label>
     <textarea
       className="input"
       placeholder={placeholder}
       style={{
-        minHeight: height, width: '100%', padding: '1rem 1.25rem',
-        resize: 'vertical', lineHeight: 1.6, backgroundColor: 'white'
+        minHeight: height, width: '100%', padding: '1.25rem 1.5rem',
+        resize: 'vertical', lineHeight: 1.6, backgroundColor: 'white',
+        fontSize: '1.1rem', borderRadius: '20px'
       }}
       value={value}
       onChange={e => onChange(e.target.value)}
