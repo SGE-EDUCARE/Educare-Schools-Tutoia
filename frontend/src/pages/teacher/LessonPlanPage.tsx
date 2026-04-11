@@ -548,7 +548,7 @@ const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange
         width: '100%', justifyContent: 'center', minHeight: '60px',
         borderColor: isOpen ? 'hsl(var(--primary))' : undefined,
         boxShadow: isOpen ? '0 0 0 4px hsl(var(--primary) / 0.12)' : undefined,
-        backgroundColor: '#fff'
+        backgroundColor: isOpen ? '#fff' : 'hsl(var(--background))'
       }} 
       onClick={() => setIsOpen(!isOpen)}
     >
