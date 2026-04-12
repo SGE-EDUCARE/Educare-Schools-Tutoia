@@ -7,7 +7,7 @@
 
     // Environment Settings
     "module": "CommonJS",
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "ignoreDeprecations": "5.0",
     "target": "esnext",
     "types": [],
