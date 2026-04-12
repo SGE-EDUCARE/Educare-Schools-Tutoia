@@ -682,13 +682,24 @@ export const LessonPlanPage: React.FC = () => {
               </div>
             ) : (
               plans.map(plan => {
-                // Cálculo de preenchimento (versão simples)
-                const fields = [
-                  plan.knowledge_objects, plan.programmatic_content, plan.methodology, 
-                  plan.evaluation, plan.resources, plan.references
+                // Cálculo de preenchimento (versão completa e justa)
+                const checkString = (s?: string) => s && s.trim().length > 0
+                const checkArray = (a?: any[]) => a && a.length > 0
+                
+                const steps = [
+                  checkArray(plan.bncc_skills),
+                  checkArray(plan.bncc_general_comp) || checkString(plan.custom_general_comp),
+                  checkArray(plan.bncc_specific_comp) || checkString(plan.custom_specific_comp),
+                  checkString(plan.knowledge_objects),
+                  checkString(plan.programmatic_content),
+                  checkString(plan.methodology),
+                  checkString(plan.evaluation),
+                  checkString(plan.resources),
+                  checkString(plan.references)
                 ]
-                const filled = fields.filter(f => f && f.trim().length > 10).length
-                const progress = Math.min(100, (filled / fields.length) * 100)
+                
+                const filled = steps.filter(Boolean).length
+                const progress = Math.round((filled / steps.length) * 100)
                 const color = progress === 100 ? 'hsl(var(--success))' : progress > 50 ? 'hsl(var(--primary))' : 'hsl(var(--warning))'
 
                 return (
