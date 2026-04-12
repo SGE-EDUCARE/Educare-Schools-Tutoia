@@ -395,7 +395,10 @@ const BnccTag = ({ code, description }: { code?: string, description: string }) 
     }}>
       {code}
     </div>
-    <div style={{ fontSize: '0.85rem', lineHeight: 1.5, fontWeight: 600, color: '#444' }}>{description}</div>
+    <div style={{ 
+      fontSize: '0.85rem', lineHeight: 1.5, fontWeight: 600, color: '#444',
+      wordBreak: 'break-word', overflowWrap: 'anywhere'
+    }}>{description}</div>
   </div>
 )
 
@@ -410,7 +413,10 @@ const ViewSection = ({ label, icon, children }: any) => (
       </div>
       <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#1B2559', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
     </div>
-    <div style={{ paddingLeft: '0.2rem', fontSize: '1rem', lineHeight: 1.6, color: '#333', fontWeight: 500 }}>{children}</div>
+    <div style={{ 
+      paddingLeft: '0.2rem', fontSize: '1rem', lineHeight: 1.6, color: '#333', fontWeight: 500,
+      wordBreak: 'break-word', overflowWrap: 'anywhere'
+    }}>{children}</div>
   </div>
 )
 
