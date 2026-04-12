@@ -177,26 +177,45 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile, isInfantil }: { plan: L
                 {plan.bncc_skills?.map(s => <div key={s.id} style={{ marginBottom: '0.5rem' }}><strong>{s.code}</strong>: {s.description}</div>)}
               </ViewSection>
               <ViewSection label="Público Alvo / Local" icon={<LayoutList size={18} />}>{plan.knowledge_objects}</ViewSection>
+              <ViewSection label="Conteúdo Programático" icon={<Book size={18} />}>{plan.programmatic_content}</ViewSection>
             </>
           ) : (
             <>
-              <ViewSection label="Competências Gerais" icon={<Target size={18} />}>
+              <ViewSection label="COMPETÊNCIAS GERAIS" icon={<Target size={18} />}>
                 {plan.bncc_general_comp?.map(c => <div key={c.id}>• {c.description}</div>)}
                 {plan.custom_general_comp && <div style={{ marginTop: '1rem', whiteSpace: 'pre-wrap' }}>{plan.custom_general_comp}</div>}
               </ViewSection>
-              <ViewSection label="Habilidades" icon={<FileText size={18} />}>
-                {plan.bncc_skills?.map(s => <div key={s.id}><strong>{s.code}</strong>: {s.description}</div>)}
+              <ViewSection label="COMPETÊNCIAS ESPECÍFICAS DA ÁREA" icon={<Target size={18} />}>
+                {plan.bncc_specific_comp?.map(c => <div key={c.id}>• {c.description}</div>)}
+                {plan.custom_specific_comp && <div style={{ marginTop: '1rem', whiteSpace: 'pre-wrap' }}>{plan.custom_specific_comp}</div>}
               </ViewSection>
-              <ViewSection label="Objetos de Conhecimento" icon={<Book size={18} />}>{plan.knowledge_objects}</ViewSection>
+              <ViewSection label="HABILIDADE(S) (BNCC)" icon={<FileText size={18} />}>
+                {plan.bncc_skills?.map(s => <div key={s.id}><strong>{s.code}</strong>: {s.description}</div>)}
+                {plan.skills && <div style={{ marginTop: '1rem', borderTop: '1px dashed #eee', paddingTop: '0.5rem' }}><strong>Próprias:</strong> {plan.skills}</div>}
+              </ViewSection>
+              <ViewSection label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" icon={<LayoutList size={18} />}>{plan.knowledge_objects}</ViewSection>
+              <ViewSection label="CONTEÚDOS PROGRAMÁTICOS" icon={<Book size={18} />}>{plan.content}</ViewSection>
+              <ViewSection label="CRONOGRAMA DETALHADO (SEMANAS)" icon={<Calendar size={18} />}>{plan.programmatic_content}</ViewSection>
+              <ViewSection label="PROCEDIMENTOS METODOLÓGICOS" icon={<LayoutList size={18} />}>{plan.methodology}</ViewSection>
             </>
           )}
 
-          <ViewSection label="Conteúdo Programático" icon={<Book size={18} />}>{plan.programmatic_content}</ViewSection>
-          <ViewSection label="Metodologia / Procedimentos" icon={<LayoutList size={18} />}>{plan.methodology}</ViewSection>
-          <ViewSection label="Avaliação" icon={<CheckCircle2 size={18} />}>{plan.evaluation}</ViewSection>
+          {!isInfantil && (
+            <>
+              {plan.resources && <ViewSection label="RECURSOS" icon={<LayoutList size={18} />}>{plan.resources}</ViewSection>}
+              {plan.references && <ViewSection label="REFERÊNCIAS" icon={<Book size={18} />}>{plan.references}</ViewSection>}
+              <ViewSection label="PROCEDIMENTOS AVALIATIVOS" icon={<CheckCircle2 size={18} />}>{plan.evaluation}</ViewSection>
+            </>
+          )}
           
-          {plan.resources && <ViewSection label="Recursos" icon={<LayoutList size={18} />}>{plan.resources}</ViewSection>}
-          {plan.references && <ViewSection label="Referências" icon={<Book size={18} />}>{plan.references}</ViewSection>}
+          {isInfantil && (
+            <>
+              <ViewSection label="Metodologia / Procedimentos" icon={<LayoutList size={18} />}>{plan.methodology}</ViewSection>
+              <ViewSection label="Avaliação" icon={<CheckCircle2 size={18} />}>{plan.evaluation}</ViewSection>
+              {plan.resources && <ViewSection label="Recursos" icon={<LayoutList size={18} />}>{plan.resources}</ViewSection>}
+              {plan.references && <ViewSection label="Referências" icon={<Book size={18} />}>{plan.references}</ViewSection>}
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -517,7 +536,7 @@ export const LessonPlanPage: React.FC = () => {
                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1rem' }}>
                  <CustomSelect label="Disciplina" value={currentPlan.subject} options={subjects.map(s => ({ value: s, label: s }))} isOpen={openSubject} setIsOpen={setOpenSubject} onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} />
                  <CustomSelect label="Bimestre" value={currentPlan.bimester} options={bimesterOptions} isOpen={openBimester} setIsOpen={setOpenBimester} onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} />
-                 <CustomSelect label="Mês" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} />
+                 <CustomSelect label="Mês de Referência" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} />
                </div>
             </SectionCard>
 
@@ -541,19 +560,42 @@ export const LessonPlanPage: React.FC = () => {
             ) : (
               <SectionCard isMobile={isMobile} icon={<Target />} title="Base BNCC" accent="linear-gradient(135deg, #fffcf0 0%, #fff9e0 100%)">
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                   {renderMultiselect("gerais", "Competências Gerais", "Buscar...", genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects, (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]) } }, (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }, 'orange', isMobile)}
-                   {renderMultiselect("especificas", "Competências Específicas", "Buscar...", specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects, (it) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]) } }, (id) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }, 'blue', isMobile)}
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                     {renderMultiselect("gerais", "COMPETÊNCIAS GERAIS (BNCC)", "Buscar...", genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects, (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]) } }, (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }, 'orange', isMobile)}
+                     <FormGroup label="Anotações de Competências Gerais" value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} />
+                   </div>
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                     {renderMultiselect("especificas", "COMPETÊNCIAS ESPECÍFICAS (BNCC)", "Buscar...", specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects, (it) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]) } }, (id) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }, 'blue', isMobile)}
+                     <FormGroup label="Anotações de Competências Específicas" value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} />
+                   </div>
                 </div>
               </SectionCard>
             )}
 
             <SectionCard isMobile={isMobile} icon={<LayoutList />} title="Desenvolvimento">
                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-                 <FormGroup label={isInfantil ? "Público Alvo / Local" : "Objeto de Conhecimento"} value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} />
-                 <FormGroup label="Conteúdo Programático" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} />
-                 {renderMultiselect("habilidades", isInfantil ? "Objetivos de Aprendizagem (BNCC)" : "Habilidades (BNCC)", "Código...", bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects, (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]) } }, (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }, 'green', isMobile)}
-                 <FormGroup label="Metodologia / Procedimentos" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} />
-                 <FormGroup label="Avaliação" value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} />
+                 {!isInfantil && (
+                   <>
+                     <FormGroup label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} />
+                     <FormGroup label="CONTEÚDOS PROGRAMÁTICOS" value={currentPlan.content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, content: v })} />
+                     {renderMultiselect("habilidades", "HABILIDADE(S) (BNCC)", "Código...", bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects, (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]) } }, (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }, 'green', isMobile)}
+                     <FormGroup label="HABILIDADE(S) PRÓPRIAS" value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} />
+                     <FormGroup label="CRONOGRAMA DETALHADO (SEMANAS)" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} />
+                     <FormGroup label="PROCEDIMENTOS METODOLÓGICOS" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} />
+                     <FormGroup label="RECURSOS" value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} />
+                     <FormGroup label="REFERÊNCIAS" value={currentPlan.references} onChange={(v: string) => setCurrentPlan({ ...currentPlan, references: v })} />
+                     <FormGroup label="PROCEDIMENTOS AVALIATIVOS" value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} />
+                   </>
+                 )}
+                 {isInfantil && (
+                   <>
+                     <FormGroup label="Público Alvo / Local" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} />
+                     <FormGroup label="Conteúdo Programático" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} />
+                     {renderMultiselect("habilidades", "Objetivos de Aprendizagem (BNCC)", "Código...", bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects, (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]) } }, (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }, 'green', isMobile)}
+                     <FormGroup label="Metodologia / Procedimentos" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} />
+                     <FormGroup label="Avaliação" value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} />
+                   </>
+                 )}
                </div>
             </SectionCard>
 
