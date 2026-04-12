@@ -51,16 +51,16 @@ async function main() {
   console.log('✅ Níveis acadêmicos criados')
 
   // 4. Estrutura Acadêmica: Séries
-  const grade1 = await prisma.academicGrade.create({
-    data: { name: '1º Ano', level_id: fundamental.id }
-  })
-  const grade2 = await prisma.academicGrade.create({
-    data: { name: '2º Ano', level_id: fundamental.id }
-  })
-  const infantilA = await prisma.academicGrade.create({
-    data: { name: 'Pré-Escola A', level_id: infantil.id }
-  })
-  console.log('✅ Séries criadas')
+  let grade1 = await prisma.academicGrade.findFirst({ where: { name: '1º Ano', level_id: fundamental.id } })
+  if (!grade1) grade1 = await prisma.academicGrade.create({ data: { name: '1º Ano', level_id: fundamental.id } })
+
+  let grade2 = await prisma.academicGrade.findFirst({ where: { name: '2º Ano', level_id: fundamental.id } })
+  if (!grade2) grade2 = await prisma.academicGrade.create({ data: { name: '2º Ano', level_id: fundamental.id } })
+
+  let infantilA = await prisma.academicGrade.findFirst({ where: { name: 'Pré-Escola A', level_id: infantil.id } })
+  if (!infantilA) infantilA = await prisma.academicGrade.create({ data: { name: 'Pré-Escola A', level_id: infantil.id } })
+
+  console.log('✅ Séries tratadas (Idempotente)')
 
   // 5. Turnos
   const matutino = await prisma.academicTurn.upsert({

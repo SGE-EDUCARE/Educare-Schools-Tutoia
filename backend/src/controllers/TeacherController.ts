@@ -297,7 +297,7 @@ export class TeacherController {
       const subjects = Array.from(new Set(allocations.map(a => a.subject).filter(Boolean)));
       
       // Pegar info da turma (da primeira alocação encontrada para este classId)
-      const classInfo = allocations.length > 0 ? allocations[0].class : null;
+      const classInfo = allocations.length > 0 ? allocations[0]!.class : null;
 
       res.json({
         subjects,
