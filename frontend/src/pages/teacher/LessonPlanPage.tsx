@@ -36,7 +36,7 @@ type LessonPlan = {
   resources: string
   content?: string
   references?: string
-  status: string
+  status?: string
   type: string
 }
 
@@ -112,7 +112,9 @@ export const LessonPlanPage: React.FC = () => {
     evaluation: '',
     resources: '',
     references: '',
-    type: 'Mensal'
+    content: '',
+    type: 'Mensal',
+    status: 'PENDING'
   })
 
   const fetchPlans = useCallback(async () => {
