@@ -282,10 +282,27 @@ export class TeacherController {
 
       const allocations = await prisma.teacherAllocation.findMany({
         where,
-        distinct: ['subject'],
-        select: { subject: true }
+        include: {
+          class: {
+            include: {
+              grade: {
+                include: { level: true }
+              }
+            }
+          }
+        }
       });
-      res.json(allocations.map(a => a.subject).filter(Boolean));
+
+      // Extrair lista única de disciplinas
+      const subjects = Array.from(new Set(allocations.map(a => a.subject).filter(Boolean)));
+      
+      // Pegar info da turma (da primeira alocação encontrada para este classId)
+      const classInfo = allocations.length > 0 ? allocations[0].class : null;
+
+      res.json({
+        subjects,
+        class: classInfo
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
