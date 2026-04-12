@@ -480,6 +480,7 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile, levelInfo }: { plan: Le
           blockquote { border-left-color: #ddd !important; }
         }
       `}</style>
+      </div>
     </div>
   )
 }
