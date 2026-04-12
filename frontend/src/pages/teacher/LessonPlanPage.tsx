@@ -254,9 +254,13 @@ export const LessonPlanPage: React.FC = () => {
 
   // ══════════ LÓGICA DE NÍVEL (MEMOIZED) ══════════
   const isInfantil = useMemo(() => {
-    const level = activeClass?.grade?.level
-    const name = level?.name || ''
-    return String(name).includes('Infantil')
+    const levelName = activeClass?.grade?.level?.name || ''
+    return levelName.toLowerCase().includes('infantil')
+  }, [activeClass])
+
+  const levelDisplayName = useMemo(() => {
+    if (!activeClass) return ''
+    return `${activeClass.grade.name} • ${activeClass.grade.level.name}`
   }, [activeClass])
 
   // ══════════ EFEITOS E BUSCAS ══════════
@@ -495,7 +499,14 @@ export const LessonPlanPage: React.FC = () => {
         <header style={{ padding: '2rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button onClick={() => isEditing ? setIsEditing(false) : navigate(-1)} className="card-interactive" style={{ width: '50px', height: '50px', borderRadius: '15px', background: 'white', border: '1px solid #eee' }}><ChevronLeft size={24} /></button>
-            <h1 style={{ fontSize: '2rem', fontWeight: 950 }}>{isEditing ? 'Planejamento' : 'Meus Planos'}</h1>
+            <div>
+              <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 950, lineHeight: 1 }}>{isEditing ? 'Planejamento' : 'Meus Planos'}</h1>
+              {activeClass && (
+                <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'hsl(var(--primary))', marginTop: '0.2rem', textTransform: 'uppercase', opacity: 0.8 }}>
+                  {levelDisplayName}
+                </p>
+              )}
+            </div>
           </div>
           {!isEditing && <button onClick={handleCreateNew} className="btn btn-primary"><Plus size={20} /> Novo Plano</button>}
         </header>
