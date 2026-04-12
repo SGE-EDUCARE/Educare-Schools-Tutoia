@@ -533,9 +533,11 @@ export const LessonPlanPage: React.FC = () => {
   // ══════════ LÓGICA DE NÍVEL (MEMOIZED) ══════════
   const levelInfo = useMemo(() => {
     const levelName = activeClass?.grade?.level?.name?.toLowerCase() || ''
+    
+    // Detecção precisa para evitar sobreposição (Fundamental II contém "Fundamental I")
     const isInf = levelName.includes('infantil')
-    const isF1 = levelName.includes('fundamental i') || levelName.includes('fundamental 1')
     const isF2m = levelName.includes('fundamental ii') || levelName.includes('fundamental 2') || levelName.includes('médio')
+    const isF1 = !isF2m && (levelName.includes('fundamental i') || levelName.includes('fundamental 1') || levelName.includes('anos iniciais'))
     
     return {
       isInfantil: isInf,
