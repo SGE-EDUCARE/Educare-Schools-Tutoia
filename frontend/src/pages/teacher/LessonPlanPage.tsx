@@ -694,8 +694,7 @@ export const LessonPlanPage: React.FC = () => {
                   checkString(plan.programmatic_content),
                   checkString(plan.methodology),
                   checkString(plan.evaluation),
-                  checkString(plan.resources),
-                  checkString(plan.references)
+                  checkString(plan.resources)
                 ]
                 
                 const filled = steps.filter(Boolean).length
