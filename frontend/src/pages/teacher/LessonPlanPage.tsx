@@ -336,6 +336,7 @@ export const LessonPlanPage: React.FC = () => {
     const showResults = isOpen && results.length > 0
 
     return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.35rem' : '0.5rem' }}>
         <label style={{
           fontSize: isMobile ? '0.8rem' : '0.9rem', 
           fontWeight: 850, color: 'hsl(var(--text))',
