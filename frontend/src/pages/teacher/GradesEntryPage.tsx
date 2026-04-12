@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronDown, Search, Loader2, Calendar, BookOpen, Trash2, 
 type GradeFields = { p1: string; p2: string; result: string; retry: string; final: string }
 
 export const GradesEntryPage: React.FC = () => {
-  const { classId } = useParams()
+  const { classId } = useParams<{ classId: string }>()
   const navigate = useNavigate()
   const [students, setStudents] = useState<any[]>([])
   const [grades, setGrades] = useState<Record<string, GradeFields>>({})
@@ -589,3 +589,7 @@ const MobileInput = ({ label, value, onChange, disabled, accent }: { label: stri
     />
   </div>
 )
+/* 
+  Modernized Grades Entry - Educare Premium 
+  Version: 1.1.1
+*/
