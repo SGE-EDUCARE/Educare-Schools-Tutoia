@@ -534,16 +534,19 @@ export const LessonPlanPage: React.FC = () => {
   const levelInfo = useMemo(() => {
     const levelName = activeClass?.grade?.level?.name?.toLowerCase() || ''
     
-    // Detecção precisa para evitar sobreposição (Fundamental II contém "Fundamental I")
+    // Detecção baseada no nome
     const isInf = levelName.includes('infantil')
-    const isF2m = levelName.includes('fundamental ii') || levelName.includes('fundamental 2') || levelName.includes('médio')
-    const isF1 = !isF2m && (levelName.includes('fundamental i') || levelName.includes('fundamental 1') || levelName.includes('anos iniciais'))
+    const isF1 = levelName.includes('fundamental i') || levelName.includes('fundamental 1') || levelName.includes('anos iniciais')
     
+    // O Fundamental II / Médio é o PADRÃO se nenhum outro for identificado 
+    // ou enquanto os dados da turma (activeClass) estão sendo carregados.
+    const isF2m = !isInf && !isF1
+
     return {
       isInfantil: isInf,
       isFundamental1: isF1,
       isFundamental2m: isF2m,
-      name: levelName
+      name: levelName || 'Padrão (Mensal)'
     }
   }, [activeClass])
 
@@ -839,6 +842,7 @@ export const LessonPlanPage: React.FC = () => {
               </SectionCard>
             )}
 
+            {/* Fundamental I e II compartilham a estrutura de Base BNCC (Habilidades, Competências) */}
             {(levelInfo.isFundamental1 || levelInfo.isFundamental2m) && (
               <SectionCard isMobile={isMobile} icon={<Target />} title="Base BNCC" accent="linear-gradient(135deg, #fffcf0 0%, #fff9e0 100%)">
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
