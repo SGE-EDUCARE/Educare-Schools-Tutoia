@@ -255,7 +255,7 @@ const MultiSelectField = ({ label, selected, onRemove, onOpen, variantColor }: a
 
 const SelectionModal = ({ 
   isOpen, onClose, title, search, setSearch, results, searching, 
-  onAdd, selectedObjects, onRemove, variantColor, levelInfo 
+  onAdd, selectedObjects, onRemove, variantColor, levelInfo, isMobile 
 }: any) => {
   if (!isOpen) return null;
   
