@@ -687,7 +687,7 @@ export const LessonPlanPage: React.FC = () => {
                 const checkArray = (a?: any[]) => a && a.length > 0
                 
                 const steps = [
-                  checkArray(plan.bncc_skills),
+                  checkArray(plan.bncc_skills) || checkString(plan.skills),
                   checkArray(plan.bncc_general_comp) || checkString(plan.custom_general_comp),
                   checkArray(plan.bncc_specific_comp) || checkString(plan.custom_specific_comp),
                   checkString(plan.knowledge_objects),
