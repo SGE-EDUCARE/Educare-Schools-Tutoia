@@ -12,8 +12,7 @@ import {
   LayoutList, 
   CheckCircle2,
   Trash2,
-  Book,
-  Printer
+  Book
 } from 'lucide-react'
 
 // ══════════ TIPAGENS ══════════
