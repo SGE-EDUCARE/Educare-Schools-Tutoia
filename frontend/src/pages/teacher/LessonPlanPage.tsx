@@ -822,13 +822,14 @@ export const LessonPlanPage: React.FC = () => {
                           color: 'hsl(var(--error))', borderRadius: isMobile ? '14px' : '18px', 
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           flexShrink: 0,
+                          padding: 0,
                           position: isMobile ? 'absolute' : 'static',
                           top: isMobile ? '1.25rem' : 'auto',
                           right: isMobile ? '1.25rem' : 'auto',
                           zIndex: 5
                         }}
                       >
-                        <Trash2 size={isMobile ? 24 : 30} strokeWidth={2.5} />
+                        <Trash2 size={isMobile ? 24 : 28} strokeWidth={2.5} />
                       </button>
                     </div>
                   </div>
