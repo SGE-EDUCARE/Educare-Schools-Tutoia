@@ -13,7 +13,8 @@ import {
   CheckCircle2,
   Trash2,
   Book,
-  BookOpen
+  BookOpen,
+  X
 } from 'lucide-react'
 
 // ══════════ TIPAGENS ══════════
