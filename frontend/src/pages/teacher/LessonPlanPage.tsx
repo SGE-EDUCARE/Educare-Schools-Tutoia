@@ -466,44 +466,39 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile, levelInfo }: { plan: Le
           <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
             {levelInfo.isInfantil && (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                  <ViewSection label="Campos de Experiência" icon={<Target size={18} />}>
+                <ViewSection label="Campos de Experiência" icon={<Target size={18} />}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {plan.custom_specific_comp?.split(';').filter(Boolean).map((c, i) => <div key={i} style={{ padding: '1rem', backgroundColor: '#f0f4ff', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>{c}</div>)}
+                  </div>
+                </ViewSection>
+                <ViewSection label="Direitos de Aprendizagem" icon={<Book size={18} />}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      {plan.custom_specific_comp?.split(';').filter(Boolean).map((c, i) => <div key={i} style={{ padding: '1rem', backgroundColor: '#f0f4ff', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>{c}</div>)}
+                    {plan.custom_general_comp?.split(';').filter(Boolean).map((c, i) => <div key={i} style={{ padding: '1rem', backgroundColor: '#fff8f0', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>{c}</div>)}
                     </div>
-                  </ViewSection>
-                  <ViewSection label="Direitos de Aprendizagem" icon={<Book size={18} />}>
-                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      {plan.custom_general_comp?.split(';').filter(Boolean).map((c, i) => <div key={i} style={{ padding: '1rem', backgroundColor: '#fff8f0', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>{c}</div>)}
-                     </div>
-                  </ViewSection>
-                </div>
+                </ViewSection>
+                
                 <ViewSection label="Objetivos de Aprendizagem (BNCC)" icon={<FileText size={18} />}>
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
                     {plan.bncc_skills?.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
                   </div>
                 </ViewSection>
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                  <ViewSection label="Público Alvo / Local" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
-                  <ViewSection label="Conteúdo Programático" icon={<Book size={18} />}>{plan.programmatic_content || '---'}</ViewSection>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                  <ViewSection label="Metodologia / Procedimentos" icon={<LayoutList size={18} />}>{plan.methodology || '---'}</ViewSection>
-                  <ViewSection label="Avaliação" icon={<CheckCircle2 size={18} />}>{plan.evaluation || '---'}</ViewSection>
-                  <ViewSection label="Recursos" icon={<LayoutList size={18} />}>{plan.resources || '---'}</ViewSection>
-                  <ViewSection label="Referências" icon={<Book size={18} />}>{plan.references || '---'}</ViewSection>
-                </div>
+
+                <ViewSection label="Público Alvo / Local" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
+                <ViewSection label="Conteúdo Programático" icon={<Book size={18} />}>{plan.programmatic_content || '---'}</ViewSection>
+                <ViewSection label="Metodologia / Procedimentos" icon={<LayoutList size={18} />}>{plan.methodology || '---'}</ViewSection>
+                <ViewSection label="Avaliação" icon={<CheckCircle2 size={18} />}>{plan.evaluation || '---'}</ViewSection>
+                <ViewSection label="Recursos" icon={<LayoutList size={18} />}>{plan.resources || '---'}</ViewSection>
+                <ViewSection label="Referências" icon={<Book size={18} />}>{plan.references || '---'}</ViewSection>
               </>
             )}
 
             {levelInfo.isFundamental1 && (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                  <ViewSection label="Temática / Tema" icon={<Target size={18} />}>{plan.skills || '---'}</ViewSection>
-                  <ViewSection label="Objeto do Conhecimento" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
-                </div>
+                <ViewSection label="Temática / Tema" icon={<Target size={18} />}>{plan.skills || '---'}</ViewSection>
+                <ViewSection label="Objeto do Conhecimento" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
+                
                 <ViewSection label="Habilidades (BNCC)" icon={<FileText size={18} />}>
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
                     {plan.bncc_skills?.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
                   </div>
                 </ViewSection>
@@ -516,7 +511,7 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile, levelInfo }: { plan: Le
                       {moments.m5 && <div style={{ padding: '1rem', background: '#fcfcfc', borderRadius: '12px' }}><strong>5º Momento:</strong> {moments.m5}</div>}
                    </div>
                 </ViewSection>
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2.5rem', background: '#fcfcfc', padding: '2rem', borderRadius: '24px', border: '1px solid #eee' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', background: '#fcfcfc', padding: isMobile ? '1.5rem' : '3rem', borderRadius: '32px', border: '1px solid #f0f0f0' }}>
                    <ViewSection label="Agenda Sala" icon={<Plus size={18} />}>{agenda.sala || '---'}</ViewSection>
                    <ViewSection label="Agenda Casa" icon={<Plus size={18} />}>{agenda.casa || '---'}</ViewSection>
                 </div>
@@ -525,47 +520,42 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile, levelInfo }: { plan: Le
 
             {levelInfo.isFundamental2m && (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                  <ViewSection label="COMPETÊNCIAS GERAIS" icon={<Target size={18} />}>
-                    {plan.bncc_general_comp?.length ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        {plan.bncc_general_comp.map(c => <BnccTag key={c.id} code={`CG${c.number}`} description={c.description} />)}
-                      </div>
-                    ) : <EmptyText />}
-                    {plan.custom_general_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_general_comp}</blockquote>}
-                  </ViewSection>
-                  <ViewSection label="COMPETÊNCIAS ESPECÍFICAS DA ÁREA" icon={<Target size={18} />}>
-                    {plan.bncc_specific_comp?.length ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        {plan.bncc_specific_comp.map(c => <BnccTag key={c.id} code={c.code} description={c.description} />)}
-                      </div>
-                    ) : <EmptyText />}
-                    {plan.custom_specific_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_specific_comp}</blockquote>}
-                  </ViewSection>
-                </div>
+                <ViewSection label="COMPETÊNCIAS GERAIS" icon={<Target size={18} />}>
+                  {plan.bncc_general_comp?.length ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {plan.bncc_general_comp.map(c => <BnccTag key={c.id} code={`CG${c.number}`} description={c.description} />)}
+                    </div>
+                  ) : <EmptyText />}
+                  {plan.custom_general_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_general_comp}</blockquote>}
+                </ViewSection>
+
+                <ViewSection label="COMPETÊNCIAS ESPECÍFICAS DA ÁREA" icon={<Target size={18} />}>
+                  {plan.bncc_specific_comp?.length ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {plan.bncc_specific_comp.map(c => <BnccTag key={c.id} code={c.code} description={c.description} />)}
+                    </div>
+                  ) : <EmptyText />}
+                  {plan.custom_specific_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_specific_comp}</blockquote>}
+                </ViewSection>
 
                 <ViewSection label="HABILIDADE(S) (BNCC)" icon={<FileText size={18} />}>
                   {plan.bncc_skills?.length ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
                       {plan.bncc_skills.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
                     </div>
                   ) : <EmptyText />}
                   {plan.skills && <p style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9f9f9', borderRadius: '12px', fontSize: '0.95rem' }}>{plan.skills}</p>}
                 </ViewSection>
 
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                  <ViewSection label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
-                  <ViewSection label="CONTEÚDOS PROGRAMÁTICOS" icon={<Book size={18} />}>{plan.content || '---'}</ViewSection>
-                </div>
+                <ViewSection label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
+                <ViewSection label="CONTEÚDOS PROGRAMÁTICOS" icon={<Book size={18} />}>{plan.content || '---'}</ViewSection>
 
                 <ViewSection label="CRONOGRAMA DETALHADO (SEMANAS)" icon={<Calendar size={18} />}>{plan.programmatic_content || '---'}</ViewSection>
                 <ViewSection label="PROCEDIMENTOS METODOLÓGICOS" icon={<LayoutList size={18} />}>{plan.methodology || '---'}</ViewSection>
 
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem' }}>
-                  <ViewSection label="RECURSOS" icon={<LayoutList size={18} />}>{plan.resources || '---'}</ViewSection>
-                  <ViewSection label="REFERÊNCIAS" icon={<Book size={18} />}>{plan.references || '---'}</ViewSection>
-                  <ViewSection label="PROCEDIMENTOS AVALIATIVOS" icon={<CheckCircle2 size={18} />}>{plan.evaluation || '---'}</ViewSection>
-                </div>
+                <ViewSection label="RECURSOS" icon={<LayoutList size={18} />}>{plan.resources || '---'}</ViewSection>
+                <ViewSection label="REFERÊNCIAS" icon={<Book size={18} />}>{plan.references || '---'}</ViewSection>
+                <ViewSection label="PROCEDIMENTOS AVALIATIVOS" icon={<CheckCircle2 size={18} />}>{plan.evaluation || '---'}</ViewSection>
               </>
             )}
           </div>
