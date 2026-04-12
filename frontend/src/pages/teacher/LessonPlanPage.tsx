@@ -90,37 +90,39 @@ const INFANTIL_DIREITOS = [
 const SectionCard = ({ icon, title, accent, children, isMobile }: any) => (
   <section className="card" style={{ 
     padding: 0, 
-    borderRadius: isMobile ? '16px' : '28px', 
-    border: '1px solid #eee', 
+    borderRadius: isMobile ? '24px' : '32px', 
+    border: '1px solid rgba(0,0,0,0.02)', 
     background: 'white', 
     position: 'relative',
-    boxShadow: isMobile ? '0 2px 10px rgba(0,0,0,0.03)' : 'var(--shadow-sm)'
+    boxShadow: isMobile ? '0 10px 30px rgba(0,0,0,0.03)' : '0 15px 45px rgba(0,0,0,0.04)',
+    overflow: 'visible'
   }}>
     <div style={{ 
-      padding: isMobile ? '1rem 1.25rem' : '1.25rem 2rem', 
+      padding: isMobile ? '1.25rem 1.5rem' : '1.5rem 2.5rem', 
       background: accent || '#fff', 
-      borderBottom: '1px solid #f5f5f5', 
+      borderBottom: '1px solid #f8f8f8', 
       display: 'flex', 
       alignItems: 'center', 
-      gap: '0.75rem',
-      borderTopLeftRadius: isMobile ? '16px' : '28px',
-      borderTopRightRadius: isMobile ? '16px' : '28px'
+      gap: '1rem',
+      borderTopLeftRadius: isMobile ? '24px' : '32px',
+      borderTopRightRadius: isMobile ? '24px' : '32px'
     }}>
       <div style={{ 
-        width: isMobile ? '32px' : '40px', 
-        height: isMobile ? '32px' : '40px', 
-        borderRadius: '10px', 
+        width: isMobile ? '40px' : '48px', 
+        height: isMobile ? '40px' : '48px', 
+        borderRadius: '14px', 
         background: 'white', 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center', 
-        boxShadow: '0 2px 8px rgba(0,0,0,0.05)' 
+        boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+        color: 'hsl(var(--primary))'
       }}>
-        {React.cloneElement(icon, { size: isMobile ? 18 : 24 })}
+        {React.cloneElement(icon, { size: isMobile ? 20 : 24 })}
       </div>
-      <h3 style={{ fontSize: isMobile ? '1rem' : '1.1rem', fontWeight: 800 }}>{title}</h3>
+      <h3 style={{ fontSize: isMobile ? '1.1rem' : '1.4rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#1B2559' }}>{title}</h3>
     </div>
-    <div style={{ padding: isMobile ? '1.25rem' : '2rem' }}>{children}</div>
+    <div style={{ padding: isMobile ? '1.5rem 1.5rem' : '2.5rem' }}>{children}</div>
   </section>
 )
 
@@ -892,34 +894,78 @@ export const LessonPlanPage: React.FC = () => {
 
   // ══════════ RENDERIZAÇÃO FINAL ══════════
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'hsl(var(--background))' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '0 0.75rem 6rem' : '0 2rem 10rem' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: isMobile ? '0 1.25rem 12rem' : '0 2.5rem 10rem' }}>
         
-        <header style={{ padding: isMobile ? '1.25rem 0' : '2rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.75rem' : '1rem' }}>
-            <button onClick={() => isEditing ? setIsEditing(false) : navigate(-1)} className="card-interactive" style={{ width: isMobile ? '40px' : '50px', height: isMobile ? '40px' : '50px', borderRadius: '12px', background: 'white', border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={isMobile ? 20 : 24} /></button>
-            <div>
-              <h1 style={{ fontSize: isMobile ? '1.25rem' : '2.5rem', fontWeight: 1000, lineHeight: 1.1, letterSpacing: '-0.04em' }}>{isEditing ? 'Planejamento' : 'Meus Planos'}</h1>
-              {activeClass && (
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                   <span style={{ 
-                     fontSize: '0.7rem', fontWeight: 950, color: 'white', 
-                     backgroundColor: levelInfo.isInfantil ? '#ff9f43' : levelInfo.isFundamental1 ? '#00d2d3' : '#5f27cd',
-                     padding: '0.3rem 0.8rem', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.05em'
-                   }}>
-                     {levelInfo.isInfantil ? 'Infantil' : levelInfo.isFundamental1 ? 'Fundamental I' : 'Fund II / Médio'}
-                   </span>
-                   <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#666', opacity: 0.8 }}>
-                    {levelDisplayName}
-                  </p>
-                </div>
-              )}
+        <header style={{ padding: isMobile ? '2.5rem 0 1.5rem' : '4rem 0 2.5rem' }}>
+          <button 
+            onClick={() => isEditing ? setIsEditing(false) : navigate('/teacher/dashboard')} 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem', 
+              color: 'hsl(var(--primary))', 
+              fontSize: '0.8rem', 
+              fontWeight: 900,
+              marginBottom: '1.5rem',
+              border: 'none',
+              background: 'hsl(var(--primary) / 0.1)',
+              padding: '0.5rem 1rem',
+              borderRadius: 'var(--radius-full)',
+              cursor: 'pointer',
+              letterSpacing: '0.05em'
+            }}
+          >
+            <ChevronLeft size={16} /> {isEditing ? 'VOLTAR À LISTA' : 'VOLTAR AO PAINEL'}
+          </button>
+          
+          <h1 style={{ 
+            fontSize: isMobile ? '2.2rem' : '3.2rem', 
+            fontWeight: 1000, 
+            lineHeight: 1, 
+            letterSpacing: '-0.06em', 
+            color: '#1B2559' 
+          }}>
+            {isEditing ? 'Planejamento' : 'Meus Planos'}
+          </h1>
+          
+          <p style={{ 
+             fontSize: isMobile ? '1rem' : '1.2rem', 
+             fontWeight: 500, 
+             color: 'hsl(var(--text-light))', 
+             letterSpacing: '-0.01em', 
+             marginTop: '0.5rem' 
+          }}>
+            {isEditing ? `Defina os objetivos de aprendizagem para ${currentPlan?.subject || 'sua disciplina'}.` : 'Gerencie e visualize todos os seus planejamentos BNCC.'}
+          </p>
+
+          {activeClass && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center', marginTop: '1.5rem' }}>
+               <div style={{ 
+                 display: 'flex', alignItems: 'center', gap: '0.5rem',
+                 backgroundColor: 'white', padding: '0.5rem 1rem', borderRadius: '14px',
+                 boxShadow: '0 4px 12px rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.03)'
+               }}>
+                 <span style={{ 
+                   width: '10px', height: '10px', borderRadius: '50%',
+                   backgroundColor: levelInfo.isInfantil ? '#ff9f43' : levelInfo.isFundamental1 ? '#00d2d3' : '#5f27cd'
+                 }}></span>
+                 <span style={{ fontSize: '0.8rem', fontWeight: 900, color: '#1B2559' }}>
+                   {levelInfo.isInfantil ? 'Educação Infantil' : levelInfo.isFundamental1 ? 'Fundamental I' : 'Fundamental II / Médio'}
+                 </span>
+               </div>
+               <p style={{ fontSize: '0.9rem', fontWeight: 700, color: 'hsl(var(--text-light))', opacity: 1 }}>
+                {levelDisplayName}
+               </p>
             </div>
-          </div>
+          )}
+
           {!isEditing && (
-            <button onClick={handleCreateNew} className="btn-primary" style={{ padding: '0.8rem 1.5rem', borderRadius: '16px', fontWeight: 800, boxShadow: '0 10px 25px hsl(var(--primary) / 0.3)' }}>
-              <Plus size={20} /> <span style={{ marginLeft: '0.5rem' }}>Novo Plano</span>
-            </button>
+            <div style={{ marginTop: '2.5rem' }}>
+              <button onClick={handleCreateNew} className="btn-primary" style={{ padding: '1.2rem 2rem', borderRadius: '24px', fontWeight: 900, boxShadow: '0 20px 40px hsl(var(--primary) / 0.3)', width: isMobile ? '100%' : 'auto' }}>
+                <Plus size={22} /> <span style={{ marginLeft: '0.5rem' }}>NOVO PLANEJAMENTO</span>
+              </button>
+            </div>
           )}
         </header>
 
@@ -1055,20 +1101,60 @@ export const LessonPlanPage: React.FC = () => {
                </div>
             </SectionCard>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
-              <button onClick={() => setIsEditing(false)} className="btn btn-secondary">Cancelar</button>
-              <button onClick={handleSave} disabled={saving} className="btn btn-primary">{saving ? <Loader2 className="animate-spin" /> : 'Salvar Planejamento'}</button>
-            </div>
+            {/* FAB de Salvamento Mobile */}
+            {isMobile && (
+              <div style={{ 
+                position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', 
+                width: 'calc(100% - 2.5rem)', zIndex: 3000
+              }}>
+                <button 
+                  onClick={handleSave} 
+                  disabled={saving}
+                  style={{ 
+                    width: '100%', padding: '1.4rem', borderRadius: '28px', backgroundColor: 'hsl(var(--primary))', 
+                    color: 'white', boxShadow: '0 20px 40px hsl(var(--primary) / 0.4)', fontSize: '1.2rem', 
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', 
+                    fontWeight: 1000, border: 'none', letterSpacing: '-0.02em'
+                  }}
+                >
+                  {saving ? <Loader2 className="animate-spin" size={24} /> : 'SALVAR PLANEJAMENTO'}
+                </button>
+              </div>
+            )}
+
+            {!isMobile && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
+                <button onClick={() => setIsEditing(false)} className="btn btn-secondary" style={{ padding: '1rem 2rem', borderRadius: '16px', fontWeight: 800 }}>Cancelar</button>
+                <button onClick={handleSave} disabled={saving} className="btn btn-primary" style={{ padding: '1rem 2.5rem', borderRadius: '16px', fontWeight: 800 }}>
+                  {saving ? <Loader2 className="animate-spin" /> : 'Salvar Planejamento'}
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
             {plans.map(p => (
-              <div key={p.id} className="card-interactive-premium" style={{ padding: '2rem', borderRadius: '30px', background: 'white', display: 'flex', flexDirection: 'column', gap: '1.5rem', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-                <div><span style={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem', color: '#999' }}>{p.month} • {p.bimester}º Bimestre</span><h3 style={{ fontSize: '1.3rem', fontWeight: 1000, marginTop: '0.5rem' }}>{p.subject}</h3></div>
+              <div key={p.id} className="card-interactive-premium" style={{ 
+                padding: '2rem', 
+                borderRadius: '32px', 
+                background: 'white', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '1.5rem', 
+                boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
+                border: '1px solid rgba(0,0,0,0.01)'
+              }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                    <span style={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.08)', padding: '0.3rem 0.6rem', borderRadius: '8px' }}>{p.month}</span>
+                    <span style={{ fontWeight: 800, fontSize: '0.7rem', color: '#999' }}>{p.bimester}º BIMESTRE</span>
+                  </div>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 1000, color: '#1B2559', letterSpacing: '-0.03em' }}>{p.subject}</h3>
+                </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                   <button onClick={() => setViewingPlan(p)} className="btn btn-secondary" style={{ flex: 1 }}>Ver</button>
-                   <button onClick={() => handleEdit(p)} className="btn btn-primary" style={{ flex: 1.5 }}>Editar</button>
-                   <button onClick={() => { if(confirm('Excluir?')) api(`/teacher/lesson-plans/${p.id}`, { method: 'DELETE' }).then(() => fetchPlans()) }} className="btn" style={{ background: '#fff0f0', color: 'red' }}><Trash2 size={18} /></button>
+                   <button onClick={() => setViewingPlan(p)} className="btn btn-secondary" style={{ flex: 1, borderRadius: '14px', fontWeight: 800 }}>Ver</button>
+                   <button onClick={() => handleEdit(p)} className="btn btn-primary" style={{ flex: 1.5, borderRadius: '14px', fontWeight: 800 }}>Editar</button>
+                   <button onClick={() => { if(confirm('Excluir?')) api(`/teacher/lesson-plans/${p.id}`, { method: 'DELETE' }).then(() => fetchPlans()) }} className="btn" style={{ background: '#fff0f0', color: 'red', borderRadius: '14px' }}><Trash2 size={18} /></button>
                 </div>
               </div>
             ))}
