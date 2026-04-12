@@ -976,7 +976,7 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile }: { plan: LessonPlan; o
       >
         {/* Header Visualizer */}
         <div style={{
-          padding: isMobile ? '1.5rem' : '2rem 3rem', 
+          padding: isMobile ? '1.5rem' : '2rem 4rem', 
           borderBottom: '1px solid hsl(var(--border) / 0.4)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           position: 'sticky', top: 0, backgroundColor: 'white',
@@ -1007,7 +1007,7 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile }: { plan: LessonPlan; o
         </div>
 
         {/* Content Visualizer */}
-        <div style={{ padding: isMobile ? '1.5rem' : '3.5rem', flex: 1, backgroundColor: '#fff', color: '#1a1a1a' }} className="print-content">
+        <div style={{ padding: isMobile ? '1.5rem' : '4rem', flex: 1, backgroundColor: '#fff', color: '#1a1a1a' }} className="print-content">
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
             
