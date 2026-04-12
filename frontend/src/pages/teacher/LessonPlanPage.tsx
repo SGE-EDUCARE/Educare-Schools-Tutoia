@@ -90,27 +90,28 @@ const INFANTIL_DIREITOS = [
 const SectionCard = ({ icon, title, accent, children, isMobile }: any) => (
   <section className="card" style={{ 
     padding: 0, 
-    borderRadius: isMobile ? '24px' : '32px', 
+    borderRadius: isMobile ? '18px' : '32px', 
     border: '1px solid rgba(0,0,0,0.02)', 
     background: 'white', 
     position: 'relative',
-    boxShadow: isMobile ? '0 10px 30px rgba(0,0,0,0.03)' : '0 15px 45px rgba(0,0,0,0.04)',
-    overflow: 'visible'
+    boxShadow: isMobile ? '0 5px 20px rgba(0,0,0,0.02)' : '0 15px 45px rgba(0,0,0,0.04)',
+    overflow: 'visible',
+    width: '100%'
   }}>
     <div style={{ 
-      padding: isMobile ? '1.25rem 1.5rem' : '1.5rem 2.5rem', 
+      padding: isMobile ? '1rem' : '1.5rem 2.5rem', 
       background: accent || '#fff', 
       borderBottom: '1px solid #f8f8f8', 
       display: 'flex', 
       alignItems: 'center', 
-      gap: '1rem',
-      borderTopLeftRadius: isMobile ? '24px' : '32px',
-      borderTopRightRadius: isMobile ? '24px' : '32px'
+      gap: '0.75rem',
+      borderTopLeftRadius: isMobile ? '18px' : '32px',
+      borderTopRightRadius: isMobile ? '18px' : '32px'
     }}>
       <div style={{ 
-        width: isMobile ? '40px' : '48px', 
-        height: isMobile ? '40px' : '48px', 
-        borderRadius: '14px', 
+        width: isMobile ? '36px' : '48px', 
+        height: isMobile ? '36px' : '48px', 
+        borderRadius: '12px', 
         background: 'white', 
         display: 'flex', 
         alignItems: 'center', 
@@ -118,11 +119,11 @@ const SectionCard = ({ icon, title, accent, children, isMobile }: any) => (
         boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
         color: 'hsl(var(--primary))'
       }}>
-        {React.cloneElement(icon, { size: isMobile ? 20 : 24 })}
+        {React.cloneElement(icon, { size: isMobile ? 18 : 24 })}
       </div>
-      <h3 style={{ fontSize: isMobile ? '1.1rem' : '1.4rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#1B2559' }}>{title}</h3>
+      <h3 style={{ fontSize: isMobile ? '1rem' : '1.4rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#1B2559' }}>{title}</h3>
     </div>
-    <div style={{ padding: isMobile ? '1.5rem 1.5rem' : '2.5rem' }}>{children}</div>
+    <div style={{ padding: isMobile ? '1rem' : '2.5rem' }}>{children}</div>
   </section>
 )
 
@@ -895,7 +896,7 @@ export const LessonPlanPage: React.FC = () => {
   // ══════════ RENDERIZAÇÃO FINAL ══════════
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: isMobile ? '0 1.25rem 12rem' : '0 2.5rem 10rem' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: isMobile ? '0 0.5rem 12rem' : '0 2.5rem 10rem' }}>
         
         <header style={{ padding: isMobile ? '2.5rem 0 1.5rem' : '4rem 0 2.5rem' }}>
           <button 
