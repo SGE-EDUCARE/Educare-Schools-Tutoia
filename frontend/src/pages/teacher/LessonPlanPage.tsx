@@ -644,14 +644,26 @@ export const LessonPlanPage: React.FC = () => {
 
             {/* ─── AÇÕES ─── */}
             <div style={{
-              display: 'flex', justifyContent: 'flex-end', gap: '1rem',
-              paddingTop: '1.5rem', borderTop: '1px solid hsl(var(--border) / 0.4)'
+              display: 'flex', 
+              flexDirection: isMobile ? 'column-reverse' : 'row', 
+              justifyContent: 'flex-end', 
+              gap: isMobile ? '0.75rem' : '1rem',
+              paddingTop: '1.5rem', 
+              borderTop: '1px solid hsl(var(--border) / 0.4)'
             }}>
               <button
                 onClick={() => setIsEditing(false)}
                 disabled={saving}
                 className="btn btn-secondary"
-                style={{ padding: '0.75rem 2rem', fontWeight: 700, borderRadius: '14px' }}
+                style={{ 
+                  width: isMobile ? '100%' : 'auto',
+                  padding: isMobile ? '1rem' : '0.75rem 2rem', 
+                  fontWeight: 700, 
+                  borderRadius: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
                 Descartar
               </button>
@@ -659,13 +671,28 @@ export const LessonPlanPage: React.FC = () => {
                 onClick={handleSave}
                 disabled={saving}
                 className="btn btn-primary"
-                style={{
-                  padding: '0.75rem 3rem', borderRadius: '14px', fontWeight: 800,
-                  display: 'flex', alignItems: 'center', gap: '0.75rem',
-                  opacity: saving ? 0.7 : 1
+                style={{ 
+                  width: isMobile ? '100%' : 'auto',
+                  padding: isMobile ? '1rem' : '0.75rem 3rem', 
+                  borderRadius: '14px', 
+                  fontWeight: 900,
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  gap: '0.75rem',
+                  opacity: saving ? 0.7 : 1,
+                  background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.85) 100%)',
+                  boxShadow: '0 8px 20px -4px hsl(var(--primary) / 0.4)'
                 }}
               >
-                {saving ? <Loader2 className="animate-spin" size={20} /> : <><CheckCircle2 size={20} /> Salvar Plano</>}
+                {saving ? (
+                  <Loader2 className="animate-spin" size={20} />
+                ) : (
+                  <>
+                    <CheckCircle2 size={20} />
+                    Salvar Plano
+                  </>
+                )}
               </button>
             </div>
           </div>
