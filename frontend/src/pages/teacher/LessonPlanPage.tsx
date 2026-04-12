@@ -656,7 +656,11 @@ export const LessonPlanPage: React.FC = () => {
 
         ) : (
           /* ══════════ LISTA DE PLANOS ══════════ */
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '2rem' }} className="animate-fade-in">
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(360px, 1fr))', 
+            gap: isMobile ? '1rem' : '2rem' 
+          }} className="animate-fade-in">
             {plans.length === 0 ? (
               <div style={{ gridColumn: '1 / -1', padding: '6rem 2rem', textAlign: 'center' }} className="card">
                 <div style={{
@@ -688,11 +692,12 @@ export const LessonPlanPage: React.FC = () => {
 
                 return (
                   <div key={plan.id} className="card-interactive" style={{
-                    borderRadius: '28px', padding: '1.75rem',
+                    borderRadius: isMobile ? '24px' : '28px', 
+                    padding: isMobile ? '1.25rem' : '1.75rem',
                     background: 'rgba(255, 255, 255, 0.8)',
                     backdropFilter: 'blur(20px)',
                     border: '1px solid hsl(var(--border) / 0.6)',
-                    display: 'flex', flexDirection: 'column', gap: '1.5rem',
+                    display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem',
                     position: 'relative', overflow: 'hidden',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.05)'
@@ -721,9 +726,17 @@ export const LessonPlanPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <h3 style={{ fontSize: '1.35rem', fontWeight: 950, color: 'hsl(var(--text))', lineHeight: 1.2, letterSpacing: '-0.03em' }}>{plan.subject}</h3>
+                      <h3 style={{ 
+                        fontSize: isMobile ? '1.15rem' : '1.35rem', 
+                        fontWeight: 950, color: 'hsl(var(--text))', 
+                        lineHeight: 1.2, letterSpacing: '-0.03em' 
+                      }}>{plan.subject}</h3>
                       <div style={{ 
-                        marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '1rem',
+                        marginTop: isMobile ? '0.5rem' : '0.75rem', 
+                        display: 'flex', 
+                        flexDirection: isMobile ? 'column' : 'row',
+                        alignItems: isMobile ? 'flex-start' : 'center', 
+                        gap: isMobile ? '0.4rem' : '1rem',
                         fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 600 
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -740,14 +753,15 @@ export const LessonPlanPage: React.FC = () => {
                       <div style={{ width: `${progress}%`, height: '100%', backgroundColor: color, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }} />
                     </div>
 
-                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
                       <button 
                         onClick={() => setViewingPlan(plan)} 
                         className="btn"
                         style={{
                           flex: 1, background: 'white', border: '1.5px solid hsl(var(--border))',
                           color: 'hsl(var(--text))', borderRadius: '16px',
-                          fontWeight: 850, fontSize: '0.85rem', minHeight: '52px',
+                          fontWeight: 850, fontSize: isMobile ? '0.8rem' : '0.85rem', 
+                          minHeight: isMobile ? '48px' : '52px',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem'
                         }}
                       >
@@ -758,21 +772,22 @@ export const LessonPlanPage: React.FC = () => {
                         className="btn btn-primary"
                         style={{
                           flex: 1, borderRadius: '16px',
-                          fontWeight: 850, fontSize: '0.85rem', minHeight: '52px',
+                          fontWeight: 850, fontSize: isMobile ? '0.8rem' : '0.85rem', 
+                          minHeight: isMobile ? '48px' : '52px',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem'
                         }}
                       >
-                        <Edit3 size={18} /> Editar
+                        {isMobile ? 'Editar' : <><Edit3 size={18} /> Editar</>}
                       </button>
                       <button 
                         onClick={(e) => { e.stopPropagation(); if(confirm('Excluir este plano?')) api(`/teacher/lesson-plans/${plan.id}`, { method: 'DELETE' }).then(() => fetchPlans()) }} 
                         className="btn"
                         style={{
-                          padding: '0 1rem', background: 'hsl(var(--error) / 0.05)', border: '1.5px solid transparent',
-                          color: 'hsl(var(--error))', borderRadius: '16px', minHeight: '52px'
+                          padding: '0 0.75rem', background: 'hsl(var(--error) / 0.05)', border: '1.5px solid transparent',
+                          color: 'hsl(var(--error))', borderRadius: '16px', minHeight: isMobile ? '48px' : '52px'
                         }}
                       >
-                        <Trash2 size={20} />
+                        <Trash2 size={isMobile ? 18 : 20} />
                       </button>
                     </div>
                   </div>
@@ -1002,7 +1017,7 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile }: { plan: LessonPlan; o
             </div>
 
             {/* 2. Grades de Referência */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '1.5rem' : '2rem' }}>
               <ViewSection label="Competências Gerais (BNCC)" icon={<Target size={18}/>}>
                 {plan.bncc_general_comp?.length ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -1047,7 +1062,7 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile }: { plan: LessonPlan; o
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '1.5rem' : '2rem' }}>
               <ViewSection label="Recursos Didáticos" icon={<CheckCircle2 size={18}/>}>
                 <p>{plan.resources || '---'}</p>
               </ViewSection>
