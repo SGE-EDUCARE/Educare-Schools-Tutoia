@@ -34,7 +34,9 @@ type LessonPlan = {
   methodology: string
   evaluation: string
   resources: string
-  references: string
+  content?: string
+  references?: string
+  status: string
   type: string
 }
 
@@ -694,13 +696,10 @@ export const LessonPlanPage: React.FC = () => {
             ) : (
               plans.map(plan => {
                 // Cálculo de preenchimento (versão completa e justa)
-                const checkString = (s?: string) => s && s.trim().length > 0
-                const checkArray = (a?: any[]) => a && a.length > 0
-                
                 const steps = [
-                  (plan.bncc_skills?.length > 0 || plan.skills?.trim()),
-                  (plan.bncc_general_comp?.length > 0 || plan.custom_general_comp?.trim()),
-                  (plan.bncc_specific_comp?.length > 0 || plan.custom_specific_comp?.trim()),
+                  ((plan.bncc_skills?.length ?? 0) > 0 || plan.skills?.trim()),
+                  ((plan.bncc_general_comp?.length ?? 0) > 0 || plan.custom_general_comp?.trim()),
+                  ((plan.bncc_specific_comp?.length ?? 0) > 0 || plan.custom_specific_comp?.trim()),
                   plan.knowledge_objects?.trim(),
                   plan.content?.trim(),
                   plan.programmatic_content?.trim(),
