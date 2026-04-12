@@ -829,7 +829,7 @@ export const LessonPlanPage: React.FC = () => {
                           zIndex: 5
                         }}
                       >
-                        <Trash2 size={isMobile ? 24 : 28} strokeWidth={2.5} />
+                        <Trash2 size={isMobile ? 20 : 24} strokeWidth={2.5} />
                       </button>
                     </div>
                   </div>
