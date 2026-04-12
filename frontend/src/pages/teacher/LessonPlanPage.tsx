@@ -1101,8 +1101,8 @@ export const LessonPlanPage: React.FC = () => {
                </div>
             </SectionCard>
 
-            {/* FAB de Salvamento Mobile */}
-            {isMobile && (
+            {/* FAB de Salvamento Mobile (Oculto se modal aberto) */}
+            {isMobile && !activeDropdown && !viewingPlan && (
               <div style={{ 
                 position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', 
                 width: 'calc(100% - 2.5rem)', zIndex: 3000
