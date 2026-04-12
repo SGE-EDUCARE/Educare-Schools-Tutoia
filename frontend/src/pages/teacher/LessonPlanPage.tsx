@@ -137,7 +137,7 @@ const FormGroup = ({ label, value, onChange }: any) => (
 
 const MultiSelectField = ({ 
   label, placeholder, search, setSearch, results, searching, selected, onAdd, onRemove, 
-  variantColor, isMobile, isOpen, onToggle, onClose 
+  variantColor, isOpen, onToggle, onClose 
 }: any) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -613,45 +613,7 @@ export const LessonPlanPage: React.FC = () => {
   )
 
   // ══════════ AUXILIARES DE RENDER ══════════
-  const renderMultiselect = (
-    dropdownKey: string, label: string, placeholder: string, search: string, setSearch: (v: string) => void,
-    results: any[], searching: boolean, selected: any[], onAdd: (item: any) => void, onRemove: (id: string) => void,
-    variantColor: string = 'hsl(var(--primary))', isMobile: boolean = false
-  ) => {
-    const isOpen = activeDropdown === dropdownKey
-    const showResults = isOpen && results.length > 0
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.35rem' : '0.5rem' }}>
-        <label style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', fontWeight: 850, color: 'hsl(var(--text))', textTransform: 'uppercase', opacity: 0.8 }}>{label}</label>
-        <div style={{ position: 'relative' }}>
-          <input 
-            type="text" className="input" placeholder={placeholder} value={search}
-            onChange={e => setSearch(e.target.value)} onFocus={() => setActiveDropdown(dropdownKey)}
-            style={{ width: '100%', backgroundColor: 'white', borderRadius: isMobile ? '16px' : '20px' }}
-          />
-          {searching && <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}><Loader2 size={16} className="animate-spin" /></div>}
-          {showResults && (
-            <div className="glass" style={{ position: 'absolute', top: '105%', left: 0, right: 0, backgroundColor: 'white', zIndex: 500, borderRadius: '16px', maxHeight: '250px', overflowY: 'auto', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-              {results.map(res => (
-                <div key={res.id} onClick={() => { onAdd(res); setSearch(''); setActiveDropdown(null) }} style={{ padding: '1rem', cursor: 'pointer', borderBottom: '1px solid #eee' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.85rem' }}>{res.code || res.number} - {res.title || ''}</div>
-                  <div style={{ fontSize: '0.75rem', color: '#666' }}>{res.description}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
-          {selected.map(item => (
-            <div key={item.id} style={{ backgroundColor: 'white', padding: '1rem', borderRadius: '16px', border: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ flex: 1 }}><span style={{ fontWeight: 900, color: variantColor, fontSize: '0.7rem' }}>{item.code || item.number}</span> <p style={{ fontSize: '0.8rem' }}>{item.description}</p></div>
-              <button onClick={() => onRemove(item.id)} style={{ color: 'red', marginLeft: '1rem' }}><Trash2 size={16} /></button>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
+  // (Componente MultiSelectField agora é externo para usar refs)
 
   // ══════════ RENDERIZAÇÃO FINAL ══════════
   return (
