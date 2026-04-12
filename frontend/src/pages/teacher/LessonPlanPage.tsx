@@ -614,7 +614,7 @@ export const LessonPlanPage: React.FC = () => {
                   <FormGroup isMobile={isMobile} label="Habilidades Próprias" placeholder="Habilidades não previstas na BNCC..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem' }}>
-                  <FormGroup isMobile={isMobile} label="Cronograma Detalhado" placeholder="Distribuição do conteúdo pelas semanas..." value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="180px" />
+                  <FormGroup isMobile={isMobile} label="Cronograma Detalhado" placeholder="Distribuição do conteúdo pelas semanas..." value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="120px" />
                   <FormGroup isMobile={isMobile} label="Metodologias e Estratégias" placeholder="Como o conteúdo será trabalhado?" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="180px" />
                 </div>
               </div>
