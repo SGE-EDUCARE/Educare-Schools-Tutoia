@@ -137,96 +137,167 @@ const FormGroup = ({ label, value, onChange }: any) => (
 )
 
 const ViewSection = ({ label, icon, children }: any) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'blue' }}>{icon} <span style={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.8rem' }}>{label}</span></div>
-    <div style={{ color: '#444', lineHeight: 1.6 }}>{children}</div>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'hsl(var(--primary))' }}>
+      <div style={{ 
+        width: '32px', height: '32px', borderRadius: '8px', 
+        background: 'hsl(var(--primary) / 0.1)', display: 'flex', 
+        alignItems: 'center', justifyContent: 'center' 
+      }}>
+        {icon}
+      </div>
+      <span style={{ fontSize: '0.85rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
+    </div>
+    <div style={{ 
+      fontSize: '1rem', color: '#333', lineHeight: 1.6, 
+      wordBreak: 'break-word', overflowWrap: 'anywhere' 
+    }}>
+      {children}
+    </div>
   </div>
 )
+
+const BnccTag = ({ code, description }: any) => (
+  <div style={{ 
+    padding: '1.5rem', backgroundColor: '#fcfcfd', borderRadius: '18px', 
+    border: '1px solid #f0eff5', display: 'flex', gap: '1rem', alignItems: 'flex-start',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+  }}>
+    <span style={{ 
+      backgroundColor: 'hsl(var(--primary))', color: 'white', 
+      padding: '0.25rem 0.6rem', borderRadius: '8px', 
+      fontSize: '0.7rem', fontWeight: 950, flexShrink: 0,
+      letterSpacing: '0.02em'
+    }}>{code}</span>
+    <span style={{ 
+      fontSize: '0.85rem', lineHeight: 1.6, fontWeight: 550, 
+      color: '#2d3748', wordBreak: 'break-word' 
+    }}>{description}</span>
+  </div>
+)
+
+const EmptyText = () => <span style={{ color: '#bbb', fontSize: '0.9rem', fontStyle: 'italic' }}>Nenhum item selecionado</span>
 
 // ══════════ SUBCOMPONENTE: VISUALIZADOR ══════════
 const LessonPlanVisualizer = ({ plan, onClose, isMobile, isInfantil }: { plan: LessonPlan; onClose: () => void; isMobile: boolean; isInfantil: boolean }) => (
   <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '0' : '2rem' }} onClick={onClose}>
-    <div className="glass animate-scale-in" style={{ width: '100%', maxWidth: '850px', maxHeight: '95vh', backgroundColor: 'white', borderRadius: isMobile ? '0' : '30px', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-      <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 2 }}>
-        <h2 style={{ fontSize: '1.3rem', fontWeight: 1000 }}>Visualização do Plano</h2>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button onClick={() => window.print()} className="btn btn-secondary" style={{ gap: '0.5rem', padding: '0.5rem 1rem' }}><Printer size={18} /> Imprimir</button>
-          <button onClick={onClose} className="btn-primary" style={{ width: '40px', height: '40px', borderRadius: '12px' }}>✕</button>
+    <div className="glass animate-scale-in" style={{ width: '100%', maxWidth: '900px', maxHeight: '95vh', backgroundColor: 'white', borderRadius: isMobile ? '0' : '30px', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+      <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
+        <div>
+          <h2 style={{ fontSize: isMobile ? '1.25rem' : '1.75rem', fontWeight: 950, color: 'hsl(var(--text))', letterSpacing: '-0.03em' }}>{isInfantil ? 'Plano de Aula Infantil' : 'Plano de Aula Mensal'}</h2>
+          <div style={{ fontSize: '0.9rem', color: '#666', fontWeight: 600, marginTop: '0.2rem' }}>{plan.subject} • {plan.month}</div>
+        </div>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button onClick={() => window.print()} className="btn btn-secondary" style={{ display: isMobile ? 'none' : 'flex', padding: '0.75rem 1.25rem', borderRadius: '14px' }}>Imprimir</button>
+          <button onClick={onClose} className="btn-primary" style={{ width: '44px', height: '44px', borderRadius: '14px' }}>✕</button>
         </div>
       </div>
-      <div style={{ padding: '3rem', cursor: 'default' }} id="printable-plan">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 1000, textTransform: 'uppercase' }}>Planejamento de Ensino</h1>
-          <p style={{ fontSize: '1.1rem', marginTop: '0.5rem' }}>{plan.subject} • {plan.bimester}º Bimestre • {plan.month}</p>
+
+      <div style={{ padding: isMobile ? '1.5rem' : '4rem', cursor: 'default' }} id="printable-plan" className="print-content">
+        <div style={{ textAlign: 'center', borderBottom: '1px solid #eee', paddingBottom: '2.5rem', marginBottom: '3rem' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 950, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'black' }}>Planejamento de Ensino</div>
+          <div style={{ color: '#666', marginTop: '0.5rem', fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.02em' }}>
+            Unidade de Gestão Educacional • Ciclo {plan.bimester}º Bimestre
+          </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
           {isInfantil ? (
             <>
-              <ViewSection label="Campos de Experiência" icon={<Target size={18} />}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  {plan.custom_specific_comp?.split(';').map((c, i) => <span key={i} style={{ backgroundColor: '#f0f4ff', padding: '0.4rem 0.8rem', borderRadius: '10px', fontSize: '0.85rem' }}>{c}</span>)}
-                </div>
-              </ViewSection>
-              <ViewSection label="Direitos de Aprendizagem" icon={<Book size={18} />}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  {plan.custom_general_comp?.split(';').map((c, i) => <span key={i} style={{ backgroundColor: '#fff8f0', padding: '0.4rem 0.8rem', borderRadius: '10px', fontSize: '0.85rem' }}>{c}</span>)}
-                </div>
-              </ViewSection>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                <ViewSection label="Campos de Experiência" icon={<Target size={18} />}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {plan.custom_specific_comp?.split(';').filter(Boolean).map((c, i) => <div key={i} style={{ padding: '1rem', backgroundColor: '#f0f4ff', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>{c}</div>)}
+                  </div>
+                </ViewSection>
+                <ViewSection label="Direitos de Aprendizagem" icon={<Book size={18} />}>
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {plan.custom_general_comp?.split(';').filter(Boolean).map((c, i) => <div key={i} style={{ padding: '1rem', backgroundColor: '#fff8f0', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>{c}</div>)}
+                   </div>
+                </ViewSection>
+              </div>
               <ViewSection label="Objetivos de Aprendizagem (BNCC)" icon={<FileText size={18} />}>
-                {plan.bncc_skills?.map(s => <div key={s.id} style={{ marginBottom: '0.5rem' }}><strong>{s.code}</strong>: {s.description}</div>)}
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                  {plan.bncc_skills?.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
+                </div>
               </ViewSection>
-              <ViewSection label="Público Alvo / Local" icon={<LayoutList size={18} />}>{plan.knowledge_objects}</ViewSection>
-              <ViewSection label="Conteúdo Programático" icon={<Book size={18} />}>{plan.programmatic_content}</ViewSection>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                <ViewSection label="Público Alvo / Local" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
+                <ViewSection label="Conteúdo Programático" icon={<Book size={18} />}>{plan.programmatic_content || '---'}</ViewSection>
+              </div>
             </>
           ) : (
             <>
-              <ViewSection label="COMPETÊNCIAS GERAIS" icon={<Target size={18} />}>
-                {plan.bncc_general_comp?.map(c => <div key={c.id}>• {c.description}</div>)}
-                {plan.custom_general_comp && <div style={{ marginTop: '1rem', whiteSpace: 'pre-wrap' }}>{plan.custom_general_comp}</div>}
-              </ViewSection>
-              <ViewSection label="COMPETÊNCIAS ESPECÍFICAS DA ÁREA" icon={<Target size={18} />}>
-                {plan.bncc_specific_comp?.map(c => <div key={c.id}>• {c.description}</div>)}
-                {plan.custom_specific_comp && <div style={{ marginTop: '1rem', whiteSpace: 'pre-wrap' }}>{plan.custom_specific_comp}</div>}
-              </ViewSection>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                <ViewSection label="COMPETÊNCIAS GERAIS" icon={<Target size={18} />}>
+                  {plan.bncc_general_comp?.length ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {plan.bncc_general_comp.map(c => <BnccTag key={c.id} code={`CG${c.number}`} description={c.description} />)}
+                    </div>
+                  ) : <EmptyText />}
+                  {plan.custom_general_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_general_comp}</blockquote>}
+                </ViewSection>
+                <ViewSection label="COMPETÊNCIAS ESPECÍFICAS DA ÁREA" icon={<Target size={18} />}>
+                  {plan.bncc_specific_comp?.length ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {plan.bncc_specific_comp.map(c => <BnccTag key={c.id} code={c.code} description={c.description} />)}
+                    </div>
+                  ) : <EmptyText />}
+                  {plan.custom_specific_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_specific_comp}</blockquote>}
+                </ViewSection>
+              </div>
+
               <ViewSection label="HABILIDADE(S) (BNCC)" icon={<FileText size={18} />}>
-                {plan.bncc_skills?.map(s => <div key={s.id}><strong>{s.code}</strong>: {s.description}</div>)}
-                {plan.skills && <div style={{ marginTop: '1rem', borderTop: '1px dashed #eee', paddingTop: '0.5rem' }}><strong>Próprias:</strong> {plan.skills}</div>}
+                {plan.bncc_skills?.length ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                    {plan.bncc_skills.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
+                  </div>
+                ) : <EmptyText />}
+                {plan.skills && <p style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9f9f9', borderRadius: '12px', fontSize: '0.95rem' }}>{plan.skills}</p>}
               </ViewSection>
-              <ViewSection label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" icon={<LayoutList size={18} />}>{plan.knowledge_objects}</ViewSection>
-              <ViewSection label="CONTEÚDOS PROGRAMÁTICOS" icon={<Book size={18} />}>{plan.content}</ViewSection>
-              <ViewSection label="CRONOGRAMA DETALHADO (SEMANAS)" icon={<Calendar size={18} />}>{plan.programmatic_content}</ViewSection>
-              <ViewSection label="PROCEDIMENTOS METODOLÓGICOS" icon={<LayoutList size={18} />}>{plan.methodology}</ViewSection>
+
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                <ViewSection label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
+                <ViewSection label="CONTEÚDOS PROGRAMÁTICOS" icon={<Book size={18} />}>{plan.content || '---'}</ViewSection>
+              </div>
+
+              <ViewSection label="CRONOGRAMA DETALHADO (SEMANAS)" icon={<Calendar size={18} />}>{plan.programmatic_content || '---'}</ViewSection>
+              <ViewSection label="PROCEDIMENTOS METODOLÓGICOS" icon={<LayoutList size={18} />}>{plan.methodology || '---'}</ViewSection>
             </>
           )}
 
           {!isInfantil && (
-            <>
-              {plan.resources && <ViewSection label="RECURSOS" icon={<LayoutList size={18} />}>{plan.resources}</ViewSection>}
-              {plan.references && <ViewSection label="REFERÊNCIAS" icon={<Book size={18} />}>{plan.references}</ViewSection>}
-              <ViewSection label="PROCEDIMENTOS AVALIATIVOS" icon={<CheckCircle2 size={18} />}>{plan.evaluation}</ViewSection>
-            </>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem' }}>
+              <ViewSection label="RECURSOS" icon={<LayoutList size={18} />}>{plan.resources || '---'}</ViewSection>
+              <ViewSection label="REFERÊNCIAS" icon={<Book size={18} />}>{plan.references || '---'}</ViewSection>
+              <ViewSection label="PROCEDIMENTOS AVALIATIVOS" icon={<CheckCircle2 size={18} />}>{plan.evaluation || '---'}</ViewSection>
+            </div>
           )}
           
           {isInfantil && (
-            <>
-              <ViewSection label="Metodologia / Procedimentos" icon={<LayoutList size={18} />}>{plan.methodology}</ViewSection>
-              <ViewSection label="Avaliação" icon={<CheckCircle2 size={18} />}>{plan.evaluation}</ViewSection>
-              {plan.resources && <ViewSection label="Recursos" icon={<LayoutList size={18} />}>{plan.resources}</ViewSection>}
-              {plan.references && <ViewSection label="Referências" icon={<Book size={18} />}>{plan.references}</ViewSection>}
-            </>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+              <ViewSection label="Metodologia / Procedimentos" icon={<LayoutList size={18} />}>{plan.methodology || '---'}</ViewSection>
+              <ViewSection label="Avaliação" icon={<CheckCircle2 size={18} />}>{plan.evaluation || '---'}</ViewSection>
+              <ViewSection label="Recursos" icon={<LayoutList size={18} />}>{plan.resources || '---'}</ViewSection>
+              <ViewSection label="Referências" icon={<Book size={18} />}>{plan.references || '---'}</ViewSection>
+            </div>
           )}
         </div>
+        <div style={{ padding: '2rem', backgroundColor: '#fcfcfc', borderTop: '1px solid #eee', fontSize: '0.85rem', color: '#999', textAlign: 'center', marginTop: '3rem' }}>
+          Documento gerado digitalmente via Sistema de Gestão Educacional • {new Date().toLocaleDateString()}
+        </div>
       </div>
+      <style>{`
+        @media print {
+          body * { visibility: hidden; }
+          #printable-plan, #printable-plan * { visibility: visible; }
+          #printable-plan { position: absolute; left: 0; top: 0; width: 100%; padding: 0 !important; margin: 0 !important; }
+          .print-content { padding: 0 !important; gap: 2rem !important; }
+          .glass { box-shadow: none !important; border: none !important; }
+          blockquote { border-left-color: #ddd !important; }
+        }
+      `}</style>
     </div>
-    <style>{`
-      @media print {
-        body * { visibility: hidden; }
-        #printable-plan, #printable-plan * { visibility: visible; }
-        #printable-plan { position: absolute; left: 0; top: 0; width: 100%; padding: 0 !important; }
-        .glass { box-shadow: none !important; border: none !important; }
-      }
-    `}</style>
   </div>
 )
 
@@ -533,7 +604,7 @@ export const LessonPlanPage: React.FC = () => {
         {isEditing && currentPlan ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <SectionCard isMobile={isMobile} icon={<Calendar />} title="Identificação" accent="linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%)">
-               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1rem' }}>
+               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.25rem' }}>
                  <CustomSelect label="Disciplina" value={currentPlan.subject} options={subjects.map(s => ({ value: s, label: s }))} isOpen={openSubject} setIsOpen={setOpenSubject} onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} />
                  <CustomSelect label="Bimestre" value={currentPlan.bimester} options={bimesterOptions} isOpen={openBimester} setIsOpen={setOpenBimester} onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} />
                  <CustomSelect label="Mês de Referência" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} />
@@ -560,13 +631,13 @@ export const LessonPlanPage: React.FC = () => {
             ) : (
               <SectionCard isMobile={isMobile} icon={<Target />} title="Base BNCC" accent="linear-gradient(135deg, #fffcf0 0%, #fff9e0 100%)">
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                     {renderMultiselect("gerais", "COMPETÊNCIAS GERAIS (BNCC)", "Buscar...", genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects, (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]) } }, (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }, 'orange', isMobile)}
-                     <FormGroup label="Anotações de Competências Gerais" value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} />
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                     {renderMultiselect("gerais", "Competências Gerais", "Buscar...", genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects, (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]) } }, (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }, 'orange', isMobile)}
+                     <FormGroup label="Anotações de Competências Gerais" placeholder="Complemente as competências..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="100px" />
                    </div>
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                     {renderMultiselect("especificas", "COMPETÊNCIAS ESPECÍFICAS (BNCC)", "Buscar...", specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects, (it) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]) } }, (id) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }, 'blue', isMobile)}
-                     <FormGroup label="Anotações de Competências Específicas" value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} />
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                     {renderMultiselect("especificas", "Competências Específicas", "Buscar...", specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects, (it) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]) } }, (id) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }, 'blue', isMobile)}
+                     <FormGroup label="Anotações de Competências Específicas" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="100px" />
                    </div>
                 </div>
               </SectionCard>
@@ -576,15 +647,21 @@ export const LessonPlanPage: React.FC = () => {
                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
                  {!isInfantil && (
                    <>
-                     <FormGroup label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} />
-                     <FormGroup label="CONTEÚDOS PROGRAMÁTICOS" value={currentPlan.content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, content: v })} />
+                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
+                        <FormGroup label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" placeholder="O que será ensinado?" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
+                        <FormGroup label="CONTEÚDOS PROGRAMÁTICOS" placeholder="Temas, capítulos e unidades..." value={currentPlan.content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, content: v })} height="120px" />
+                     </div>
                      {renderMultiselect("habilidades", "HABILIDADE(S) (BNCC)", "Código...", bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects, (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]) } }, (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }, 'green', isMobile)}
-                     <FormGroup label="HABILIDADE(S) PRÓPRIAS" value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} />
-                     <FormGroup label="CRONOGRAMA DETALHADO (SEMANAS)" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} />
-                     <FormGroup label="PROCEDIMENTOS METODOLÓGICOS" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} />
-                     <FormGroup label="RECURSOS" value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} />
-                     <FormGroup label="REFERÊNCIAS" value={currentPlan.references} onChange={(v: string) => setCurrentPlan({ ...currentPlan, references: v })} />
-                     <FormGroup label="PROCEDIMENTOS AVALIATIVOS" value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} />
+                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
+                        <FormGroup label="CRONOGRAMA DETALHADO (SEMANAS)" placeholder="Distribuição do conteúdo (Ex: Semana 1, Semana 2...)" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="120px" />
+                        <FormGroup label="PROCEDIMENTOS METODOLÓGICOS" placeholder="Lúdico, laboratório, pesquisa, socioemocional..." value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="120px" />
+                     </div>
+                     <FormGroup label="HABILIDADE(S) PRÓPRIAS" placeholder="Inovação, projetos e específicas..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
+                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                        <FormGroup label="RECURSOS" placeholder="Mapas, vídeos, livros..." value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} height="100px" />
+                        <FormGroup label="REFERÊNCIAS" placeholder="Bibliografia utilizada..." value={currentPlan.references} onChange={(v: string) => setCurrentPlan({ ...currentPlan, references: v })} height="100px" />
+                        <FormGroup label="PROCEDIMENTOS AVALIATIVOS" placeholder="Processos avaliativos..." value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} height="100px" />
+                     </div>
                    </>
                  )}
                  {isInfantil && (
