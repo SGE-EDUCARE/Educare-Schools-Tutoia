@@ -6,7 +6,7 @@
     "outDir": "./dist",
 
     // Environment Settings
-    "module": "CommonJS",
+    "module": "Node16",
     "moduleResolution": "node16",
     "ignoreDeprecations": "5.0",
     "target": "esnext",
