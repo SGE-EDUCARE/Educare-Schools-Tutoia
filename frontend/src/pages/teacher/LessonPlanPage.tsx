@@ -381,43 +381,35 @@ const SelectionModal = ({
   )
 }
 
-const ViewSection = ({ label, icon, children }: any) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'hsl(var(--primary))' }}>
-      <div style={{ 
-        width: '32px', height: '32px', borderRadius: '8px', 
-        background: 'hsl(var(--primary) / 0.1)', display: 'flex', 
-        alignItems: 'center', justifyContent: 'center' 
-      }}>
-        {icon}
-      </div>
-      <span style={{ fontSize: '0.85rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
-    </div>
+const BnccTag = ({ code, description }: { code?: string, description: string }) => (
+  <div style={{ 
+    display: 'flex', gap: '1rem', padding: '1.25rem', borderRadius: '20px', 
+    backgroundColor: 'white', border: '1px solid rgba(0,0,0,0.04)', 
+    boxShadow: '0 4px 20px rgba(0,0,0,0.02)', position: 'relative', overflow: 'hidden'
+  }}>
     <div style={{ 
-      fontSize: '1rem', color: '#333', lineHeight: 1.6, 
-      wordBreak: 'break-word', overflowWrap: 'anywhere' 
+      padding: '0.4rem 0.8rem', borderRadius: '10px', backgroundColor: 'hsl(var(--primary))', 
+      color: 'white', fontWeight: 1000, fontSize: '0.7rem', height: 'fit-content', flexShrink: 0,
+      letterSpacing: '0.02em', boxShadow: '0 4px 10px hsl(var(--primary) / 0.2)'
     }}>
-      {children}
+      {code}
     </div>
+    <div style={{ fontSize: '0.85rem', lineHeight: 1.5, fontWeight: 600, color: '#444' }}>{description}</div>
   </div>
 )
 
-const BnccTag = ({ code, description }: any) => (
-  <div style={{ 
-    padding: '1.5rem', backgroundColor: '#fcfcfd', borderRadius: '18px', 
-    border: '1px solid #f0eff5', display: 'flex', gap: '1rem', alignItems: 'flex-start',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
-  }}>
-    <span style={{ 
-      backgroundColor: 'hsl(var(--primary))', color: 'white', 
-      padding: '0.25rem 0.6rem', borderRadius: '8px', 
-      fontSize: '0.7rem', fontWeight: 950, flexShrink: 0,
-      letterSpacing: '0.02em'
-    }}>{code}</span>
-    <span style={{ 
-      fontSize: '0.85rem', lineHeight: 1.6, fontWeight: 550, 
-      color: '#2d3748', wordBreak: 'break-word' 
-    }}>{description}</span>
+const ViewSection = ({ label, icon, children }: any) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div style={{ 
+        width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'hsl(var(--primary) / 0.08)', 
+        color: 'hsl(var(--primary))', display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}>
+        {React.cloneElement(icon, { size: 18 })}
+      </div>
+      <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#1B2559', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+    </div>
+    <div style={{ paddingLeft: '0.2rem', fontSize: '1rem', lineHeight: 1.6, color: '#333', fontWeight: 500 }}>{children}</div>
   </div>
 )
 
@@ -436,27 +428,32 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile, levelInfo }: { plan: Le
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '0' : '2rem' }} onClick={onClose}>
       <div className="glass animate-scale-in" style={{ width: '100%', maxWidth: '900px', maxHeight: '95vh', backgroundColor: 'white', borderRadius: isMobile ? '0' : '30px', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-        <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-          <div>
-            <h2 style={{ fontSize: isMobile ? '1.25rem' : '1.75rem', fontWeight: 950, color: 'hsl(var(--text))', letterSpacing: '-0.03em' }}>
-              {levelInfo.isInfantil ? 'Plano de Aula Infantil' : levelInfo.isFundamental1 ? 'Pauta Diária' : 'Plano de Aula Mensal'}
-            </h2>
-            <div style={{ fontSize: '0.9rem', color: '#666', fontWeight: 600, marginTop: '0.2rem' }}>{plan.subject} • {plan.month}</div>
-          </div>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <button onClick={() => window.print()} className="btn btn-secondary" style={{ display: isMobile ? 'none' : 'flex', padding: '0.75rem 1.25rem', borderRadius: '14px' }}>Imprimir</button>
-            <button onClick={onClose} className="btn-primary" style={{ width: '44px', height: '44px', borderRadius: '14px' }}>✕</button>
-          </div>
-        </div>
+        <header style={{ padding: isMobile ? '1.5rem' : '2.5rem', flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: 'white', zIndex: 10, borderBottom: '1px solid #f0f0f0' }}>
+            <div>
+              <h2 style={{ fontSize: isMobile ? '1.2rem' : '1.8rem', fontWeight: 1000, color: '#1B2559', letterSpacing: '-0.04em' }}>Documento Digital</h2>
+              <p style={{ fontSize: '0.8rem', color: '#999', fontWeight: 700 }}>{plan.subject} • {plan.month}</p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+               <button onClick={() => window.print()} className="btn btn-secondary" style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', fontWeight: 800 }}>Imprimir</button>
+               <button onClick={onClose} style={{ 
+                 width: '44px', height: '44px', borderRadius: '12px', border: 'none', background: 'hsl(var(--primary))', color: 'white',
+                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 8px 16px hsl(var(--primary) / 0.2)'
+               }}><X size={24} /></button>
+            </div>
+        </header>
 
-        <div style={{ padding: isMobile ? '1.5rem' : '4rem', cursor: 'default' }} id="printable-plan" className="print-content">
-          <div style={{ textAlign: 'center', borderBottom: '1px solid #eee', paddingBottom: '2.5rem', marginBottom: '3rem' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 950, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'black' }}>
+        <div style={{ padding: isMobile ? '1.5rem' : '5rem', cursor: 'default', backgroundColor: 'white' }} id="printable-plan" className="print-content">
+          <div style={{ 
+             textAlign: 'center', padding: '3rem', marginBottom: '4rem', 
+             backgroundColor: '#f8fafc', borderRadius: '32px', border: '1px solid rgba(0,0,0,0.02)'
+          }}>
+            <div style={{ fontSize: isMobile ? '1.2rem' : '2rem', fontWeight: 1000, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#1B2559' }}>
               {levelInfo.isFundamental1 ? 'Pauta de Aula Diária' : 'Planejamento de Ensino'}
             </div>
-            <div style={{ color: '#666', marginTop: '0.5rem', fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.02em' }}>
-              Unidade de Gestão Educacional • Ciclo {plan.bimester}º Bimestre
+            <div style={{ color: 'hsl(var(--primary))', marginTop: '0.75rem', fontWeight: 900, fontSize: '1rem', letterSpacing: '0.02em', textTransform: 'uppercase', opacity: 0.8 }}>
+              Ciclo {plan.bimester}º Bimestre • {plan.month}
             </div>
+            <div style={{ width: '40px', height: '4px', background: 'hsl(var(--primary))', margin: '2rem auto 0', borderRadius: 'var(--radius-full)', opacity: 0.3 }}></div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
@@ -565,8 +562,14 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile, levelInfo }: { plan: Le
               </>
             )}
           </div>
-          <div style={{ padding: '2rem', backgroundColor: '#fcfcfc', borderTop: '1px solid #eee', fontSize: '0.85rem', color: '#999', textAlign: 'center', marginTop: '3rem' }}>
-            Documento gerado digitalmente via Sistema de Gestão Educacional • {new Date().toLocaleDateString()}
+          <div style={{ 
+            padding: '2.5rem', backgroundColor: '#f8fafc', borderRadius: '24px', 
+            border: '1px solid rgba(0,0,0,0.02)', fontSize: '0.85rem', 
+            color: '#999', textAlign: 'center', marginTop: '5rem',
+            display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <strong style={{ color: '#1B2559' }}>SGE-EDUCARE • Sistema de Gestão Educacional</strong>
+            <span>Documento autenticado digitalmente • Gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}</span>
           </div>
         </div>
       <style>{`
