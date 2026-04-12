@@ -13,7 +13,8 @@ import {
   LayoutList, 
   CheckCircle2,
   Trash2,
-  ChevronDown
+  ChevronDown,
+  Book
 } from 'lucide-react'
 
 type LessonPlan = {
@@ -691,78 +692,108 @@ export const LessonPlanPage: React.FC = () => {
                 const color = progress === 100 ? 'hsl(var(--success))' : progress > 50 ? 'hsl(var(--primary))' : 'hsl(var(--warning))'
 
                 return (
-                  <div key={plan.id} className="card-interactive" style={{
-                    borderRadius: isMobile ? '24px' : '28px', 
-                    padding: isMobile ? '1.25rem' : '1.75rem',
-                    background: 'rgba(255, 255, 255, 0.8)',
-                    backdropFilter: 'blur(20px)',
-                    border: '1px solid hsl(var(--border) / 0.6)',
-                    display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem',
+                  <div key={plan.id} className="card-interactive-premium" style={{
+                    borderRadius: isMobile ? '28px' : '32px', 
+                    padding: isMobile ? '1.5rem' : '2.25rem',
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%)',
+                    backdropFilter: 'blur(24px)',
+                    border: '1px solid rgba(255, 255, 255, 0.4)',
+                    display: 'flex', flexDirection: 'column', gap: '1.75rem',
                     position: 'relative', overflow: 'hidden',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.05)'
+                    transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                    boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
+                    cursor: 'default'
                   }}>
+                    {/* Glow Accent */}
                     <div style={{
-                      position: 'absolute', top: 0, right: 0, width: '6px', height: '100%',
-                      backgroundColor: color, opacity: 0.6
+                      position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px',
+                      background: color, filter: 'blur(40px)', opacity: 0.15, pointerEvents: 'none'
                     }} />
-                    
+
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                         <div style={{
                           background: 'white', color: 'hsl(var(--text))',
-                          padding: '0.4rem 0.85rem', borderRadius: '12px',
-                          fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', 
-                          letterSpacing: '0.04em', border: '1px solid hsl(var(--border) / 0.4)',
-                          boxShadow: 'var(--shadow-sm)'
-                        }}>{plan.month}</div>
+                          padding: '0.45rem 1rem', borderRadius: '14px',
+                          fontSize: '0.72rem', fontWeight: 950, textTransform: 'uppercase', 
+                          letterSpacing: '0.06em', border: '1px solid hsl(var(--border) / 0.3)',
+                          boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+                          display: 'flex', alignItems: 'center', gap: '0.5rem'
+                        }}>
+                          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: color }} />
+                          {plan.month}
+                        </div>
                         <div style={{
-                          background: 'hsl(var(--primary) / 0.08)', color: 'hsl(var(--primary))',
-                          padding: '0.4rem 0.85rem', borderRadius: '12px',
-                          fontSize: '0.75rem', fontWeight: 900,
+                          background: 'hsl(var(--primary) / 0.05)', color: 'hsl(var(--primary))',
+                          padding: '0.45rem 1rem', borderRadius: '14px',
+                          fontSize: '0.72rem', fontWeight: 950,
                           border: '1px solid hsl(var(--primary) / 0.1)'
                         }}>{plan.bimester}º Bimestre</div>
                       </div>
                     </div>
 
-                    <div>
-                      <h3 style={{ 
-                        fontSize: isMobile ? '1.15rem' : '1.35rem', 
-                        fontWeight: 950, color: 'hsl(var(--text))', 
-                        lineHeight: 1.2, letterSpacing: '-0.03em' 
-                      }}>{plan.subject}</h3>
-                      <div style={{ 
-                        marginTop: isMobile ? '0.5rem' : '0.75rem', 
-                        display: 'flex', 
-                        flexDirection: isMobile ? 'column' : 'row',
-                        alignItems: isMobile ? 'flex-start' : 'center', 
-                        gap: isMobile ? '0.4rem' : '1rem',
-                        fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 600 
+                    <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+                      <div style={{
+                        width: '56px', height: '56px', borderRadius: '18px',
+                        background: 'hsl(var(--primary) / 0.05)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: 'hsl(var(--primary))', flexShrink: 0,
+                        boxShadow: 'inset 0 0 0 1px hsl(var(--primary) / 0.1)'
                       }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          <Calendar size={15} /> {new Date(plan.date).toLocaleDateString('pt-BR')}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          <CheckCircle2 size={15} color={color} /> {progress.toFixed(0)}% preenchido
+                        <Book size={28} style={{ opacity: 0.8 }} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <h3 style={{ 
+                          fontSize: isMobile ? '1.2rem' : '1.45rem', 
+                          fontWeight: 1000, color: 'hsl(var(--text))', 
+                          lineHeight: 1.15, letterSpacing: '-0.04em',
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                        }}>{plan.subject}</h3>
+                        <div style={{ 
+                          marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem',
+                          fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 650 
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                            <Calendar size={15} style={{ opacity: 0.6 }} /> {new Date(plan.date).toLocaleDateString('pt-BR')}
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Progress Bar */}
-                    <div style={{ width: '100%', height: '6px', backgroundColor: 'hsl(var(--border) / 0.3)', borderRadius: '10px', overflow: 'hidden' }}>
-                      <div style={{ width: `${progress}%`, height: '100%', backgroundColor: color, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }} />
+                    <div style={{ marginTop: 'auto' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '0.6rem' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 900, color: 'hsl(var(--text-light))', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          Status do Plano
+                        </span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 1000, color: color }}>
+                          {progress.toFixed(0)}%
+                        </span>
+                      </div>
+                      <div style={{ 
+                        width: '100%', height: '8px', background: 'hsl(var(--border) / 0.2)', 
+                        borderRadius: '20px', overflow: 'hidden', position: 'relative',
+                        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)'
+                      }}>
+                        <div style={{ 
+                          width: `${progress}%`, height: '100%', backgroundColor: color, 
+                          transition: 'width 1.2s cubic-bezier(0.65, 0, 0.35, 1)',
+                          boxShadow: `0 0 12px ${color}44` 
+                        }} />
+                      </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.85rem', marginTop: '0.5rem' }}>
                       <button 
                         onClick={() => setViewingPlan(plan)} 
                         className="btn"
                         style={{
-                          flex: 1, background: 'white', border: '1.5px solid hsl(var(--border))',
-                          color: 'hsl(var(--text))', borderRadius: '16px',
-                          fontWeight: 850, fontSize: isMobile ? '0.8rem' : '0.85rem', 
-                          minHeight: isMobile ? '48px' : '52px',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem'
+                          flex: 1, background: 'white', border: '1.5px solid hsl(var(--border) / 0.8)',
+                          color: 'hsl(var(--text))', borderRadius: '18px',
+                          fontWeight: 900, fontSize: isMobile ? '0.82rem' : '0.88rem', 
+                          minHeight: isMobile ? '52px' : '56px',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.7rem',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                          transition: 'all 0.2s'
                         }}
                       >
                         Visualizar
@@ -771,23 +802,26 @@ export const LessonPlanPage: React.FC = () => {
                         onClick={() => handleEdit(plan)} 
                         className="btn btn-primary"
                         style={{
-                          flex: 1, borderRadius: '16px',
-                          fontWeight: 850, fontSize: isMobile ? '0.8rem' : '0.85rem', 
-                          minHeight: isMobile ? '48px' : '52px',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem'
+                          flex: 1.2, borderRadius: '18px',
+                          fontWeight: 900, fontSize: isMobile ? '0.82rem' : '0.88rem', 
+                          minHeight: isMobile ? '52px' : '56px',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.7rem',
+                          background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.85) 100%)',
+                          boxShadow: '0 8px 24px -6px hsl(var(--primary) / 0.4)'
                         }}
                       >
-                        {isMobile ? 'Editar' : <><Edit3 size={18} /> Editar</>}
+                         <Edit3 size={19} /> Editar
                       </button>
                       <button 
                         onClick={(e) => { e.stopPropagation(); if(confirm('Excluir este plano?')) api(`/teacher/lesson-plans/${plan.id}`, { method: 'DELETE' }).then(() => fetchPlans()) }} 
                         className="btn"
                         style={{
-                          padding: '0 0.75rem', background: 'hsl(var(--error) / 0.05)', border: '1.5px solid transparent',
-                          color: 'hsl(var(--error))', borderRadius: '16px', minHeight: isMobile ? '48px' : '52px'
+                          width: '56px', height: '56px', background: 'hsl(var(--error) / 0.05)', border: '1.5px solid transparent',
+                          color: 'hsl(var(--error))', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          flexShrink: 0
                         }}
                       >
-                        <Trash2 size={isMobile ? 18 : 20} />
+                        <Trash2 size={22} />
                       </button>
                     </div>
                   </div>
