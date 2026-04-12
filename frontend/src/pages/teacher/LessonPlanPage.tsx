@@ -60,6 +60,19 @@ interface ClassMetadata {
   }
 }
 
+interface MomentState {
+  m1: string;
+  m2: string;
+  m3: string;
+  m4: string;
+  m5: string;
+}
+
+interface AgendaState {
+  sala: string;
+  casa: string;
+}
+
 // ══════════ CONSTANTES BNCC INFANTIL ══════════
 const INFANTIL_CAMPOS = [
   "O eu, o outro e o nós",
@@ -190,69 +203,79 @@ const MultiSelectField = ({ label, selected, onRemove, onOpen, variantColor }: a
 
 const SelectionModal = ({ 
   isOpen, onClose, title, search, setSearch, results, searching, 
-  onAdd, selectedObjects, onRemove, variantColor 
+  onAdd, selectedObjects, onRemove, variantColor, levelInfo 
 }: any) => {
   if (!isOpen) return null;
   
   return (
     <div style={{ 
-      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
-      backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)',
+      position: 'fixed', inset: 0, 
+      backgroundColor: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(12px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000,
       padding: '1rem'
     }} onClick={onClose}>
-      <div style={{ 
-        width: '100%', maxWidth: '600px', backgroundColor: 'white', 
-        borderRadius: '24px', maxHeight: '85vh', display: 'flex', flexDirection: 'column',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.2)', border: '1px solid #eee'
+      <div className="glass animate-scale-in" style={{ 
+        width: '100%', maxWidth: '600px', backgroundColor: 'rgba(255,255,255,0.95)', 
+        borderRadius: '32px', maxHeight: '85vh', display: 'flex', flexDirection: 'column',
+        boxShadow: '0 40px 100px rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.5)',
+        overflow: 'hidden'
       }} onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid #f5f5f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>{title}</h3>
-          <button onClick={onClose} style={{ color: '#999', border: 'none', background: 'none', cursor: 'pointer' }}><Plus style={{ transform: 'rotate(45deg)' }} /></button>
+        <div style={{ padding: '2rem 2.5rem', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h3 style={{ fontWeight: 1000, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>{title}</h3>
+            <p style={{ fontSize: '0.75rem', color: '#999', fontWeight: 600 }}>
+              {levelInfo.isInfantil ? 'Filtro ativo: Educação Infantil (EI)' : 'Filtro ativo: Ensino Fundamental (EF)'}
+            </p>
+          </div>
+          <button onClick={onClose} style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#f5f5f5', color: '#999', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Plus style={{ transform: 'rotate(45deg)' }} /></button>
         </div>
         
         {/* Search */}
-        <div style={{ padding: '1.5rem 2rem' }}>
-          <FormGroup label="PESQUISAR" type="text" placeholder="Digite código ou descrição..." value={search} onChange={setSearch} />
+        <div style={{ padding: '0 2.5rem 1.5rem', marginTop: '1.5rem' }}>
+          <div style={{ position: 'relative' }}>
+            <FormGroup label="PESQUISAR" type="text" placeholder="Digite código ou descrição..." value={search} onChange={setSearch} />
+            {searching && <div style={{ position: 'absolute', right: '1.5rem', bottom: '1.1rem' }}><Loader2 className="animate-spin" size={20} color={variantColor} /></div>}
+          </div>
         </div>
 
         {/* Results */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0 2rem 1.5rem' }}>
-          {searching ? (
-             <div style={{ padding: '2rem', textAlign: 'center' }}><Loader2 className="animate-spin" size={32} color={variantColor} /></div>
-          ) : results.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {results.map((item: any) => {
-                const isSelected = selectedObjects.some((o: any) => o.id === item.id)
-                return (
-                  <div key={item.id} onClick={() => isSelected ? onRemove(item.id) : onAdd(item)} style={{ 
-                    padding: '1rem', borderRadius: '16px', border: '1px solid',
-                    borderColor: isSelected ? variantColor : '#f0f0f0',
-                    backgroundColor: isSelected ? `${variantColor}10` : 'white',
-                    cursor: 'pointer', transition: 'all 0.2s',
-                    position: 'relative'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                      <span style={{ fontWeight: 900, color: variantColor, fontSize: '0.75rem', textTransform: 'uppercase' }}>{item.code || item.number}</span>
-                      {isSelected && <CheckCircle2 size={16} color={variantColor} />}
-                    </div>
-                    <p style={{ fontSize: '0.85rem', color: '#333', marginTop: '0.3rem', lineHeight: '1.4' }}>{item.description}</p>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0 2.5rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {results.length > 0 ? (
+            results.map((item: any) => {
+              const isSelected = selectedObjects.some((o: any) => o.id === item.id)
+              return (
+                <div key={item.id} onClick={() => isSelected ? onRemove(item.id) : onAdd(item)} style={{ 
+                  padding: '1.25rem', borderRadius: '20px', border: '1px solid',
+                  borderColor: isSelected ? variantColor : '#f0f0f0',
+                  backgroundColor: isSelected ? `${variantColor}08` : '#fcfcfc',
+                  cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative', overflow: 'hidden'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
+                    <span style={{ 
+                      fontWeight: 1000, color: variantColor, fontSize: '0.7rem', 
+                      background: `${variantColor}12`, padding: '0.3rem 0.6rem', borderRadius: '8px',
+                      textTransform: 'uppercase', letterSpacing: '0.05em' 
+                    }}>{item.code || item.number}</span>
+                    {isSelected && <div style={{ color: variantColor }}><CheckCircle2 size={18} fill="currentColor" color="white" /></div>}
                   </div>
-                )
-              })}
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', padding: '3rem 2rem', color: '#999' }}>Nenhum resultado encontrado.</div>
-          )}
+                  <p style={{ fontSize: '0.9rem', color: '#333', lineHeight: '1.5', fontWeight: 550 }}>{item.description}</p>
+                </div>
+              )
+            })
+          ) : !searching ? (
+            <div style={{ textAlign: 'center', padding: '4rem 2rem', color: '#bbb', fontWeight: 600 }}>Nenhum resultado encontrado.</div>
+          ) : null}
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '1.5rem 2rem', borderTop: '1px solid #f5f5f5', textAlign: 'right' }}>
+        <div style={{ padding: '1.5rem 2.5rem', borderTop: '1px solid #f0f0f0', textAlign: 'right', background: '#fafafa' }}>
            <button onClick={onClose} style={{ 
-             backgroundColor: variantColor, color: 'white', padding: '0.8rem 2rem', 
-             borderRadius: '14px', fontWeight: 800, fontSize: '0.9rem', border: 'none', cursor: 'pointer'
-           }}>CONCLUIR</button>
+             backgroundColor: variantColor, color: 'white', padding: '1rem 2.5rem', 
+             borderRadius: '16px', fontWeight: 900, fontSize: '0.95rem', border: 'none', 
+             cursor: 'pointer', boxShadow: `0 10px 25px ${variantColor}40`
+           }}>Concluir Seleção</button>
         </div>
       </div>
     </div>
@@ -302,114 +325,151 @@ const BnccTag = ({ code, description }: any) => (
 const EmptyText = () => <span style={{ color: '#bbb', fontSize: '0.9rem', fontStyle: 'italic' }}>Nenhum item selecionado</span>
 
 // ══════════ SUBCOMPONENTE: VISUALIZADOR ══════════
-const LessonPlanVisualizer = ({ plan, onClose, isMobile, isInfantil }: { plan: LessonPlan; onClose: () => void; isMobile: boolean; isInfantil: boolean }) => (
-  <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '0' : '2rem' }} onClick={onClose}>
-    <div className="glass animate-scale-in" style={{ width: '100%', maxWidth: '900px', maxHeight: '95vh', backgroundColor: 'white', borderRadius: isMobile ? '0' : '30px', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-      <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-        <div>
-          <h2 style={{ fontSize: isMobile ? '1.25rem' : '1.75rem', fontWeight: 950, color: 'hsl(var(--text))', letterSpacing: '-0.03em' }}>{isInfantil ? 'Plano de Aula Infantil' : 'Plano de Aula Mensal'}</h2>
-          <div style={{ fontSize: '0.9rem', color: '#666', fontWeight: 600, marginTop: '0.2rem' }}>{plan.subject} • {plan.month}</div>
-        </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button onClick={() => window.print()} className="btn btn-secondary" style={{ display: isMobile ? 'none' : 'flex', padding: '0.75rem 1.25rem', borderRadius: '14px' }}>Imprimir</button>
-          <button onClick={onClose} className="btn-primary" style={{ width: '44px', height: '44px', borderRadius: '14px' }}>✕</button>
-        </div>
-      </div>
+const LessonPlanVisualizer = ({ plan, onClose, isMobile, levelInfo }: { plan: LessonPlan; onClose: () => void; isMobile: boolean; levelInfo: any }) => {
+  const parseJsonSafe = (str: any, def: any) => {
+    if (typeof str === 'object') return str
+    try { return JSON.parse(str || '{}') } catch { return def }
+  }
 
-      <div style={{ padding: isMobile ? '1.5rem' : '4rem', cursor: 'default' }} id="printable-plan" className="print-content">
-        <div style={{ textAlign: 'center', borderBottom: '1px solid #eee', paddingBottom: '2.5rem', marginBottom: '3rem' }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 950, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'black' }}>Planejamento de Ensino</div>
-          <div style={{ color: '#666', marginTop: '0.5rem', fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.02em' }}>
-            Unidade de Gestão Educacional • Ciclo {plan.bimester}º Bimestre
+  const moments = levelInfo.isFundamental1 ? parseJsonSafe(plan.programmatic_content, { m1: '', m2: '', m3: '', m4: '', m5: '' }) : null
+  const agenda = levelInfo.isFundamental1 ? parseJsonSafe(plan.content, { sala: '', casa: '' }) : null
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '0' : '2rem' }} onClick={onClose}>
+      <div className="glass animate-scale-in" style={{ width: '100%', maxWidth: '900px', maxHeight: '95vh', backgroundColor: 'white', borderRadius: isMobile ? '0' : '30px', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+        <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
+          <div>
+            <h2 style={{ fontSize: isMobile ? '1.25rem' : '1.75rem', fontWeight: 950, color: 'hsl(var(--text))', letterSpacing: '-0.03em' }}>
+              {levelInfo.isInfantil ? 'Plano de Aula Infantil' : levelInfo.isFundamental1 ? 'Pauta Diária' : 'Plano de Aula Mensal'}
+            </h2>
+            <div style={{ fontSize: '0.9rem', color: '#666', fontWeight: 600, marginTop: '0.2rem' }}>{plan.subject} • {plan.month}</div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button onClick={() => window.print()} className="btn btn-secondary" style={{ display: isMobile ? 'none' : 'flex', padding: '0.75rem 1.25rem', borderRadius: '14px' }}>Imprimir</button>
+            <button onClick={onClose} className="btn-primary" style={{ width: '44px', height: '44px', borderRadius: '14px' }}>✕</button>
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-          {isInfantil ? (
-            <>
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                <ViewSection label="Campos de Experiência" icon={<Target size={18} />}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {plan.custom_specific_comp?.split(';').filter(Boolean).map((c, i) => <div key={i} style={{ padding: '1rem', backgroundColor: '#f0f4ff', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>{c}</div>)}
+        <div style={{ padding: isMobile ? '1.5rem' : '4rem', cursor: 'default' }} id="printable-plan" className="print-content">
+          <div style={{ textAlign: 'center', borderBottom: '1px solid #eee', paddingBottom: '2.5rem', marginBottom: '3rem' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 950, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'black' }}>
+              {levelInfo.isFundamental1 ? 'Pauta de Aula Diária' : 'Planejamento de Ensino'}
+            </div>
+            <div style={{ color: '#666', marginTop: '0.5rem', fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.02em' }}>
+              Unidade de Gestão Educacional • Ciclo {plan.bimester}º Bimestre
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+            {levelInfo.isInfantil && (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                  <ViewSection label="Campos de Experiência" icon={<Target size={18} />}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {plan.custom_specific_comp?.split(';').filter(Boolean).map((c, i) => <div key={i} style={{ padding: '1rem', backgroundColor: '#f0f4ff', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>{c}</div>)}
+                    </div>
+                  </ViewSection>
+                  <ViewSection label="Direitos de Aprendizagem" icon={<Book size={18} />}>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {plan.custom_general_comp?.split(';').filter(Boolean).map((c, i) => <div key={i} style={{ padding: '1rem', backgroundColor: '#fff8f0', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>{c}</div>)}
+                     </div>
+                  </ViewSection>
+                </div>
+                <ViewSection label="Objetivos de Aprendizagem (BNCC)" icon={<FileText size={18} />}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                    {plan.bncc_skills?.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
                   </div>
                 </ViewSection>
-                <ViewSection label="Direitos de Aprendizagem" icon={<Book size={18} />}>
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {plan.custom_general_comp?.split(';').filter(Boolean).map((c, i) => <div key={i} style={{ padding: '1rem', backgroundColor: '#fff8f0', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>{c}</div>)}
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                  <ViewSection label="Público Alvo / Local" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
+                  <ViewSection label="Conteúdo Programático" icon={<Book size={18} />}>{plan.programmatic_content || '---'}</ViewSection>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                  <ViewSection label="Metodologia / Procedimentos" icon={<LayoutList size={18} />}>{plan.methodology || '---'}</ViewSection>
+                  <ViewSection label="Avaliação" icon={<CheckCircle2 size={18} />}>{plan.evaluation || '---'}</ViewSection>
+                  <ViewSection label="Recursos" icon={<LayoutList size={18} />}>{plan.resources || '---'}</ViewSection>
+                  <ViewSection label="Referências" icon={<Book size={18} />}>{plan.references || '---'}</ViewSection>
+                </div>
+              </>
+            )}
+
+            {levelInfo.isFundamental1 && (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                  <ViewSection label="Temática / Tema" icon={<Target size={18} />}>{plan.skills || '---'}</ViewSection>
+                  <ViewSection label="Objeto do Conhecimento" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
+                </div>
+                <ViewSection label="Habilidades (BNCC)" icon={<FileText size={18} />}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                    {plan.bncc_skills?.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
+                  </div>
+                </ViewSection>
+                <ViewSection label="Momentos da Aula" icon={<Calendar size={18} />}>
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {moments.m1 && <div style={{ padding: '1rem', background: '#f8f9ff', borderRadius: '12px' }}><strong>1º Momento:</strong> {moments.m1}</div>}
+                      {moments.m2 && <div style={{ padding: '1rem', background: '#fcfcfc', borderRadius: '12px' }}><strong>2º Momento:</strong> {moments.m2}</div>}
+                      {moments.m3 && <div style={{ padding: '1rem', background: '#fcfcfc', borderRadius: '12px' }}><strong>3º Momento:</strong> {moments.m3}</div>}
+                      {moments.m4 && <div style={{ padding: '1rem', background: '#fcfcfc', borderRadius: '12px' }}><strong>4º Momento:</strong> {moments.m4}</div>}
+                      {moments.m5 && <div style={{ padding: '1rem', background: '#fcfcfc', borderRadius: '12px' }}><strong>5º Momento:</strong> {moments.m5}</div>}
                    </div>
                 </ViewSection>
-              </div>
-              <ViewSection label="Objetivos de Aprendizagem (BNCC)" icon={<FileText size={18} />}>
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
-                  {plan.bncc_skills?.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2.5rem', background: '#fcfcfc', padding: '2rem', borderRadius: '24px', border: '1px solid #eee' }}>
+                   <ViewSection label="Agenda Sala" icon={<Plus size={18} />}>{agenda.sala || '---'}</ViewSection>
+                   <ViewSection label="Agenda Casa" icon={<Plus size={18} />}>{agenda.casa || '---'}</ViewSection>
                 </div>
-              </ViewSection>
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                <ViewSection label="Público Alvo / Local" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
-                <ViewSection label="Conteúdo Programático" icon={<Book size={18} />}>{plan.programmatic_content || '---'}</ViewSection>
-              </div>
-            </>
-          ) : (
-            <>
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                <ViewSection label="COMPETÊNCIAS GERAIS" icon={<Target size={18} />}>
-                  {plan.bncc_general_comp?.length ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      {plan.bncc_general_comp.map(c => <BnccTag key={c.id} code={`CG${c.number}`} description={c.description} />)}
+              </>
+            )}
+
+            {levelInfo.isFundamental2m && (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                  <ViewSection label="COMPETÊNCIAS GERAIS" icon={<Target size={18} />}>
+                    {plan.bncc_general_comp?.length ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {plan.bncc_general_comp.map(c => <BnccTag key={c.id} code={`CG${c.number}`} description={c.description} />)}
+                      </div>
+                    ) : <EmptyText />}
+                    {plan.custom_general_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_general_comp}</blockquote>}
+                  </ViewSection>
+                  <ViewSection label="COMPETÊNCIAS ESPECÍFICAS DA ÁREA" icon={<Target size={18} />}>
+                    {plan.bncc_specific_comp?.length ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {plan.bncc_specific_comp.map(c => <BnccTag key={c.id} code={c.code} description={c.description} />)}
+                      </div>
+                    ) : <EmptyText />}
+                    {plan.custom_specific_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_specific_comp}</blockquote>}
+                  </ViewSection>
+                </div>
+
+                <ViewSection label="HABILIDADE(S) (BNCC)" icon={<FileText size={18} />}>
+                  {plan.bncc_skills?.length ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                      {plan.bncc_skills.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
                     </div>
                   ) : <EmptyText />}
-                  {plan.custom_general_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_general_comp}</blockquote>}
+                  {plan.skills && <p style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9f9f9', borderRadius: '12px', fontSize: '0.95rem' }}>{plan.skills}</p>}
                 </ViewSection>
-                <ViewSection label="COMPETÊNCIAS ESPECÍFICAS DA ÁREA" icon={<Target size={18} />}>
-                  {plan.bncc_specific_comp?.length ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      {plan.bncc_specific_comp.map(c => <BnccTag key={c.id} code={c.code} description={c.description} />)}
-                    </div>
-                  ) : <EmptyText />}
-                  {plan.custom_specific_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_specific_comp}</blockquote>}
-                </ViewSection>
-              </div>
 
-              <ViewSection label="HABILIDADE(S) (BNCC)" icon={<FileText size={18} />}>
-                {plan.bncc_skills?.length ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
-                    {plan.bncc_skills.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
-                  </div>
-                ) : <EmptyText />}
-                {plan.skills && <p style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9f9f9', borderRadius: '12px', fontSize: '0.95rem' }}>{plan.skills}</p>}
-              </ViewSection>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+                  <ViewSection label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
+                  <ViewSection label="CONTEÚDOS PROGRAMÁTICOS" icon={<Book size={18} />}>{plan.content || '---'}</ViewSection>
+                </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                <ViewSection label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" icon={<LayoutList size={18} />}>{plan.knowledge_objects || '---'}</ViewSection>
-                <ViewSection label="CONTEÚDOS PROGRAMÁTICOS" icon={<Book size={18} />}>{plan.content || '---'}</ViewSection>
-              </div>
+                <ViewSection label="CRONOGRAMA DETALHADO (SEMANAS)" icon={<Calendar size={18} />}>{plan.programmatic_content || '---'}</ViewSection>
+                <ViewSection label="PROCEDIMENTOS METODOLÓGICOS" icon={<LayoutList size={18} />}>{plan.methodology || '---'}</ViewSection>
 
-              <ViewSection label="CRONOGRAMA DETALHADO (SEMANAS)" icon={<Calendar size={18} />}>{plan.programmatic_content || '---'}</ViewSection>
-              <ViewSection label="PROCEDIMENTOS METODOLÓGICOS" icon={<LayoutList size={18} />}>{plan.methodology || '---'}</ViewSection>
-            </>
-          )}
-
-          {!isInfantil && (
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem' }}>
-              <ViewSection label="RECURSOS" icon={<LayoutList size={18} />}>{plan.resources || '---'}</ViewSection>
-              <ViewSection label="REFERÊNCIAS" icon={<Book size={18} />}>{plan.references || '---'}</ViewSection>
-              <ViewSection label="PROCEDIMENTOS AVALIATIVOS" icon={<CheckCircle2 size={18} />}>{plan.evaluation || '---'}</ViewSection>
-            </div>
-          )}
-          
-          {isInfantil && (
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-              <ViewSection label="Metodologia / Procedimentos" icon={<LayoutList size={18} />}>{plan.methodology || '---'}</ViewSection>
-              <ViewSection label="Avaliação" icon={<CheckCircle2 size={18} />}>{plan.evaluation || '---'}</ViewSection>
-              <ViewSection label="Recursos" icon={<LayoutList size={18} />}>{plan.resources || '---'}</ViewSection>
-              <ViewSection label="Referências" icon={<Book size={18} />}>{plan.references || '---'}</ViewSection>
-            </div>
-          )}
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '2rem' }}>
+                  <ViewSection label="RECURSOS" icon={<LayoutList size={18} />}>{plan.resources || '---'}</ViewSection>
+                  <ViewSection label="REFERÊNCIAS" icon={<Book size={18} />}>{plan.references || '---'}</ViewSection>
+                  <ViewSection label="PROCEDIMENTOS AVALIATIVOS" icon={<CheckCircle2 size={18} />}>{plan.evaluation || '---'}</ViewSection>
+                </div>
+              </>
+            )}
+          </div>
+          <div style={{ padding: '2rem', backgroundColor: '#fcfcfc', borderTop: '1px solid #eee', fontSize: '0.85rem', color: '#999', textAlign: 'center', marginTop: '3rem' }}>
+            Documento gerado digitalmente via Sistema de Gestão Educacional • {new Date().toLocaleDateString()}
+          </div>
         </div>
-        <div style={{ padding: '2rem', backgroundColor: '#fcfcfc', borderTop: '1px solid #eee', fontSize: '0.85rem', color: '#999', textAlign: 'center', marginTop: '3rem' }}>
-          Documento gerado digitalmente via Sistema de Gestão Educacional • {new Date().toLocaleDateString()}
-        </div>
-      </div>
       <style>{`
         @media print {
           body * { visibility: hidden; }
@@ -465,10 +525,23 @@ export const LessonPlanPage: React.FC = () => {
   const [openBimester, setOpenBimester] = useState(false)
   const [openMonth, setOpenMonth] = useState(false)
 
+  // Estados para campos específicos de Fundamental I
+  const [moments, setMoments] = useState<MomentState>({ m1: '', m2: '', m3: '', m4: '', m5: '' })
+  const [agenda, setAgenda] = useState<AgendaState>({ sala: '', casa: '' })
+
   // ══════════ LÓGICA DE NÍVEL (MEMOIZED) ══════════
-  const isInfantil = useMemo(() => {
-    const levelName = activeClass?.grade?.level?.name || ''
-    return levelName.toLowerCase().includes('infantil')
+  const levelInfo = useMemo(() => {
+    const levelName = activeClass?.grade?.level?.name?.toLowerCase() || ''
+    const isInf = levelName.includes('infantil')
+    const isF1 = levelName.includes('fundamental i') || levelName.includes('fundamental 1')
+    const isF2m = levelName.includes('fundamental ii') || levelName.includes('fundamental 2') || levelName.includes('médio')
+    
+    return {
+      isInfantil: isInf,
+      isFundamental1: isF1,
+      isFundamental2m: isF2m,
+      name: levelName
+    }
   }, [activeClass])
 
   const levelDisplayName = useMemo(() => {
@@ -477,12 +550,6 @@ export const LessonPlanPage: React.FC = () => {
   }, [activeClass])
 
   // ══════════ EFEITOS E BUSCAS ══════════
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768)
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
   const fetchPlans = useCallback(async () => {
     setLoading(true)
     try {
@@ -505,6 +572,12 @@ export const LessonPlanPage: React.FC = () => {
   }, [classId])
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
     if (classId) {
       fetchPlans()
       fetchAllocations()
@@ -519,7 +592,6 @@ export const LessonPlanPage: React.FC = () => {
   useEffect(() => {
     const isActive = activeDropdown === 'habilidades'
     const queryTerm = bnccSearch.trim()
-    // Só bloqueia se não estiver ativo E termo for curto
     if (!isActive && queryTerm.length < 1) { setBnccResults([]); return }
     const requestId = ++bnccRequestId.current
     const timer = setTimeout(async () => {
@@ -528,15 +600,12 @@ export const LessonPlanPage: React.FC = () => {
         const queryParams = new URLSearchParams({ q: queryTerm })
         if (currentPlan?.subject) queryParams.append('subject', currentPlan.subject)
         
-        // Se for Infantil, forçar busca por códigos EI se o termo for curto ou vazio
-        if (isInfantil && queryTerm.length < 2) {
+        if (levelInfo.isInfantil && queryTerm.length < 2) {
           queryParams.set('q', 'EI')
         }
 
         const results = await api(`/teacher/bncc/search?${queryParams.toString()}`)
-        
-        // Filtro adicional no client-side para garantir que só venha EI se for infantil
-        const filtered = isInfantil 
+        const filtered = levelInfo.isInfantil 
           ? results.filter((r: any) => r.code?.startsWith('EI'))
           : results;
 
@@ -545,7 +614,7 @@ export const LessonPlanPage: React.FC = () => {
       finally { if (requestId === bnccRequestId.current) setSearchingBNCC(false) }
     }, isActive && queryTerm === '' ? 0 : 200)
     return () => clearTimeout(timer)
-  }, [bnccSearch, currentPlan?.subject, activeDropdown, isInfantil])
+  }, [bnccSearch, currentPlan?.subject, activeDropdown, levelInfo.isInfantil])
 
   useEffect(() => {
     const isActive = activeDropdown === 'gerais'
@@ -597,7 +666,7 @@ export const LessonPlanPage: React.FC = () => {
     resources: '',
     references: '',
     content: '',
-    type: 'Mensal',
+    type: levelInfo.isFundamental1 ? 'Diário' : 'Mensal',
     status: 'PENDING'
   })
 
@@ -608,7 +677,16 @@ export const LessonPlanPage: React.FC = () => {
     setSelectedBnccIds([]); setSelectedBnccObjects([])
     setSelectedGenIds([]); setSelectedGenObjects([])
     setSelectedSpecIds([]); setSelectedSpecObjects([])
+    
+    // Reset specific states
+    setMoments({ m1: '', m2: '', m3: '', m4: '', m5: '' })
+    setAgenda({ sala: '', casa: '' })
+    
     setIsEditing(true)
+  }
+
+  const parseJsonSafe = (str: string, def: any) => {
+    try { return JSON.parse(str || '{}') } catch { return def }
   }
 
   const handleEdit = (plan: LessonPlan) => {
@@ -621,27 +699,54 @@ export const LessonPlanPage: React.FC = () => {
     setSelectedGenObjects(plan.bncc_general_comp || [])
     setSelectedSpecIds(plan.bncc_specific_comp?.map(s => s.id) || [])
     setSelectedSpecObjects(plan.bncc_specific_comp || [])
+
+    // Parse Fundamental I fields
+    if (levelInfo.isFundamental1) {
+      setMoments(parseJsonSafe(plan.programmatic_content || '', { m1: '', m2: '', m3: '', m4: '', m5: '' }))
+      setAgenda(parseJsonSafe(plan.content || '', { sala: '', casa: '' }))
+    }
+
     setIsEditing(true)
   }
 
   const handleSave = async () => {
     if (!currentPlan?.subject) return toast.error('Informe a disciplina')
-    if (!currentPlan?.knowledge_objects && selectedGenIds.length === 0) {
-      return toast.error('Preencha ao menos as competências ou objetos de conhecimento')
+    
+    // Validations based on level
+    if (levelInfo.isFundamental1) {
+      if (!currentPlan.knowledge_objects && !moments.m1) {
+        return toast.error('Preencha ao menos o Objeto de Conhecimento ou o 1º Momento')
+      }
+    } else {
+      if (!currentPlan?.knowledge_objects && selectedGenIds.length === 0) {
+        return toast.error('Preencha ao menos as competências ou objetos de conhecimento')
+      }
     }
+
     setSaving(true)
     try {
       const { bncc_skills, bncc_general_comp, bncc_specific_comp, ...cleanPlan } = currentPlan as any
+      
+      // Preparar payload com serialização se necessário
+      const payload: any = { 
+        ...cleanPlan, 
+        classId,
+        bncc_skills_ids: selectedBnccIds,
+        bncc_general_comp_ids: selectedGenIds,
+        bncc_specific_comp_ids: selectedSpecIds
+      }
+
+      if (levelInfo.isFundamental1) {
+        payload.programmatic_content = JSON.stringify(moments)
+        payload.content = JSON.stringify(agenda)
+        payload.type = 'Diário'
+      }
+
       await api('/teacher/lesson-plans', {
         method: 'POST',
-        body: JSON.stringify({ 
-          ...cleanPlan, 
-          classId,
-          bncc_skills_ids: selectedBnccIds,
-          bncc_general_comp_ids: selectedGenIds,
-          bncc_specific_comp_ids: selectedSpecIds
-        })
+        body: JSON.stringify(payload)
       })
+      
       toast.success('Plano de aula salvo!')
       setIsEditing(false); setCurrentPlan(null); fetchPlans()
     } catch (error) { toast.error('Erro ao salvar plano') }
@@ -676,15 +781,28 @@ export const LessonPlanPage: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button onClick={() => isEditing ? setIsEditing(false) : navigate(-1)} className="card-interactive" style={{ width: '50px', height: '50px', borderRadius: '15px', background: 'white', border: '1px solid #eee' }}><ChevronLeft size={24} /></button>
             <div>
-              <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 950, lineHeight: 1 }}>{isEditing ? 'Planejamento' : 'Meus Planos'}</h1>
+              <h1 style={{ fontSize: isMobile ? '1.5rem' : '2.5rem', fontWeight: 1000, lineHeight: 1, letterSpacing: '-0.04em' }}>{isEditing ? 'Planejamento' : 'Meus Planos'}</h1>
               {activeClass && (
-                <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'hsl(var(--primary))', marginTop: '0.2rem', textTransform: 'uppercase', opacity: 0.8 }}>
-                  {levelDisplayName}
-                </p>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                   <span style={{ 
+                     fontSize: '0.7rem', fontWeight: 950, color: 'white', 
+                     backgroundColor: levelInfo.isInfantil ? '#ff9f43' : levelInfo.isFundamental1 ? '#00d2d3' : '#5f27cd',
+                     padding: '0.3rem 0.8rem', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.05em'
+                   }}>
+                     {levelInfo.isInfantil ? 'Infantil' : levelInfo.isFundamental1 ? 'Fundamental I' : 'Fund II / Médio'}
+                   </span>
+                   <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#666', opacity: 0.8 }}>
+                    {levelDisplayName}
+                  </p>
+                </div>
               )}
             </div>
           </div>
-          {!isEditing && <button onClick={handleCreateNew} className="btn btn-primary"><Plus size={20} /> Novo Plano</button>}
+          {!isEditing && (
+            <button onClick={handleCreateNew} className="btn-primary" style={{ padding: '0.8rem 1.5rem', borderRadius: '16px', fontWeight: 800, boxShadow: '0 10px 25px hsl(var(--primary) / 0.3)' }}>
+              <Plus size={20} /> <span style={{ marginLeft: '0.5rem' }}>Novo Plano</span>
+            </button>
+          )}
         </header>
 
         {isEditing && currentPlan ? (
@@ -697,7 +815,9 @@ export const LessonPlanPage: React.FC = () => {
                </div>
             </SectionCard>
 
-            {isInfantil ? (
+            {/* ══════════ TEMPLATES POR NÍVEL ══════════ */}
+            
+            {levelInfo.isInfantil && (
               <SectionCard isMobile={isMobile} icon={<Target />} title="Campos e Direitos (Infantil)" accent="linear-gradient(135deg, #fffcf0 0%, #fff9e0 100%)">
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
                    <MultiCheckGroup 
@@ -714,49 +834,76 @@ export const LessonPlanPage: React.FC = () => {
                    />
                 </div>
               </SectionCard>
-            ) : (
+            )}
+
+            {(levelInfo.isFundamental1 || levelInfo.isFundamental2m) && (
               <SectionCard isMobile={isMobile} icon={<Target />} title="Base BNCC" accent="linear-gradient(135deg, #fffcf0 0%, #fff9e0 100%)">
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                       <MultiSelectField label="Competências Gerais" selected={selectedGenObjects} onRemove={(id: string) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }} onOpen={() => setActiveDropdown('gerais')} variantColor="orange" />
-                     <FormGroup label="Anotações de Competências Gerais" placeholder="Complemente as competências..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="100px" />
-                   </div>
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                      <FormGroup label="Anotações de Competências Gerais" placeholder="Complemente as competências..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="100px" />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                       <MultiSelectField label="Competências Específicas" selected={selectedSpecObjects} onRemove={(id: string) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }} onOpen={() => setActiveDropdown('especificas')} variantColor="blue" />
-                     <FormGroup label="Anotações de Competências Específicas" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="100px" />
-                   </div>
+                      <FormGroup label="Anotações de Competências Específicas" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="100px" />
+                    </div>
                 </div>
               </SectionCard>
             )}
 
             <SectionCard isMobile={isMobile} icon={<LayoutList />} title="Desenvolvimento">
-               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-                 {!isInfantil && (
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                 
+                 {levelInfo.isFundamental2m && (
                    <>
-                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
                         <FormGroup label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" placeholder="O que será ensinado?" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
                         <FormGroup label="CONTEÚDOS PROGRAMÁTICOS" placeholder="Temas, capítulos e unidades..." value={currentPlan.content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, content: v })} height="120px" />
-                     </div>
+                      </div>
                       <MultiSelectField label="HABILIDADE(S) (BNCC)" selected={selectedBnccObjects} onRemove={(id: string) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }} onOpen={() => setActiveDropdown('habilidades')} variantColor="green" />
-                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
                         <FormGroup label="CRONOGRAMA DETALHADO (SEMANAS)" placeholder="Distribuição do conteúdo (Ex: Semana 1, Semana 2...)" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="120px" />
                         <FormGroup label="PROCEDIMENTOS METODOLÓGICOS" placeholder="Lúdico, laboratório, pesquisa, socioemocional..." value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="120px" />
-                     </div>
-                     <FormGroup label="HABILIDADE(S) PRÓPRIAS" placeholder="Inovação, projetos e específicas..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
-                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                      </div>
+                      <FormGroup label="HABILIDADE(S) PRÓPRIAS" placeholder="Inovação, projetos e específicas..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
                         <FormGroup label="RECURSOS" placeholder="Mapas, vídeos, livros..." value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} height="100px" />
                         <FormGroup label="REFERÊNCIAS" placeholder="Bibliografia utilizada..." value={currentPlan.references} onChange={(v: string) => setCurrentPlan({ ...currentPlan, references: v })} height="100px" />
                         <FormGroup label="PROCEDIMENTOS AVALIATIVOS" placeholder="Processos avaliativos..." value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} height="100px" />
-                     </div>
+                      </div>
                    </>
                  )}
-                 {isInfantil && (
+
+                 {levelInfo.isFundamental1 && (
                    <>
-                     <FormGroup label="Público Alvo / Local" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} />
-                     <FormGroup label="Conteúdo Programático" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} />
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
+                        <FormGroup label="OBJETO(S) DE CONHECIMENTO" placeholder="O que será ensinado?" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="100px" />
+                        <FormGroup label="TEMÁTICA / TEMA" placeholder="Tema principal da pauta..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="100px" />
+                      </div>
+                      
+                      <MultiSelectField label="HABILIDADE(S) (BNCC)" selected={selectedBnccObjects} onRemove={(id: string) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }} onOpen={() => setActiveDropdown('habilidades')} variantColor="green" />
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                        <FormGroup label="1º Momento" value={moments.m1} onChange={(v: string) => setMoments({...moments, m1: v})} height="100px" />
+                        <FormGroup label="2º Momento" value={moments.m2} onChange={(v: string) => setMoments({...moments, m2: v})} height="100px" />
+                        <FormGroup label="3º Momento" value={moments.m3} onChange={(v: string) => setMoments({...moments, m3: v})} height="100px" />
+                        <FormGroup label="4º Momento" value={moments.m4} onChange={(v: string) => setMoments({...moments, m4: v})} height="100px" />
+                        <FormGroup label="5º Momento" value={moments.m5} onChange={(v: string) => setMoments({...moments, m5: v})} height="100px" />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                           <FormGroup label="AGENDA (SALA)" value={agenda.sala} onChange={(v: string) => setAgenda({...agenda, sala: v})} height="70px" />
+                           <FormGroup label="AGENDA (CASA)" value={agenda.casa} onChange={(v: string) => setAgenda({...agenda, casa: v})} height="70px" />
+                        </div>
+                      </div>
+                   </>
+                 )}
+
+                 {levelInfo.isInfantil && (
+                   <>
+                      <FormGroup label="Público Alvo / Local" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} />
+                      <FormGroup label="Conteúdo Programático" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} />
                       <MultiSelectField label="Objetivos de Aprendizagem (BNCC)" selected={selectedBnccObjects} onRemove={(id: string) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }} onOpen={() => setActiveDropdown('habilidades')} variantColor="green" />
-                     <FormGroup label="Metodologia / Procedimentos" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} />
-                     <FormGroup label="Avaliação" value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} />
+                      <FormGroup label="Metodologia / Procedimentos" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} />
+                      <FormGroup label="Avaliação" value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} />
                    </>
                  )}
                </div>
@@ -783,21 +930,21 @@ export const LessonPlanPage: React.FC = () => {
         )}
 
         {viewingPlan && (
-          <LessonPlanVisualizer plan={viewingPlan} onClose={() => setViewingPlan(null)} isMobile={isMobile} isInfantil={isInfantil} />
+          <LessonPlanVisualizer plan={viewingPlan} onClose={() => setViewingPlan(null)} isMobile={isMobile} levelInfo={levelInfo} />
         )}
       </div>
 
-      {/* Modais de Seleção BNCC */}
       <SelectionModal 
         isOpen={activeDropdown === 'habilidades'} 
         onClose={() => setActiveDropdown(null)} 
-        title={isInfantil ? "Seleção: Objetivos de Aprendizagem" : "Seleção: Habilidades BNCC"}
+        title={levelInfo.isInfantil ? "Seleção: Objetivos de Aprendizagem" : "Seleção: Habilidades BNCC"}
         search={bnccSearch} 
         setSearch={setBnccSearch} 
         results={bnccResults} 
         searching={searchingBNCC} 
-        variantColor="green" 
+        variantColor="#10ac84" 
         selectedObjects={selectedBnccObjects} 
+        levelInfo={levelInfo}
         onAdd={(it: any) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]) } }} 
         onRemove={(id: string) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }} 
       />
@@ -809,8 +956,9 @@ export const LessonPlanPage: React.FC = () => {
         setSearch={setGenCompSearch} 
         results={genCompResults} 
         searching={searchingGen} 
-        variantColor="orange" 
+        variantColor="#ff9f43" 
         selectedObjects={selectedGenObjects} 
+        levelInfo={levelInfo}
         onAdd={(it: any) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]) } }} 
         onRemove={(id: string) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }} 
       />
@@ -822,12 +970,12 @@ export const LessonPlanPage: React.FC = () => {
         setSearch={setSpecCompSearch} 
         results={specCompResults} 
         searching={searchingSpec} 
-        variantColor="blue" 
+        variantColor="#54a0ff" 
         selectedObjects={selectedSpecObjects} 
+        levelInfo={levelInfo}
         onAdd={(it: any) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]) } }} 
         onRemove={(id: string) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }} 
       />
-    </div>
     </div>
   )
 }
