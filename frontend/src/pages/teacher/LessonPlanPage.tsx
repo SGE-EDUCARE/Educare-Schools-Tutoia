@@ -88,19 +88,50 @@ const INFANTIL_DIREITOS = [
 
 // ══════════ ELEMENTOS UI AUXILIARES ══════════
 const SectionCard = ({ icon, title, accent, children, isMobile }: any) => (
-  <section className="card" style={{ padding: 0, borderRadius: isMobile ? '20px' : '28px', border: '1px solid #eee', background: 'white', position: 'relative' }}>
-    <div style={{ padding: '1.25rem 2rem', background: accent || '#fff', borderBottom: '1px solid #f5f5f5', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>{icon}</div>
-      <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>{title}</h3>
+  <section className="card" style={{ 
+    padding: 0, 
+    borderRadius: isMobile ? '16px' : '28px', 
+    border: '1px solid #eee', 
+    background: 'white', 
+    position: 'relative',
+    boxShadow: isMobile ? '0 2px 10px rgba(0,0,0,0.03)' : 'var(--shadow-sm)'
+  }}>
+    <div style={{ 
+      padding: isMobile ? '1rem 1.25rem' : '1.25rem 2rem', 
+      background: accent || '#fff', 
+      borderBottom: '1px solid #f5f5f5', 
+      display: 'flex', 
+      alignItems: 'center', 
+      gap: '0.75rem' 
+    }}>
+      <div style={{ 
+        width: isMobile ? '32px' : '40px', 
+        height: isMobile ? '32px' : '40px', 
+        borderRadius: '10px', 
+        background: 'white', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        boxShadow: '0 2px 8px rgba(0,0,0,0.05)' 
+      }}>
+        {React.cloneElement(icon, { size: isMobile ? 18 : 24 })}
+      </div>
+      <h3 style={{ fontSize: isMobile ? '1rem' : '1.1rem', fontWeight: 800 }}>{title}</h3>
     </div>
-    <div style={{ padding: '2rem' }}>{children}</div>
+    <div style={{ padding: isMobile ? '1.25rem' : '2rem' }}>{children}</div>
   </section>
 )
 
-const CustomSelect = ({ label, value, options, isOpen, setIsOpen, onChange, id }: any) => (
-  <div className="input" data-select-id={id} style={{ padding: '0.8rem 1.5rem', borderRadius: '18px', position: 'relative', cursor: 'pointer', background: '#fcfcfc' }} onClick={() => setIsOpen(!isOpen)}>
-    <label style={{ fontSize: '0.75rem', fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>{label}</label>
-    <div style={{ fontWeight: 700, marginTop: '0.2rem' }}>{options.find((o: any) => o.value === value)?.label || 'Selecione...'}</div>
+const CustomSelect = ({ label, value, options, isOpen, setIsOpen, onChange, id, isMobile }: any) => (
+  <div className="input" data-select-id={id} style={{ 
+    padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.5rem', 
+    borderRadius: isMobile ? '14px' : '18px', 
+    position: 'relative', 
+    cursor: 'pointer', 
+    background: '#fcfcfc' 
+  }} onClick={() => setIsOpen(!isOpen)}>
+    <label style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>{label}</label>
+    <div style={{ fontWeight: 700, marginTop: '0.1rem', fontSize: isMobile ? '0.9rem' : '1rem' }}>{options.find((o: any) => o.value === value)?.label || 'Selecione...'}</div>
     {isOpen && (
       <div style={{ 
         position: 'absolute', top: 'calc(100% + 10px)', left: 0, right: 0, 
@@ -231,14 +262,21 @@ const SelectionModal = ({
   return (
     <div style={{ 
       position: 'fixed', inset: 0, 
-      backgroundColor: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(12px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000,
-      padding: '1rem'
+      backgroundColor: 'rgba(25, 37, 89, 0.4)', backdropFilter: 'blur(8px)',
+      display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', zIndex: 2000,
+      padding: isMobile ? 0 : '1rem'
     }} onClick={onClose}>
-      <div className="glass animate-scale-in" style={{ 
-        width: '100%', maxWidth: '600px', backgroundColor: 'rgba(255,255,255,0.95)', 
-        borderRadius: '32px', maxHeight: '85vh', display: 'flex', flexDirection: 'column',
-        boxShadow: '0 40px 100px rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.5)',
+      <div className={isMobile ? "animate-slide-up" : "animate-scale-in"} style={{ 
+        width: '100%', 
+        maxWidth: isMobile ? '100%' : '650px', 
+        backgroundColor: '#ffffff', 
+        borderRadius: isMobile ? '32px 32px 0 0' : '32px', 
+        height: isMobile ? '92vh' : '85vh', 
+        maxHeight: isMobile ? '92vh' : '85vh',
+        display: 'flex', 
+        flexDirection: 'column',
+        boxShadow: '0 -10px 40px rgba(0,0,0,0.1)', 
+        border: '1px solid rgba(0,0,0,0.05)',
         overflow: 'hidden'
       }} onClick={e => e.stopPropagation()}>
         {/* Header */}
@@ -853,13 +891,13 @@ export const LessonPlanPage: React.FC = () => {
   // ══════════ RENDERIZAÇÃO FINAL ══════════
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'hsl(var(--background))' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '0 1rem 6rem' : '0 2rem 10rem' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '0 0.75rem 6rem' : '0 2rem 10rem' }}>
         
-        <header style={{ padding: '2rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button onClick={() => isEditing ? setIsEditing(false) : navigate(-1)} className="card-interactive" style={{ width: '50px', height: '50px', borderRadius: '15px', background: 'white', border: '1px solid #eee' }}><ChevronLeft size={24} /></button>
+        <header style={{ padding: isMobile ? '1.25rem 0' : '2rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.75rem' : '1rem' }}>
+            <button onClick={() => isEditing ? setIsEditing(false) : navigate(-1)} className="card-interactive" style={{ width: isMobile ? '40px' : '50px', height: isMobile ? '40px' : '50px', borderRadius: '12px', background: 'white', border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={isMobile ? 20 : 24} /></button>
             <div>
-              <h1 style={{ fontSize: isMobile ? '1.5rem' : '2.5rem', fontWeight: 1000, lineHeight: 1, letterSpacing: '-0.04em' }}>{isEditing ? 'Planejamento' : 'Meus Planos'}</h1>
+              <h1 style={{ fontSize: isMobile ? '1.25rem' : '2.5rem', fontWeight: 1000, lineHeight: 1.1, letterSpacing: '-0.04em' }}>{isEditing ? 'Planejamento' : 'Meus Planos'}</h1>
               {activeClass && (
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
                    <span style={{ 
@@ -884,11 +922,12 @@ export const LessonPlanPage: React.FC = () => {
         </header>
 
         {isEditing && currentPlan ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '2rem' }}>
             <SectionCard isMobile={isMobile} icon={<Calendar />} title="Identificação" accent="linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%)">
                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.25rem' }}>
                  <CustomSelect 
                    id="sel-subject"
+                   isMobile={isMobile}
                    label="Disciplina" 
                    value={currentPlan.subject} 
                    options={subjects.map(s => ({ value: s, label: s }))} 
@@ -898,6 +937,7 @@ export const LessonPlanPage: React.FC = () => {
                  />
                  <CustomSelect 
                    id="sel-bimester"
+                   isMobile={isMobile}
                    label="Bimestre" 
                    value={currentPlan.bimester} 
                    options={bimesterOptions} 
@@ -907,6 +947,7 @@ export const LessonPlanPage: React.FC = () => {
                  />
                  <CustomSelect 
                    id="sel-month"
+                   isMobile={isMobile}
                    label="Mês de Referência" 
                    value={currentPlan.month} 
                    options={monthOptions} 
@@ -1040,6 +1081,7 @@ export const LessonPlanPage: React.FC = () => {
       <SelectionModal 
         isOpen={activeDropdown === 'habilidades'} 
         onClose={() => setActiveDropdown(null)} 
+        isMobile={isMobile}
         title={levelInfo.isInfantil ? "Seleção: Objetivos de Aprendizagem" : "Seleção: Habilidades BNCC"}
         search={bnccSearch} 
         setSearch={setBnccSearch} 
@@ -1054,6 +1096,7 @@ export const LessonPlanPage: React.FC = () => {
       <SelectionModal 
         isOpen={activeDropdown === 'gerais'} 
         onClose={() => setActiveDropdown(null)} 
+        isMobile={isMobile}
         title="Seleção: Competências Gerais" 
         search={genCompSearch} 
         setSearch={setGenCompSearch} 
@@ -1068,6 +1111,7 @@ export const LessonPlanPage: React.FC = () => {
       <SelectionModal 
         isOpen={activeDropdown === 'especificas'} 
         onClose={() => setActiveDropdown(null)} 
+        isMobile={isMobile}
         title="Seleção: Competências Específicas" 
         search={specCompSearch} 
         setSearch={setSpecCompSearch} 
