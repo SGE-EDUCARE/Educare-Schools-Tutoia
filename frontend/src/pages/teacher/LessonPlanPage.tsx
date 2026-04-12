@@ -816,12 +816,19 @@ export const LessonPlanPage: React.FC = () => {
                         onClick={(e) => { e.stopPropagation(); if(confirm('Excluir este plano?')) api(`/teacher/lesson-plans/${plan.id}`, { method: 'DELETE' }).then(() => fetchPlans()) }} 
                         className="btn"
                         style={{
-                          width: '56px', height: '56px', background: 'hsl(var(--error) / 0.05)', border: '1.5px solid transparent',
-                          color: 'hsl(var(--error))', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          flexShrink: 0
+                          width: isMobile ? '44px' : '56px', 
+                          height: isMobile ? '44px' : '56px', 
+                          background: 'hsl(var(--error) / 0.05)', border: '1.5px solid transparent',
+                          color: 'hsl(var(--error))', borderRadius: isMobile ? '14px' : '18px', 
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          flexShrink: 0,
+                          position: isMobile ? 'absolute' : 'static',
+                          top: isMobile ? '1.25rem' : 'auto',
+                          right: isMobile ? '1.25rem' : 'auto',
+                          zIndex: 5
                         }}
                       >
-                        <Trash2 size={22} />
+                        <Trash2 size={isMobile ? 22 : 26} />
                       </button>
                     </div>
                   </div>
