@@ -982,8 +982,17 @@ export const LessonPlanPage: React.FC = () => {
 
           {!isEditing && (
             <div style={{ marginTop: '2.5rem' }}>
-              <button onClick={handleCreateNew} className="btn-primary" style={{ padding: '1.2rem 2rem', borderRadius: '24px', fontWeight: 900, boxShadow: '0 20px 40px hsl(var(--primary) / 0.3)', width: isMobile ? '100%' : 'auto' }}>
-                <Plus size={22} /> <span style={{ marginLeft: '0.5rem' }}>NOVO PLANEJAMENTO</span>
+              <button 
+                onClick={handleCreateNew} 
+                className="btn-primary" 
+                style={{ 
+                  padding: '1.2rem 2.5rem', borderRadius: '24px', fontWeight: 900, 
+                  boxShadow: '0 20px 40px hsl(var(--primary) / 0.3)', 
+                  width: isMobile ? '100%' : 'auto',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem'
+                }}
+              >
+                <Plus size={22} /> <span>NOVO PLANEJAMENTO</span>
               </button>
             </div>
           )}
