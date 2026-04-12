@@ -102,7 +102,9 @@ const SectionCard = ({ icon, title, accent, children, isMobile }: any) => (
       borderBottom: '1px solid #f5f5f5', 
       display: 'flex', 
       alignItems: 'center', 
-      gap: '0.75rem' 
+      gap: '0.75rem',
+      borderTopLeftRadius: isMobile ? '16px' : '28px',
+      borderTopRightRadius: isMobile ? '16px' : '28px'
     }}>
       <div style={{ 
         width: isMobile ? '32px' : '40px', 
