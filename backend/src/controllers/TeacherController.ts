@@ -484,7 +484,7 @@ export class TeacherController {
 
   // Buscar Habilidades BNCC
   static async searchBnccSkills(req: AuthRequest, res: Response) {
-    const { q, subject } = req.query;
+    const { q, subject, level } = req.query;
     try {
       const where: any = {};
       if (q) {
@@ -494,7 +494,13 @@ export class TeacherController {
         ];
       }
       if (subject) where.subject = String(subject);
-      const skills = await prisma.bnccSkill.findMany({ where, take: 50, orderBy: { code: 'asc' } });
+      if (level) where.level = String(level);
+
+      const skills = await prisma.bnccSkill.findMany({ 
+        where, 
+        take: 80, 
+        orderBy: { code: 'asc' } 
+      });
       res.json(skills);
     } catch (error: any) { res.status(500).json({ message: error.message }); }
   }

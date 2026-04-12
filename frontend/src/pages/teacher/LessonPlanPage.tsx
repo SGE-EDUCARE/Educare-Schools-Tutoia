@@ -260,7 +260,10 @@ const SelectionModal = ({
                     }}>{item.code || item.number}</span>
                     {isSelected && <div style={{ color: variantColor }}><CheckCircle2 size={18} fill="currentColor" color="white" /></div>}
                   </div>
-                  <p style={{ fontSize: '0.9rem', color: '#333', lineHeight: '1.5', fontWeight: 550 }}>{item.description}</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                    {item.title && <h4 style={{ fontSize: '0.95rem', fontWeight: 900, color: '#1a202c', marginBottom: '0.2rem' }}>{item.title}</h4>}
+                    <p style={{ fontSize: '0.85rem', color: '#4a5568', lineHeight: '1.6', fontWeight: 500 }}>{item.description}</p>
+                  </div>
                 </div>
               )
             })
@@ -603,8 +606,11 @@ export const LessonPlanPage: React.FC = () => {
     const timer = setTimeout(async () => {
       setSearchingBNCC(true)
       try {
-        const queryParams = new URLSearchParams({ q: queryTerm })
-        if (currentPlan?.subject) queryParams.append('subject', currentPlan.subject)
+        const queryParams = new URLSearchParams({ 
+          q: queryTerm,
+          subject: currentPlan?.subject || '',
+          level: activeClass?.grade?.level?.name || ''
+        })
         
         if (levelInfo.isInfantil && queryTerm.length < 2) {
           queryParams.set('q', 'EI')
@@ -620,7 +626,7 @@ export const LessonPlanPage: React.FC = () => {
       finally { if (requestId === bnccRequestId.current) setSearchingBNCC(false) }
     }, isActive && queryTerm === '' ? 0 : 200)
     return () => clearTimeout(timer)
-  }, [bnccSearch, currentPlan?.subject, activeDropdown, levelInfo.isInfantil])
+  }, [bnccSearch, currentPlan?.subject, activeDropdown, levelInfo.isInfantil, activeClass])
 
   useEffect(() => {
     const isActive = activeDropdown === 'gerais'
