@@ -245,24 +245,55 @@ const SelectionModal = ({
             results.map((item: any) => {
               const isSelected = selectedObjects.some((o: any) => o.id === item.id)
               return (
-                <div key={item.id} onClick={() => isSelected ? onRemove(item.id) : onAdd(item)} style={{ 
-                  padding: '1.25rem', borderRadius: '20px', border: '1px solid',
-                  borderColor: isSelected ? variantColor : '#f0f0f0',
-                  backgroundColor: isSelected ? `${variantColor}08` : '#fcfcfc',
-                  cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  position: 'relative', overflow: 'hidden'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
+                <div 
+                  key={item.id} 
+                  onClick={() => isSelected ? onRemove(item.id) : onAdd(item)} 
+                  style={{ 
+                    padding: '1.5rem', 
+                    borderRadius: '16px', 
+                    border: '2px solid',
+                    borderColor: isSelected ? variantColor : '#cbd5e0',
+                    backgroundColor: '#ffffff',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
+                    cursor: 'pointer',
+                    boxShadow: isSelected ? `0 10px 20px ${variantColor}15` : '0 2px 4px rgba(0,0,0,0.02)',
+                    position: 'relative'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ 
-                      fontWeight: 1000, color: variantColor, fontSize: '0.7rem', 
-                      background: `${variantColor}12`, padding: '0.3rem 0.6rem', borderRadius: '8px',
-                      textTransform: 'uppercase', letterSpacing: '0.05em' 
-                    }}>{item.code || item.number}</span>
-                    {isSelected && <div style={{ color: variantColor }}><CheckCircle2 size={18} fill="currentColor" color="white" /></div>}
+                      fontWeight: 900, 
+                      color: isSelected ? 'white' : variantColor, 
+                      fontSize: '0.75rem', 
+                      background: isSelected ? variantColor : `${variantColor}12`, 
+                      padding: '0.35rem 0.7rem', 
+                      borderRadius: '8px',
+                      textTransform: 'uppercase' 
+                    }}>{item.code || `Nº ${item.number}`}</span>
+                    {isSelected && <div style={{ color: variantColor }}><CheckCircle2 size={22} fill="currentColor" color="white" /></div>}
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                    {item.title && <h4 style={{ fontSize: '0.95rem', fontWeight: 900, color: '#1a202c', marginBottom: '0.2rem' }}>{item.title}</h4>}
-                    <p style={{ fontSize: '0.85rem', color: '#4a5568', lineHeight: '1.6', fontWeight: 500 }}>{item.description}</p>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    {item.title && (
+                      <h4 style={{ 
+                        fontSize: '1rem', 
+                        fontWeight: 950, 
+                        color: '#000000', 
+                        lineHeight: '1.4' 
+                      }}>
+                        {item.title}
+                      </h4>
+                    )}
+                    <p style={{ 
+                      fontSize: '0.9rem', 
+                      color: '#2d3748', 
+                      lineHeight: '1.6', 
+                      fontWeight: 500 
+                    }}>
+                      {item.description || 'Sem descrição.'}
+                    </p>
                   </div>
                 </div>
               )
