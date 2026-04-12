@@ -976,29 +976,30 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile }: { plan: LessonPlan; o
       >
         {/* Header Visualizer */}
         <div style={{
-          padding: '2rem', borderBottom: '1px solid hsl(var(--border) / 0.5)',
+          padding: isMobile ? '1.5rem' : '2rem 3rem', 
+          borderBottom: '1px solid hsl(var(--border) / 0.4)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          position: 'sticky', top: 0, backgroundColor: 'rgba(255,255,255,0.9)',
-          backdropFilter: 'blur(10px)', zIndex: 10
+          position: 'sticky', top: 0, backgroundColor: 'white',
+          zIndex: 10, boxShadow: '0 4px 20px -5px rgba(0,0,0,0.05)'
         }}>
           <div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 950, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>Plano de Aula Detalhado</h2>
+            <h2 style={{ fontSize: isMobile ? '1.25rem' : '1.75rem', fontWeight: 950, color: 'hsl(var(--text))', letterSpacing: '-0.03em' }}>Plano de Aula</h2>
             <div style={{ fontSize: '0.9rem', color: 'hsl(var(--text-light))', fontWeight: 600, marginTop: '0.2rem' }}>
-              {plan.subject} • {plan.month} • {plan.bimester}º Bimestre
+              {plan.subject} • {plan.month}
             </div>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
             <button 
               onClick={() => window.print()} 
               className="btn"
-              style={{ padding: '0.75rem 1.25rem', borderRadius: '14px', background: 'hsl(var(--background))', fontWeight: 700 }}
+              style={{ padding: '0.75rem 1.25rem', borderRadius: '14px', background: 'hsl(var(--background))', fontWeight: 700, display: isMobile ? 'none' : 'flex' }}
             >
               Imprimir
             </button>
             <button 
               onClick={onClose} 
               className="btn btn-primary"
-              style={{ width: '44px', height: '44px', padding: 0, borderRadius: '14px' }}
+              style={{ width: '44px', height: '44px', padding: 0, borderRadius: '14px', boxShadow: '0 8px 20px -4px hsl(var(--primary) / 0.4)' }}
             >
               ✕
             </button>
@@ -1006,14 +1007,20 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile }: { plan: LessonPlan; o
         </div>
 
         {/* Content Visualizer */}
-        <div style={{ padding: isMobile ? '1.5rem' : '3rem', flex: 1, color: '#333' }} className="print-content">
+        <div style={{ padding: isMobile ? '1.5rem' : '3.5rem', flex: 1, backgroundColor: '#fff', color: '#1a1a1a' }} className="print-content">
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
             
-            {/* 1. Cabeçalho do Documento */}
-            <div style={{ textAlign: 'center', borderBottom: '2px solid #eee', paddingBottom: '1.5rem' }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 950, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Planejamento de Ensino</div>
-              <div style={{ color: '#666', marginTop: '0.5rem', fontWeight: 600 }}>Censo Escolar • Unidade de Ensino</div>
+            {/* 1. Cabeçalho do Documento (Visualização de Papel) */}
+            <div style={{ textAlign: 'center', borderBottom: '1px solid #eee', paddingBottom: '2.5rem', marginBottom: '1rem' }}>
+              <div style={{ 
+                fontSize: '1.5rem', fontWeight: 950, textTransform: 'uppercase', 
+                letterSpacing: '0.1em', color: 'hsl(var(--text))' 
+              }}>Planejamento de Ensino</div>
+              <div style={{ 
+                color: 'hsl(var(--text-light))', marginTop: '0.5rem', 
+                fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.02em' 
+              }}>Unidade de Gestão Educacional • Ciclo {plan.bimester}º Bimestre</div>
             </div>
 
             {/* 2. Grades de Referência */}
@@ -1085,11 +1092,20 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile }: { plan: LessonPlan; o
 
 const ViewSection = ({ label, icon, children }: any) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'hsl(var(--primary))' }}>
-      {icon}
-      <span style={{ fontSize: '0.9rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'hsl(var(--primary))' }}>
+      <div style={{ 
+        width: '32px', height: '32px', borderRadius: '8px', 
+        background: 'hsl(var(--primary) / 0.1)', display: 'flex', 
+        alignItems: 'center', justifyContent: 'center' 
+      }}>
+        {icon}
+      </div>
+      <span style={{ fontSize: '0.85rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
     </div>
-    <div style={{ fontSize: '1rem', color: '#444' }}>
+    <div style={{ 
+      fontSize: '1rem', color: '#333', lineHeight: 1.6, 
+      wordBreak: 'break-word', overflowWrap: 'anywhere' 
+    }}>
       {children}
     </div>
   </div>
@@ -1097,15 +1113,20 @@ const ViewSection = ({ label, icon, children }: any) => (
 
 const BnccTag = ({ code, description }: any) => (
   <div style={{ 
-    padding: '0.85rem', backgroundColor: '#f8f8f8', borderRadius: '14px', 
-    border: '1px solid #efeef5', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' 
+    padding: '1.25rem', backgroundColor: '#fcfcfd', borderRadius: '18px', 
+    border: '1px solid #f0eff5', display: 'flex', gap: '1rem', alignItems: 'flex-start',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
   }}>
     <span style={{ 
       backgroundColor: 'hsl(var(--primary))', color: 'white', 
-      padding: '0.2rem 0.5rem', borderRadius: '6px', 
-      fontSize: '0.7rem', fontWeight: 900, flexShrink: 0 
+      padding: '0.25rem 0.6rem', borderRadius: '8px', 
+      fontSize: '0.7rem', fontWeight: 950, flexShrink: 0,
+      letterSpacing: '0.02em'
     }}>{code}</span>
-    <span style={{ fontSize: '0.82rem', lineHeight: 1.5, fontWeight: 500, color: '#333' }}>{description}</span>
+    <span style={{ 
+      fontSize: '0.85rem', lineHeight: 1.6, fontWeight: 550, 
+      color: '#2d3748', wordBreak: 'break-word' 
+    }}>{description}</span>
   </div>
 )
 
