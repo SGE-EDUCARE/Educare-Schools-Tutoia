@@ -97,8 +97,8 @@ const SectionCard = ({ icon, title, accent, children, isMobile }: any) => (
   </section>
 )
 
-const CustomSelect = ({ label, value, options, isOpen, setIsOpen, onChange }: any) => (
-  <div className="input" style={{ padding: '0.8rem 1.5rem', borderRadius: '18px', position: 'relative', cursor: 'pointer', background: '#fcfcfc' }} onClick={() => setIsOpen(!isOpen)}>
+const CustomSelect = ({ label, value, options, isOpen, setIsOpen, onChange, id }: any) => (
+  <div className="input" data-select-id={id} style={{ padding: '0.8rem 1.5rem', borderRadius: '18px', position: 'relative', cursor: 'pointer', background: '#fcfcfc' }} onClick={() => setIsOpen(!isOpen)}>
     <label style={{ fontSize: '0.75rem', fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>{label}</label>
     <div style={{ fontWeight: 700, marginTop: '0.2rem' }}>{options.find((o: any) => o.value === value)?.label || 'Selecione...'}</div>
     {isOpen && (
@@ -645,6 +645,20 @@ export const LessonPlanPage: React.FC = () => {
     }
   }, [classId, fetchPlans, fetchAllocations])
 
+  // Efeitos para fechamento de dropdowns ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-select-id]')) {
+        setOpenSubject(false);
+        setOpenBimester(false);
+        setOpenMonth(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const bnccRequestId = useRef(0)
   const genRequestId = useRef(0)
   const specRequestId = useRef(0)
@@ -873,9 +887,33 @@ export const LessonPlanPage: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <SectionCard isMobile={isMobile} icon={<Calendar />} title="Identificação" accent="linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%)">
                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.25rem' }}>
-                 <CustomSelect label="Disciplina" value={currentPlan.subject} options={subjects.map(s => ({ value: s, label: s }))} isOpen={openSubject} setIsOpen={setOpenSubject} onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} />
-                 <CustomSelect label="Bimestre" value={currentPlan.bimester} options={bimesterOptions} isOpen={openBimester} setIsOpen={setOpenBimester} onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} />
-                 <CustomSelect label="Mês de Referência" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} />
+                 <CustomSelect 
+                   id="sel-subject"
+                   label="Disciplina" 
+                   value={currentPlan.subject} 
+                   options={subjects.map(s => ({ value: s, label: s }))} 
+                   isOpen={openSubject} 
+                   setIsOpen={(val: boolean) => { if(val) { setOpenBimester(false); setOpenMonth(false) }; setOpenSubject(val) }} 
+                   onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} 
+                 />
+                 <CustomSelect 
+                   id="sel-bimester"
+                   label="Bimestre" 
+                   value={currentPlan.bimester} 
+                   options={bimesterOptions} 
+                   isOpen={openBimester} 
+                   setIsOpen={(val: boolean) => { if(val) { setOpenSubject(false); setOpenMonth(false) }; setOpenBimester(val) }} 
+                   onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} 
+                 />
+                 <CustomSelect 
+                   id="sel-month"
+                   label="Mês de Referência" 
+                   value={currentPlan.month} 
+                   options={monthOptions} 
+                   isOpen={openMonth} 
+                   setIsOpen={(val: boolean) => { if(val) { setOpenSubject(false); setOpenBimester(false) }; setOpenMonth(val) }} 
+                   onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} 
+                 />
                </div>
             </SectionCard>
 
