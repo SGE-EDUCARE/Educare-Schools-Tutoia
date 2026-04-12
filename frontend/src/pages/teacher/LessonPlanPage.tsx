@@ -481,8 +481,8 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile, levelInfo }: { plan: Le
         }
       `}</style>
     </div>
-  </div>
-)
+  )
+}
 
 // ══════════ COMPONENTE PRINCIPAL ══════════
 export const LessonPlanPage: React.FC = () => {
