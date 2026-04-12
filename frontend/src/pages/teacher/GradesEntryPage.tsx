@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
-import { ChevronLeft, ChevronDown, Search, Loader2, Calendar, BookOpen, Trash2, Rocket, CheckCircle2, RefreshCw, Save } from 'lucide-react'
+import { ChevronLeft, ChevronDown, Search, Loader2, Calendar, BookOpen, Trash2, CheckCircle2, RefreshCw, Save } from 'lucide-react'
 
 type GradeFields = { p1: string; p2: string; result: string; retry: string; final: string }
 
@@ -20,6 +20,14 @@ export const GradesEntryPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [savedSuccess, setSavedSuccess] = useState(false)
   const studentsRef = useRef<any[]>([])
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 1024)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const emptyGrade = (): GradeFields => ({ p1: '', p2: '', result: '', retry: '', final: '' })
 
