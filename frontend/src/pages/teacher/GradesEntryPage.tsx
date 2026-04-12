@@ -194,38 +194,42 @@ export const GradesEntryPage: React.FC = () => {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'hsl(var(--background))' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.25rem 10rem' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '0 0.5rem 10rem' : '0 2rem 5rem' }}>
 
         {/* ============ HEADER ============ */}
-        <header style={{ padding: '1.5rem 0 1rem' }}>
+        <header style={{ padding: isMobile ? '1.5rem 0.5rem 0.5rem' : '2.5rem 0 1.5rem' }}>
           <button onClick={() => navigate(-1)} style={{
-            display: 'flex', alignItems: 'center', gap: '0.4rem',
-            color: 'hsl(var(--primary))', fontSize: '0.8rem', fontWeight: 700,
-            marginBottom: '1rem', background: 'hsl(var(--primary) / 0.06)',
-            padding: '0.5rem 0.9rem', borderRadius: 'var(--radius-full)', cursor: 'pointer'
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            color: 'hsl(var(--primary))', fontSize: '0.75rem', fontWeight: 1000,
+            marginBottom: '1rem', background: 'hsl(var(--primary) / 0.08)',
+            padding: '0.6rem 1.2rem', borderRadius: '14px', cursor: 'pointer',
+            border: 'none', textTransform: 'uppercase', letterSpacing: '0.05em'
           }}>
-            <ChevronLeft size={16} /> VOLTAR
+            <ChevronLeft size={16} /> Voltar
           </button>
 
-          <div className="grades-header-row">
-            <div>
-              <h1 style={{ fontSize: '2rem', fontWeight: 900, color: 'hsl(var(--text))', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '0.3rem' }}>
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: '1.5rem' }}>
+            <div style={{ minWidth: 0 }}>
+              <h1 style={{ fontSize: isMobile ? '1.8rem' : '2.8rem', fontWeight: 1000, color: '#1B2559', letterSpacing: '-0.05em', lineHeight: 1 }}>
                 Lançar Notas
               </h1>
-              <p style={{ fontSize: '0.9rem', fontWeight: 500, color: 'hsl(var(--text-light))' }}>
-                Lançamento de avaliações bimestrais
+              <p style={{ fontSize: isMobile ? '0.85rem' : '1rem', fontWeight: 600, color: '#94A3B8', marginTop: '0.4rem' }}>
+                Registro de avaliações e desempenho escolar
               </p>
             </div>
 
-            {/* Progress pill — desktop inline */}
-            <div className="grades-progress-pill card" style={{ padding: '0.85rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', minWidth: '280px', borderRadius: '8px' }}>
+            <div style={{ 
+              backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '24px', 
+              boxShadow: '0 10px 30px rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.03)',
+              display: 'flex', alignItems: 'center', gap: '1.5rem', minWidth: isMobile ? '100%' : '300px'
+            }}>
               <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                  <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase' }}>Progresso</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--primary))' }}>{filledCount}/{students.length}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Preenchimento</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 1000, color: 'hsl(var(--primary))' }}>{filledCount}/{students.length}</span>
                 </div>
-                <div style={{ width: '100%', height: '5px', backgroundColor: 'hsl(var(--primary) / 0.06)', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${progress}%`, height: '100%', background: gradient, borderRadius: '4px', transition: 'width 0.5s ease' }}></div>
+                <div style={{ width: '100%', height: '8px', backgroundColor: '#F1F5F9', borderRadius: '10px', overflow: 'hidden' }}>
+                    <div style={{ width: `${progress}%`, height: '100%', background: gradient, borderRadius: '10px', transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }}></div>
                 </div>
               </div>
             </div>
@@ -233,64 +237,42 @@ export const GradesEntryPage: React.FC = () => {
         </header>
 
         {/* ============ CONTROLS ============ */}
-        <section className="grades-controls" style={{ marginBottom: '1.5rem' }}>
+        <section className="grades-controls" style={{ marginBottom: isMobile ? '1.5rem' : '2rem', padding: isMobile ? '0 0.5rem' : '0' }}>
           
-          {/* Bimestre Dropdown */}
           <div className="grades-ctrl-bimestre">
-            <div className="desktop-only" style={{ height: '100%', width: '100%' }}>
-              <CustomSelect 
-                label="Bimestre" 
-                icon={<Calendar size={10}/>}
-                value={bimester} 
-                options={[
-                  { label: '1º Bimestre', value: '1' },
-                  { label: '2º Bimestre', value: '2' },
-                  { label: '3º Bimestre', value: '3' },
-                  { label: '4º Bimestre', value: '4' },
-                ]}
-                isOpen={openBimester}
-                setIsOpen={setOpenBimester}
-                onChange={setBimester}
-              />
-            </div>
-            <div className="mobile-only card" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', borderRadius: 'var(--radius-lg)' }}>
-              <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Calendar size={10}/> Bimestre</div>
-              <select style={{ border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
-                value={bimester} onChange={e => setBimester(e.target.value)}>
-                <option value="1">1º Bimestre</option>
-                <option value="2">2º Bimestre</option>
-                <option value="3">3º Bimestre</option>
-                <option value="4">4º Bimestre</option>
-              </select>
-            </div>
+            <CustomSelect 
+              label="Bimestre" 
+              icon={<Calendar size={12}/>}
+              value={bimester} 
+              options={[
+                { label: '1º Bimestre', value: '1' },
+                { label: '2º Bimestre', value: '2' },
+                { label: '3º Bimestre', value: '3' },
+                { label: '4º Bimestre', value: '4' },
+              ]}
+              isOpen={openBimester}
+              setIsOpen={setOpenBimester}
+              onChange={setBimester}
+              isMobile={isMobile}
+            />
           </div>
 
-          {/* Disciplina Dropdown */}
           <div className="grades-ctrl-disciplina">
-            <div className="desktop-only" style={{ height: '100%', width: '100%' }}>
-              <CustomSelect 
-                label="Disciplina" 
-                icon={<BookOpen size={10}/>}
-                value={subject} 
-                options={subjects.map(s => ({ label: s, value: s }))}
-                isOpen={openSubject}
-                setIsOpen={setOpenSubject}
-                onChange={setSubject}
-              />
-            </div>
-            <div className="mobile-only card" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', borderRadius: 'var(--radius-lg)' }}>
-              <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><BookOpen size={10}/> Disciplina</div>
-              <select style={{ border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
-                value={subject} onChange={e => setSubject(e.target.value)}>
-                {subjects.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
+            <CustomSelect 
+              label="Disciplina" 
+              icon={<BookOpen size={12}/>}
+              value={subject} 
+              options={subjects.map(s => ({ label: s, value: s }))}
+              isOpen={openSubject}
+              setIsOpen={setOpenSubject}
+              onChange={setSubject}
+              isMobile={isMobile}
+            />
           </div>
 
-          {/* Search */}
-          <div className="card grades-ctrl-search" style={{ padding: '0.7rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderRadius: '8px', width: '100%' }}>
-            <Search size={16} color="hsl(var(--text-light))" />
-            <input placeholder="Pesquisar..." style={{ border: 'none', background: 'none', fontSize: '0.85rem', fontWeight: 600, color: 'hsl(var(--text))', outline: 'none', width: '100%' }}
+          <div className="card grades-ctrl-search" style={{ padding: '0 1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem', borderRadius: '18px', width: '100%', height: '56px', border: '1px solid rgba(0,0,0,0.03)' }}>
+            <Search size={20} color="#94A3B8" />
+            <input placeholder="Buscar aluno..." style={{ border: 'none', background: 'none', fontSize: '0.95rem', fontWeight: 600, color: '#1B2559', outline: 'none', width: '100%' }}
               value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           </div>
         </section>
@@ -396,94 +378,82 @@ export const GradesEntryPage: React.FC = () => {
 
         {/* ============ MOBILE CARD VIEW ============ */}
         <div className="grades-mobile-cards" style={{
-          flexDirection: 'column', gap: '1.5rem',
-          opacity: loadingGrades ? 0.4 : 1, pointerEvents: loadingGrades ? 'none' : 'auto', transition: 'opacity 0.3s'
+          flexDirection: 'column', gap: '1rem',
+          opacity: loadingGrades ? 0.4 : 1, pointerEvents: loadingGrades ? 'none' : 'auto', transition: 'all 0.3s'
         }}>
           {filteredStudents.map((student) => {
             const sg = grades[student.id] || emptyGrade()
-            const mediaNum = parseFloat(student.id ? grades[student.id]?.result : '0') || parseFloat(sg.result)
+            const mediaNum = parseFloat(sg.result)
             const needsRetry = !isNaN(mediaNum) && mediaNum < 7
             const finalVal = parseFloat(sg.final)
 
             return (
-              <div key={student.id} className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', border: '1px solid hsl(var(--border) / 0.5)' }}>
-                {/* Cabeçalho do Nome */}
-                <div style={{
-                  padding: '1rem 1.25rem', 
-                  backgroundColor: 'hsl(var(--primary) / 0.05)',
-                  borderBottom: '1px solid hsl(var(--border) / 0.4)'
-                }}>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))' }}>{student.name}</span>
+              <div key={student.id} className="card-interactive-premium" style={{ 
+                padding: '1.25rem', 
+                borderRadius: '24px', 
+                backgroundColor: 'white', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '1.25rem',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
+                border: '1px solid rgba(0,0,0,0.03)',
+                position: 'relative'
+              }}>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <div style={{ 
+                    width: '44px', height: '44px', borderRadius: '12px', 
+                    background: 'hsl(var(--primary) / 0.05)', color: 'hsl(var(--primary))',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontWeight: 1000, fontSize: '1rem', flexShrink: 0
+                  }}>
+                    {student.name.charAt(0)}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 1000, color: '#1B2559', letterSpacing: '-0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{student.name}</h3>
+                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase' }}>Aluno • {student.id.slice(-4)}</span>
+                  </div>
+                  {sg.final && (
+                    <div style={{ padding: '0.4rem 0.8rem', borderRadius: '10px', backgroundColor: finalVal >= 7 ? '#ECFDF5' : '#FEF2F2', color: finalVal >= 7 ? '#059669' : '#DC2626', fontSize: '0.75rem', fontWeight: 1000 }}>
+                       {finalVal >= 7 ? 'Aprovado' : 'Em Recuperação'}
+                    </div>
+                  )}
                 </div>
 
-                {/* Conteúdo da Nota */}
-                <div style={{ padding: '1.25rem' }}>
-                  {/* Provas */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                    <MobileInput label="1ª Prova" value={sg.p1} onChange={v => handleGradeChange(student.id, 'p1', v)} />
-                    <MobileInput label="2ª Prova" value={sg.p2} onChange={v => handleGradeChange(student.id, 'p2', v)} />
-                  </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <MobileInput label="1ª Prova" value={sg.p1} onChange={v => handleGradeChange(student.id, 'p1', v)} />
+                  <MobileInput label="2ª Prova" value={sg.p2} onChange={v => handleGradeChange(student.id, 'p2', v)} />
+                </div>
 
-                  {/* Média + Superação */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                      <label style={{ fontSize: '0.65rem', fontWeight: 800, color: 'hsl(var(--text-light))', marginLeft: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Média</label>
-                      <input readOnly style={{
-                        width: '100%', height: '48px', borderRadius: 'var(--radius-sm)',
-                        border: '2px solid hsl(var(--border))', backgroundColor: 'hsl(var(--background))',
-                        textAlign: 'center', fontSize: '1.1rem', fontWeight: 900,
-                        color: getColor(sg.result), outline: 'none'
-                      }} value={sg.result} placeholder="—" />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', opacity: needsRetry || sg.retry ? 1 : 0.4, transition: 'opacity 0.3s' }}>
-                      <label style={{ fontSize: '0.65rem', fontWeight: 800, color: needsRetry ? 'hsl(var(--warning))' : 'hsl(var(--text-light))', marginLeft: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Superação</label>
-                      <input disabled={!needsRetry && !sg.retry}
-                        style={{
-                          width: '100%', height: '48px', borderRadius: 'var(--radius-sm)',
-                          border: `2px solid ${sg.retry ? 'hsl(var(--warning) / 0.4)' : 'hsl(var(--border))'}`,
-                          backgroundColor: sg.retry ? 'hsl(var(--warning) / 0.04)' : 'hsl(var(--background))',
-                          textAlign: 'center', fontSize: '1.1rem', fontWeight: 900,
-                          color: 'hsl(var(--text))', outline: 'none', transition: 'all 0.2s',
-                          cursor: needsRetry ? 'text' : 'not-allowed'
-                        }}
-                        value={sg.retry} onChange={e => handleGradeChange(student.id, 'retry', e.target.value)}
-                        placeholder="—" inputMode="decimal" />
-                    </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1rem', alignItems: 'flex-end' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    <label style={{ fontSize: '0.65rem', fontWeight: 900, color: '#94A3B8', marginLeft: '0.4rem', textTransform: 'uppercase' }}>Média Parcial</label>
+                    <div style={{ 
+                      width: '100%', height: '52px', borderRadius: '14px', border: '2px solid #F1F5F9', backgroundColor: '#F8FAFC',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 1000, color: getColor(sg.result)
+                    }}>{sg.result || '—'}</div>
                   </div>
+                  <MobileInput label="Superação" value={sg.retry} onChange={v => handleGradeChange(student.id, 'retry', v)} disabled={!needsRetry && !sg.retry} accent={needsRetry} />
+                </div>
 
-                  {/* Resultado Final */}
-                  <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)',
-                    backgroundColor: sg.final ? (finalVal >= 7 ? 'hsl(160 84% 39% / 0.06)' : 'hsl(0 84% 60% / 0.06)') : 'hsl(var(--background))',
-                    border: `2px solid ${sg.final ? (finalVal >= 7 ? 'hsl(160 84% 39% / 0.15)' : 'hsl(0 84% 60% / 0.15)') : 'hsl(var(--border))'}`,
-                    marginBottom: '1rem', transition: 'all 0.3s'
-                  }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Resultado Final</span>
-                    <span style={{ fontSize: '1.3rem', fontWeight: 900, color: getColor(sg.final) }}>{sg.final || '—'}</span>
+                <div style={{ 
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.25rem', borderRadius: '16px',
+                  backgroundColor: sg.final ? (finalVal >= 7 ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)') : '#F8FAFC',
+                  border: `1.5px solid ${sg.final ? (finalVal >= 7 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)') : '#F1F5F9'}`
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                     <span style={{ fontSize: '0.6rem', fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase' }}>Resultado</span>
+                     <span style={{ fontSize: '0.85rem', fontWeight: 1000, color: '#1B2559' }}>Média Final</span>
                   </div>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 1000, color: getColor(sg.final) }}>{sg.final || '—'}</span>
+                </div>
 
-                  {/* Ações */}
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <button disabled={savingId === student.id || loadingGrades} onClick={() => handleSaveStudent(student.id)}
-                      style={{
-                        flex: 1, height: '48px', background: gradient, color: 'white',
-                        borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        cursor: 'pointer', opacity: savingId === student.id ? 0.7 : 1,
-                        boxShadow: '0 6px 16px -4px hsl(var(--primary) / 0.3)', transition: 'all 0.2s',
-                        fontSize: '0.8rem', fontWeight: 700, gap: '0.5rem'
-                      }}>
-                      {savingId === student.id ? <Loader2 className="animate-spin" size={18} /> : <><Rocket size={16} /> Salvar</>}
-                    </button>
-                    <button onClick={() => handleClear(student.id)}
-                      style={{
-                        width: '48px', height: '48px', backgroundColor: 'hsl(var(--error) / 0.08)',
-                        color: 'hsl(var(--error))', borderRadius: 'var(--radius-sm)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-                      }}>
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button onClick={() => handleSaveStudent(student.id)} disabled={savingId === student.id || loadingGrades} className="btn-primary" style={{ flex: 1, height: '52px', borderRadius: '14px', fontSize: '0.9rem', gap: '0.6rem', boxShadow: '0 8px 16px hsl(var(--primary) / 0.15)' }}>
+                    {savingId === student.id ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} /> Salvar Notas</>}
+                  </button>
+                  <button onClick={() => handleClear(student.id)} style={{ width: '52px', height: '52px', borderRadius: '14px', backgroundColor: '#FEF2F2', color: '#DC2626', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                    <Trash2 size={20} />
+                  </button>
                 </div>
               </div>
             )
@@ -494,152 +464,66 @@ export const GradesEntryPage: React.FC = () => {
       {/* ============ FAB SALVAR TUDO ============ */}
       <div style={{
         position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)',
-        width: 'calc(100% - 2rem)', maxWidth: '500px', zIndex: 200,
+        width: 'calc(100% - 1rem)', maxWidth: '500px', zIndex: 200,
         paddingBottom: 'env(safe-area-inset-bottom, 0px)'
       }}>
-        <button disabled={savingId === 'all' || loadingGrades} onClick={handleSaveAll}
+        <button disabled={savingId === 'all' || loadingGrades} onClick={handleSaveAll} className="btn-primary"
           style={{
-            width: '100%', padding: '1rem', borderRadius: 'var(--radius-xl)',
+            width: '100%', height: '64px', borderRadius: '20px',
             background: savedSuccess ? successGrad : gradient, color: 'white',
             boxShadow: savedSuccess ? '0 12px 28px -6px rgba(16, 185, 129, 0.4)' : '0 12px 28px -6px hsl(var(--primary) / 0.4)',
-            fontSize: '0.95rem', display: 'flex', justifyContent: 'center', alignItems: 'center',
-            gap: '0.75rem', fontWeight: 800, cursor: 'pointer', transition: 'all 0.4s'
+            fontSize: '1rem', fontWeight: 1000, gap: '0.75rem'
           }}>
-          {savingId === 'all' ? <Loader2 className="animate-spin" size={20} /> : savedSuccess ? (
-            <><CheckCircle2 size={20} /> Salvo com Sucesso!</>
+          {savingId === 'all' ? <Loader2 className="animate-spin" size={24} /> : savedSuccess ? (
+            <><CheckCircle2 size={24} /> Notas Salvas!</>
           ) : (
-            <>Concluir Lançamento <span style={{ width: '1.5px', height: '16px', backgroundColor: 'rgba(255,255,255,0.25)' }}></span> {filledCount} Alunos</>
+            <>Concluir <span style={{ width: '1.5px', height: '20px', backgroundColor: 'rgba(255,255,255,0.25)', margin: '0 0.5rem' }}></span> {filledCount} Lançamentos</>
           )}
         </button>
       </div>
-
-      {/* ============ RESPONSIVE STYLES ============ */}
-      <style>{`
-        .grades-header-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 1.5rem;
-        }
-        .grades-controls {
-          display: flex;
-          gap: 0.75rem;
-          align-items: stretch;
-        }
-        .grades-ctrl-bimestre { flex: 1 1 200px; display: flex; }
-        .grades-ctrl-disciplina { flex: 3 1 400px; display: flex; }
-        .grades-ctrl-search { flex: 1.5 1 250px; display: flex; }
-
-        /* Modern select dropdown styling */
-        .grades-select-popover {
-          position: absolute;
-          top: calc(100% + 8px);
-          left: 0;
-          width: 100%;
-          background: white;
-          border-radius: 8px;
-          border: 1px solid hsl(var(--border) / 0.5);
-          box-shadow: 0 10px 25px -10px rgba(0,0,0,0.15);
-          z-index: 1000;
-          overflow: hidden;
-          animation: slideIn 0.2s ease;
-        }
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .grades-select-option {
-          padding: 0.75rem 1rem;
-          font-family: 'Inter', sans-serif;
-          font-weight: 700;
-          font-size: 0.85rem;
-          color: #1B2559;
-          cursor: pointer;
-          transition: all 0.1s;
-        }
-        .grades-select-option:hover {
-          background-color: hsl(var(--primary) / 0.04);
-          color: hsl(var(--primary));
-        }
-        .grades-select-option.active {
-          background-color: hsl(var(--primary) / 0.08);
-          color: hsl(var(--primary));
-        }
-
-        /* Desktop: show table, hide cards */
-        .grades-desktop-table { display: block; }
-        .grades-mobile-cards { display: none !important; }
-
-        .grades-desktop-table table tr:hover td {
-          background-color: hsl(var(--primary) / 0.02);
-        }
-
-        @media (max-width: 1024px) {
-          .grades-header-row {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 1rem;
-          }
-          .grades-progress-pill {
-            min-width: unset !important;
-            border-radius: var(--radius-lg) !important;
-          }
-          .grades-controls {
-            flex-direction: column;
-          }
-          .grades-ctrl-bimestre,
-          .grades-ctrl-disciplina,
-          .grades-ctrl-search {
-            flex: unset;
-            min-width: unset;
-            border-radius: var(--radius-lg) !important;
-          }
-
-          /* Mobile: hide table, show cards */
-          .grades-desktop-table { display: none !important; }
-          .grades-mobile-cards { display: flex !important; }
-        }
-      `}</style>
     </div>
   )
 }
 
 /* =================== Sub-Components =================== */
 
-const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange }: any) => {
+const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange, isMobile }: any) => {
   const selectedLabel = options.find((o: any) => o.value === value)?.label || 'Selecione...'
   
   return (
-    <div className="card" style={{ 
-      padding: '0.85rem 1rem', 
+    <div className="card-interactive-premium" style={{ 
+      padding: isMobile ? '0.75rem 1rem' : '0.85rem 1.25rem', 
       display: 'flex', 
       flexDirection: 'column', 
       gap: '0.3rem', 
-      borderRadius: '8px',
+      borderRadius: '16px',
       position: 'relative',
       cursor: 'pointer',
       height: '100%',
       width: '100%',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      backgroundColor: 'white',
+      border: '1px solid rgba(0,0,0,0.03)'
     }} onClick={() => setIsOpen(!isOpen)}>
-      <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'hsl(var(--text-light))', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+      <div style={{ fontSize: '0.6rem', fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.3rem', letterSpacing: '0.05em' }}>
         {icon} {label}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-        <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'hsl(var(--text))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <span style={{ fontSize: isMobile ? '0.9rem' : '1rem', fontWeight: 1000, color: '#1B2559', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {selectedLabel}
         </span>
-        <ChevronDown size={14} color="hsl(var(--text-light))" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+        <ChevronDown size={14} color="#94A3B8" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }} />
       </div>
 
       {isOpen && (
         <>
           <div style={{ position: 'fixed', inset: 0, zIndex: 999 }} onClick={(e) => { e.stopPropagation(); setIsOpen(false) }} />
-          <div className="grades-select-popover">
+          <div className="grades-select-popover" style={{ borderRadius: '16px', boxShadow: '0 20px 50px rgba(0,0,0,0.12)', marginTop: '0.5rem' }}>
             {options.map((opt: any) => (
               <div 
                 key={opt.value} 
                 className={`grades-select-option ${value === opt.value ? 'active' : ''}`}
+                style={{ padding: '0.85rem 1.25rem' }}
                 onClick={(e) => {
                   e.stopPropagation()
                   onChange(opt.value)
@@ -677,17 +561,18 @@ const TableInput = ({ value, onChange, disabled, accent }: {
   />
 )
 
-const MobileInput = ({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-    <label style={{ fontSize: '0.65rem', fontWeight: 800, color: 'hsl(var(--primary))', marginLeft: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{label}</label>
+const MobileInput = ({ label, value, onChange, disabled, accent }: { label: string; value: string; onChange: (v: string) => void, disabled?: boolean, accent?: boolean }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', opacity: disabled ? 0.4 : 1 }}>
+    <label style={{ fontSize: '0.65rem', fontWeight: 900, color: accent ? 'hsl(var(--warning))' : '#94A3B8', marginLeft: '0.4rem', textTransform: 'uppercase' }}>{label}</label>
     <input
+      disabled={disabled}
       inputMode="decimal"
       style={{
-        width: '100%', height: '48px', borderRadius: 'var(--radius-sm)',
-        border: `2px solid ${value ? 'hsl(var(--primary) / 0.25)' : 'hsl(var(--border))'}`,
-        backgroundColor: value ? 'hsl(var(--primary) / 0.03)' : 'hsl(var(--background))',
-        textAlign: 'center', fontSize: '1.1rem', fontWeight: 900,
-        color: 'hsl(var(--text))', outline: 'none', transition: 'all 0.2s'
+        width: '100%', height: '52px', borderRadius: '14px',
+        border: `2px solid ${value ? (accent ? 'rgba(245, 158, 11, 0.4)' : 'hsl(var(--primary) / 0.15)') : '#F1F5F9'}`,
+        backgroundColor: value ? (accent ? 'rgba(245, 158, 11, 0.04)' : 'hsl(var(--primary) / 0.02)') : '#F8FAFC',
+        textAlign: 'center', fontSize: '1.25rem', fontWeight: 1000,
+        color: '#1B2559', outline: 'none', transition: 'all 0.2s'
       }}
       value={value}
       onChange={e => onChange(e.target.value.replace(',', '.'))}
