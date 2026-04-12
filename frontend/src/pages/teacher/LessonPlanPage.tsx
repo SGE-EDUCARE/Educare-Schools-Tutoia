@@ -592,7 +592,12 @@ export const LessonPlanPage: React.FC = () => {
               title="Planejamento e Desenvolvimento"
               accent="linear-gradient(135deg, hsl(210 100% 98%) 0%, hsl(210 100% 96%) 100%)"
             >
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr', gap: isMobile ? '1.5rem' : '2rem' }} className="grid-mobile-1">
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1.5fr', 
+                gap: isMobile ? '1.5rem' : '2rem',
+                alignItems: 'start'
+              }} className="grid-mobile-1">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem' }}>
                   <FormGroup isMobile={isMobile} label="Objeto(s) de Conhecimento" placeholder="O que será ensinado?" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
                   {renderMultiselect(
@@ -978,7 +983,11 @@ const FormGroup = ({ label, value, onChange, placeholder, height = '120px', isMo
         fontWeight: 850, color: 'hsl(var(--text))',
         textTransform: 'uppercase', letterSpacing: '0.05em', 
         marginLeft: isMobile ? '0.2rem' : '0.3rem',
-        opacity: 0.8
+        opacity: 0.8,
+        lineHeight: 1.2,
+        minHeight: isMobile ? 'auto' : '1.1rem',
+        display: 'flex',
+        alignItems: 'center'
       }}>{label}</label>
       <textarea
         ref={textareaRef}
