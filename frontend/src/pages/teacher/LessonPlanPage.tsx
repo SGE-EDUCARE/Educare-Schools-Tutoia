@@ -162,6 +162,8 @@ const MultiSelectField = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Usamos um pequeno delay para garantir que o clique no input de outro dropdown 
+      // feche o atual antes que o novo tente abrir, evitando conflitos de estado.
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         onClose()
       }
@@ -175,7 +177,7 @@ const MultiSelectField = ({
   return (
     <div ref={containerRef} style={{ position: 'relative' }}>
       <FormGroup 
-        label={label} 
+        label={label.toUpperCase()} 
         placeholder={placeholder} 
         value={search} 
         type="text"
@@ -512,7 +514,7 @@ export const LessonPlanPage: React.FC = () => {
         if (requestId === bnccRequestId.current) setBnccResults(filtered)
       } catch (e) { if (requestId === bnccRequestId.current) console.error(e) }
       finally { if (requestId === bnccRequestId.current) setSearchingBNCC(false) }
-    }, isActive && queryTerm === '' ? 0 : 300)
+    }, isActive && queryTerm === '' ? 0 : 200)
     return () => clearTimeout(timer)
   }, [bnccSearch, currentPlan?.subject, activeDropdown, isInfantil])
 
@@ -529,7 +531,7 @@ export const LessonPlanPage: React.FC = () => {
         if (requestId === genRequestId.current) setGenCompResults(results)
       } catch (e) { if (requestId === genRequestId.current) console.error(e) }
       finally { if (requestId === genRequestId.current) setSearchingGen(false) }
-    }, isActive && queryTerm === '' ? 0 : 300)
+    }, isActive && queryTerm === '' ? 0 : 200)
     return () => clearTimeout(timer)
   }, [genCompSearch, activeDropdown])
 
@@ -546,7 +548,7 @@ export const LessonPlanPage: React.FC = () => {
         if (requestId === specRequestId.current) setSpecCompResults(results)
       } catch (e) { if (requestId === specRequestId.current) console.error(e) }
       finally { if (requestId === specRequestId.current) setSearchingSpec(false) }
-    }, isActive && queryTerm === '' ? 0 : 300)
+    }, isActive && queryTerm === '' ? 0 : 200)
     return () => clearTimeout(timer)
   }, [specCompSearch, activeDropdown])
 
