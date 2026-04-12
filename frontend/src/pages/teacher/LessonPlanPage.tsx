@@ -582,10 +582,6 @@ export const LessonPlanPage: React.FC = () => {
                   )}
                   <FormGroup isMobile={isMobile} label="Anotações de Competências Específicas" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="80px" />
                 </div>
-              </div>
-            </SectionCard>
-
-            {/* ─── 3. DESENVOLVIMENTO MENSAL ─── */}
             <SectionCard 
               isMobile={isMobile}
               icon={<LayoutList color="hsl(210 90% 55%)" />} 
@@ -595,11 +591,47 @@ export const LessonPlanPage: React.FC = () => {
               <div style={{ 
                 display: 'grid', 
                 gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1.5fr', 
-                gap: isMobile ? '1.5rem' : '2rem',
-                alignItems: 'start'
+                gap: isMobile ? '1.5rem' : '2.5rem',
+                alignItems: 'end'
               }} className="grid-mobile-1">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem' }}>
-                  <FormGroup isMobile={isMobile} label="Objeto(s) de Conhecimento" placeholder="O que será ensinado?" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
+                
+                {/* Row 1: Primary Labels (Forced alignment) */}
+                {!isMobile && (
+                  <>
+                    <label style={{ fontSize: '0.9rem', fontWeight: 850, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8, marginLeft: '0.3rem' }}>
+                      Objeto(s) de Conhecimento
+                    </label>
+                    <label style={{ fontSize: '0.9rem', fontWeight: 850, color: 'hsl(var(--text))', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8, marginLeft: '0.3rem' }}>
+                      Cronograma Detalhado
+                    </label>
+                  </>
+                )}
+
+                {/* Row 2: Primary Inputs */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  {isMobile && <label style={{ fontSize: '0.8rem', fontWeight: 850, color: 'hsl(var(--text))', textTransform: 'uppercase', opacity: 0.8 }}>Objeto(s) de Conhecimento</label>}
+                  <textarea
+                    className="input"
+                    placeholder="O que será ensinado?"
+                    style={{ minHeight: isMobile ? '80px' : '120px', width: '100%', padding: isMobile ? '1rem 1.25rem' : '1.25rem 1.5rem', resize: 'none', lineHeight: 1.6, backgroundColor: 'white', fontSize: isMobile ? '0.95rem' : '1.1rem', borderRadius: isMobile ? '16px' : '20px' }}
+                    value={currentPlan.knowledge_objects}
+                    onChange={e => setCurrentPlan({ ...currentPlan, knowledge_objects: e.target.value })}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', gridRow: isMobile ? 'auto' : 'span 2' }}>
+                  {isMobile && <label style={{ fontSize: '0.8rem', fontWeight: 850, color: 'hsl(var(--text))', textTransform: 'uppercase', opacity: 0.8 }}>Cronograma Detalhado</label>}
+                  <textarea
+                    className="input"
+                    placeholder="Distribuição do conteúdo pelas semanas..."
+                    style={{ minHeight: isMobile ? '80px' : '180px', height: isMobile ? 'auto' : '100%', width: '100%', padding: isMobile ? '1rem 1.25rem' : '1.25rem 1.5rem', resize: 'none', lineHeight: 1.6, backgroundColor: 'white', fontSize: isMobile ? '0.95rem' : '1.1rem', borderRadius: isMobile ? '16px' : '20px' }}
+                    value={currentPlan.programmatic_content}
+                    onChange={e => setCurrentPlan({ ...currentPlan, programmatic_content: e.target.value })}
+                  />
+                </div>
+
+                {/* Row 3: Habilidades (Left Column Only) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {renderMultiselect(
                     "habilidades", "Habilidades (BNCC)", "Código ou descrição...",
                     bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects,
@@ -610,10 +642,12 @@ export const LessonPlanPage: React.FC = () => {
                   )}
                   <FormGroup isMobile={isMobile} label="Habilidades Próprias" placeholder="Habilidades não previstas na BNCC..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem' }}>
-                  <FormGroup isMobile={isMobile} label="Cronograma Detalhado" placeholder="Distribuição do conteúdo pelas semanas..." value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="180px" />
-                  <FormGroup isMobile={isMobile} label="Metodologias e Estratégias" placeholder="Como o conteúdo será trabalhado?" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="180px" />
+
+                {/* Row 4: Metodologia (Right Column Span/Reset) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', gridColumn: isMobile ? 'auto' : '2' }}>
+                   <FormGroup isMobile={isMobile} label="Metodologias e Estratégias" placeholder="Como o conteúdo será trabalhado?" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="180px" />
                 </div>
+
               </div>
             </SectionCard>
 
