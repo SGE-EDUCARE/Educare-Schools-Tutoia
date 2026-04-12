@@ -88,7 +88,7 @@ const INFANTIL_DIREITOS = [
 
 // ══════════ ELEMENTOS UI AUXILIARES ══════════
 const SectionCard = ({ icon, title, accent, children, isMobile }: any) => (
-  <section className="card" style={{ padding: 0, borderRadius: isMobile ? '20px' : '28px', border: '1px solid #eee', background: 'white', overflow: 'hidden' }}>
+  <section className="card" style={{ padding: 0, borderRadius: isMobile ? '20px' : '28px', border: '1px solid #eee', background: 'white', position: 'relative' }}>
     <div style={{ padding: '1.25rem 2rem', background: accent || '#fff', borderBottom: '1px solid #f5f5f5', display: 'flex', alignItems: 'center', gap: '1rem' }}>
       <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>{icon}</div>
       <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>{title}</h3>
@@ -102,8 +102,29 @@ const CustomSelect = ({ label, value, options, isOpen, setIsOpen, onChange }: an
     <label style={{ fontSize: '0.75rem', fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>{label}</label>
     <div style={{ fontWeight: 700, marginTop: '0.2rem' }}>{options.find((o: any) => o.value === value)?.label || 'Selecione...'}</div>
     {isOpen && (
-      <div className="glass" style={{ position: 'absolute', top: '105%', left: 0, right: 0, backgroundColor: 'white', zIndex: 100, borderRadius: '15px', padding: '0.5rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
-        {options.map((o: any) => <div key={o.value} style={{ padding: '0.75rem 1rem', borderRadius: '10px', backgroundColor: o.value === value ? '#f0f4ff' : 'transparent' }} onClick={() => onChange(o.value)}>{o.label}</div>)}
+      <div style={{ 
+        position: 'absolute', top: 'calc(100% + 10px)', left: 0, right: 0, 
+        backgroundColor: 'white', zIndex: 1000, borderRadius: '18px', 
+        padding: '0.6rem', boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
+        border: '1px solid #eee', animation: 'scaleIn 0.2s ease-out'
+      }}>
+        {options.map((o: any) => (
+          <div 
+            key={o.value} 
+            style={{ 
+              padding: '0.85rem 1.25rem', borderRadius: '12px', cursor: 'pointer',
+              backgroundColor: o.value === value ? 'hsl(var(--primary) / 0.08)' : 'transparent',
+              color: o.value === value ? 'hsl(var(--primary))' : '#444',
+              fontWeight: o.value === value ? 800 : 500,
+              fontSize: '0.9rem', transition: 'all 0.2s'
+            }} 
+            onClick={(e) => { e.stopPropagation(); onChange(o.value); setIsOpen(false) }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--primary) / 0.04)'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = o.value === value ? 'hsl(var(--primary) / 0.08)' : 'transparent'}
+          >
+            {o.label}
+          </div>
+        ))}
       </div>
     )}
   </div>
