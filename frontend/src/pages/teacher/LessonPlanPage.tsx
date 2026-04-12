@@ -128,10 +128,29 @@ const MultiCheckGroup = ({ label, options, selected, onChange }: any) => (
   </div>
 )
 
-const FormGroup = ({ label, value, onChange }: any) => (
+const FormGroup = ({ label, value, onChange, placeholder, onFocus, height, type = 'textarea' }: any) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-    <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#555' }}>{label}</label>
-    <textarea className="input" value={value} onChange={e => onChange(e.target.value)} style={{ minHeight: '100px', borderRadius: '18px', padding: '1.25rem', backgroundColor: '#fcfcfc', border: '1px solid #eee' }} />
+    <label style={{ fontSize: '0.85rem', fontWeight: 850, color: 'hsl(var(--text))', textTransform: 'uppercase', opacity: 0.8 }}>{label}</label>
+    {type === 'textarea' ? (
+      <textarea 
+        className="input" 
+        placeholder={placeholder}
+        value={value} 
+        onChange={e => onChange(e.target.value)} 
+        onFocus={onFocus}
+        style={{ minHeight: height || '120px', borderRadius: '18px', padding: '1.25rem', backgroundColor: '#fcfcfc', border: '1px solid #eee' }} 
+      />
+    ) : (
+      <input 
+        type="text"
+        className="input" 
+        placeholder={placeholder}
+        value={value} 
+        onChange={e => onChange(e.target.value)} 
+        onFocus={onFocus}
+        style={{ height: '56px', borderRadius: '18px', padding: '0 1.5rem', backgroundColor: '#fcfcfc', border: '1px solid #eee' }} 
+      />
+    )}
   </div>
 )
 
@@ -159,6 +178,7 @@ const MultiSelectField = ({
         label={label} 
         placeholder={placeholder} 
         value={search} 
+        type="text"
         onChange={(v: string) => { setSearch(v); if(!isOpen) onToggle() }} 
         onFocus={onToggle}
       />
@@ -166,8 +186,8 @@ const MultiSelectField = ({
         <div style={{ 
           position: 'absolute', top: '100%', left: 0, right: 0, 
           backgroundColor: 'white', border: '1px solid #eee', borderRadius: '16px', 
-          boxShadow: '0 10px 25px rgba(0,0,0,0.1)', zIndex: 100, marginTop: '0.5rem',
-          maxHeight: '300px', overflowY: 'auto'
+          boxShadow: '0 10px 25px rgba(0,0,0,0.1)', zIndex: 500, marginTop: '0.5rem',
+          maxHeight: '350px', overflowY: 'auto'
         }}>
           {searching ? (
             <div style={{ padding: '1.5rem', textAlign: 'center' }}><Loader2 className="animate-spin" size={24} color={variantColor} /></div>
@@ -468,7 +488,8 @@ export const LessonPlanPage: React.FC = () => {
   useEffect(() => {
     const isActive = activeDropdown === 'habilidades'
     const queryTerm = bnccSearch.trim()
-    if (!isActive && queryTerm.length < 2) { setBnccResults([]); return }
+    // Só bloqueia se não estiver ativo E termo for curto
+    if (!isActive && queryTerm.length < 1) { setBnccResults([]); return }
     const requestId = ++bnccRequestId.current
     const timer = setTimeout(async () => {
       setSearchingBNCC(true)
@@ -498,7 +519,7 @@ export const LessonPlanPage: React.FC = () => {
   useEffect(() => {
     const isActive = activeDropdown === 'gerais'
     const queryTerm = genCompSearch.trim()
-    if (!isActive && queryTerm.length < 2) { setGenCompResults([]); return }
+    if (!isActive && queryTerm.length < 1) { setGenCompResults([]); return }
     const requestId = ++genRequestId.current
     const timer = setTimeout(async () => {
       setSearchingGen(true)
@@ -515,7 +536,7 @@ export const LessonPlanPage: React.FC = () => {
   useEffect(() => {
     const isActive = activeDropdown === 'especificas'
     const queryTerm = specCompSearch.trim()
-    if (!isActive && queryTerm.length < 2) { setSpecCompResults([]); return }
+    if (!isActive && queryTerm.length < 1) { setSpecCompResults([]); return }
     const requestId = ++specRequestId.current
     const timer = setTimeout(async () => {
       setSearchingSpec(true)
