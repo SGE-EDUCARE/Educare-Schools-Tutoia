@@ -336,12 +336,11 @@ export const LessonPlanPage: React.FC = () => {
     const showResults = isOpen && results.length > 0
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.35rem' : '0.5rem' }}>
         <label style={{
-          fontSize: isMobile ? '0.7rem' : '0.75rem', 
-          fontWeight: 800, color: 'hsl(var(--text))',
+          fontSize: isMobile ? '0.8rem' : '0.9rem', 
+          fontWeight: 850, color: 'hsl(var(--text))',
           textTransform: 'uppercase', letterSpacing: '0.05em', 
-          marginLeft: isMobile ? '0.15rem' : '0.2rem',
+          marginLeft: isMobile ? '0.2rem' : '0.3rem',
           opacity: 0.8,
           lineHeight: 1.2,
           minHeight: isMobile ? 'auto' : '1.2rem',
@@ -929,9 +928,9 @@ const CustomSelect = ({ label, icon, value, options, isOpen, setIsOpen, onChange
       onClick={() => setIsOpen(!isOpen)}
     >
       <div style={{
-        fontSize: isMobile ? '0.7rem' : '0.75rem', 
-        fontWeight: 900, color: 'hsl(var(--text-light))',
-        textTransform: 'uppercase', letterSpacing: '0.06em',
+        fontSize: isMobile ? '0.8rem' : '0.9rem', 
+        fontWeight: 850, color: 'hsl(var(--text-light))',
+        textTransform: 'uppercase', letterSpacing: '0.05em',
         display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem'
       }}>
         {icon || <Calendar size={isMobile ? 12 : 14} />} {label}
