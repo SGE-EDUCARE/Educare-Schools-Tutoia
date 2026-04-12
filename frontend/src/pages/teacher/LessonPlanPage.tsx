@@ -338,7 +338,11 @@ export const LessonPlanPage: React.FC = () => {
           fontWeight: 800, color: 'hsl(var(--text))',
           textTransform: 'uppercase', letterSpacing: '0.05em', 
           marginLeft: isMobile ? '0.15rem' : '0.2rem',
-          opacity: 0.8
+          opacity: 0.8,
+          lineHeight: 1.2,
+          minHeight: isMobile ? 'auto' : '1.2rem',
+          display: 'flex',
+          alignItems: 'center'
         }}>{label}</label>
 
         <div style={{ position: 'relative' }}>
@@ -1022,7 +1026,7 @@ const FormGroup = ({ label, value, onChange, placeholder, height = '120px', isMo
         marginLeft: isMobile ? '0.2rem' : '0.3rem',
         opacity: 0.8,
         lineHeight: 1.2,
-        minHeight: isMobile ? 'auto' : '1.1rem',
+        minHeight: isMobile ? 'auto' : '1.2rem',
         display: 'flex',
         alignItems: 'center'
       }}>{label}</label>
