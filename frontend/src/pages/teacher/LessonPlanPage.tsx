@@ -582,6 +582,9 @@ export const LessonPlanPage: React.FC = () => {
                   )}
                   <FormGroup isMobile={isMobile} label="Anotações de Competências Específicas" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="80px" />
                 </div>
+              </div>
+            </SectionCard>
+
             <SectionCard 
               isMobile={isMobile}
               icon={<LayoutList color="hsl(210 90% 55%)" />} 
