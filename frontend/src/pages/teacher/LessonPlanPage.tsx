@@ -1159,56 +1159,57 @@ export const LessonPlanPage: React.FC = () => {
               
               return (
                 <div key={p.id} className="card-interactive-premium" style={{ 
-                  padding: isMobile ? '1.5rem' : '2.5rem', 
+                  padding: isMobile ? '1.25rem' : '2.5rem', 
                   borderRadius: isMobile ? '24px' : '32px', 
                   background: 'white', 
                   display: 'flex', 
                   flexDirection: 'column', 
-                  gap: '1.5rem', 
+                  gap: isMobile ? '1.25rem' : '1.5rem', 
                   boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
                   border: '1px solid rgba(0,0,0,0.03)',
                   position: 'relative',
                   overflow: 'hidden'
                 }}>
-                  <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', gap: isMobile ? '1rem' : '1.25rem', alignItems: isMobile ? 'center' : 'flex-start', flexDirection: isMobile ? 'row' : 'row' }}>
+                    {/* No mobile o ícone fica ao lado do texto de suporte, mas o título ganha destaque abaixo se necessário */}
                     <div style={{ 
-                      width: '56px', height: '56px', borderRadius: '16px', 
+                      width: isMobile ? '48px' : '56px', height: isMobile ? '48px' : '56px', borderRadius: '14px', 
                       background: 'hsl(var(--primary) / 0.05)', color: 'hsl(var(--primary))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0
                     }}>
-                      <BookOpen size={28} />
+                      <BookOpen size={isMobile ? 24 : 28} />
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                        <span style={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', color: 'hsl(var(--primary))', letterSpacing: '0.05em' }}>{p.month}</span>
-                        <span style={{ fontWeight: 800, fontSize: '0.7rem', color: '#999' }}>{p.bimester}º BIMESTRE</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                        <span style={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.6rem', color: 'hsl(var(--primary))', letterSpacing: '0.05em' }}>{p.month}</span>
+                        <span style={{ fontWeight: 800, fontSize: '0.65rem', color: '#999' }}>{p.bimester}º BIMESTRE</span>
                       </div>
-                      <h3 style={{ fontSize: isMobile ? '1.2rem' : '1.4rem', fontWeight: 1000, color: '#1B2559', letterSpacing: '-0.04em', lineHeight: 1.2 }}>{p.subject}</h3>
+                      <h3 style={{ fontSize: isMobile ? '1.15rem' : '1.4rem', fontWeight: 1000, color: '#1B2559', letterSpacing: '-0.04em', lineHeight: 1.2, whiteSpace: 'normal', overflow: 'visible' }}>{p.subject}</h3>
                     </div>
                   </div>
 
-                  <div style={{ marginTop: '0.5rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>Progresso de Preenchimento</span>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 1000, color: statusColor }}>{completion}%</span>
+                  <div style={{ marginTop: isMobile ? '0.25rem' : '0.5rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>Progresso</span>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 1000, color: statusColor }}>{completion}%</span>
                     </div>
-                    <div style={{ width: '100%', height: '8px', backgroundColor: '#f0f2f5', borderRadius: '10px', overflow: 'hidden' }}>
+                    <div style={{ width: '100%', height: '6px', backgroundColor: '#f0f2f5', borderRadius: '10px', overflow: 'hidden' }}>
                       <div style={{ width: `${completion}%`, height: '100%', backgroundColor: statusColor, borderRadius: '10px', transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }}></div>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.6rem', marginTop: '0.25rem' }}>
                     <button onClick={() => setViewingPlan(p)} style={{ 
-                      flex: 1, padding: '0.85rem', borderRadius: '14px', border: '1px solid #eee', background: 'white', 
-                      fontSize: '0.85rem', fontWeight: 800, color: '#666', cursor: 'pointer', transition: 'all 0.2s'
-                    }}>Visualizar</button>
+                      flex: 1, height: isMobile ? '48px' : 'auto', padding: isMobile ? '0' : '0.85rem', borderRadius: '14px', border: '1px solid #eee', background: 'white', 
+                      fontSize: '0.8rem', fontWeight: 800, color: '#666', cursor: 'pointer', transition: 'all 0.2s'
+                    }}>Ver</button>
                     <button onClick={() => handleEdit(p)} className="btn-primary" style={{ 
-                      flex: 1.5, padding: '0.85rem', borderRadius: '14px', fontSize: '0.85rem', fontWeight: 900, 
+                      flex: 2, height: isMobile ? '48px' : 'auto', padding: isMobile ? '0' : '0.85rem', borderRadius: '14px', fontSize: '0.85rem', fontWeight: 900, 
                       boxShadow: '0 8px 16px hsl(var(--primary) / 0.2)'
                     }}>Editar Plano</button>
                     <button onClick={() => { if(confirm('Excluir este planejamento permanentemente?')) api(`/teacher/lesson-plans/${p.id}`, { method: 'DELETE' }).then(() => fetchPlans()) }} style={{ 
-                      width: '48px', height: '48px', borderRadius: '14px', border: 'none', background: '#fff0f0', color: '#ff4d4d',
+                      width: isMobile ? '48px' : '48px', height: isMobile ? '48px' : '48px', borderRadius: '14px', border: 'none', background: '#fff0f0', color: '#ff4d4d',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s'
                     }}><Trash2 size={20} /></button>
                   </div>
