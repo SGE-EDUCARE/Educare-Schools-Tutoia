@@ -688,6 +688,24 @@ export const LessonPlanPage: React.FC = () => {
     }
   }, [classId, fetchPlans, fetchAllocations])
 
+  const calculateCompletion = (p: LessonPlan) => {
+    const fields = [
+      p.knowledge_objects, p.content, p.methodology, p.evaluation, 
+      p.resources, p.references, p.programmatic_content
+    ]
+    const filledFields = fields.filter(f => f && f.trim().length > 0).length
+    
+    // Contar arrays de IDs da BNCC
+    const bnccCount = (p.habilidades_ids?.length || 0) > 0 ? 1 : 0
+    const genCount = (p.gerais_ids?.length || 0) > 0 ? 1 : 0
+    const specCount = (p.especificas_ids?.length || 0) > 0 ? 1 : 0
+    
+    const totalPoints = fields.length + 3 // 7 textos + 3 tipos de BNCC
+    const currentPoints = filledFields + bnccCount + genCount + specCount
+    
+    return Math.round((currentPoints / totalPoints) * 100)
+  }
+
   // Efeitos para fechamento de dropdowns ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -1133,32 +1151,69 @@ export const LessonPlanPage: React.FC = () => {
             )}
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
-            {plans.map(p => (
-              <div key={p.id} className="card-interactive-premium" style={{ 
-                padding: '2rem', 
-                borderRadius: '32px', 
-                background: 'white', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '1.5rem', 
-                boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
-                border: '1px solid rgba(0,0,0,0.01)'
-              }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                    <span style={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.08)', padding: '0.3rem 0.6rem', borderRadius: '8px' }}>{p.month}</span>
-                    <span style={{ fontWeight: 800, fontSize: '0.7rem', color: '#999' }}>{p.bimester}º BIMESTRE</span>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(400px, 1fr))', gap: isMobile ? '1.25rem' : '2rem' }}>
+            {plans.map(p => {
+              const completion = calculateCompletion(p)
+              const statusColor = completion < 40 ? '#ff9f43' : completion < 80 ? '#54a0ff' : '#00d2d3'
+              
+              return (
+                <div key={p.id} className="card-interactive-premium" style={{ 
+                  padding: isMobile ? '1.5rem' : '2.5rem', 
+                  borderRadius: isMobile ? '24px' : '32px', 
+                  background: 'white', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '1.5rem', 
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
+                  border: '1px solid rgba(0,0,0,0.03)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
+                    <div style={{ 
+                      width: '56px', height: '56px', borderRadius: '16px', 
+                      background: 'hsl(var(--primary) / 0.05)', color: 'hsl(var(--primary))',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <BookOpen size={28} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <span style={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', color: 'hsl(var(--primary))', letterSpacing: '0.05em' }}>{p.month}</span>
+                        <span style={{ fontWeight: 800, fontSize: '0.7rem', color: '#999' }}>{p.bimester}º BIMESTRE</span>
+                      </div>
+                      <h3 style={{ fontSize: isMobile ? '1.2rem' : '1.4rem', fontWeight: 1000, color: '#1B2559', letterSpacing: '-0.04em', lineHeight: 1.2 }}>{p.subject}</h3>
+                    </div>
                   </div>
-                  <h3 style={{ fontSize: '1.3rem', fontWeight: 1000, color: '#1B2559', letterSpacing: '-0.03em' }}>{p.subject}</h3>
+
+                  <div style={{ marginTop: '0.5rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>Progresso de Preenchimento</span>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 1000, color: statusColor }}>{completion}%</span>
+                    </div>
+                    <div style={{ width: '100%', height: '8px', backgroundColor: '#f0f2f5', borderRadius: '10px', overflow: 'hidden' }}>
+                      <div style={{ width: `${completion}%`, height: '100%', backgroundColor: statusColor, borderRadius: '10px', transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }}></div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                    <button onClick={() => setViewingPlan(p)} style={{ 
+                      flex: 1, padding: '0.85rem', borderRadius: '14px', border: '1px solid #eee', background: 'white', 
+                      fontSize: '0.85rem', fontWeight: 800, color: '#666', cursor: 'pointer', transition: 'all 0.2s'
+                    }}>Visualizar</button>
+                    <button onClick={() => handleEdit(p)} className="btn-primary" style={{ 
+                      flex: 1.5, padding: '0.85rem', borderRadius: '14px', fontSize: '0.85rem', fontWeight: 900, 
+                      boxShadow: '0 8px 16px hsl(var(--primary) / 0.2)'
+                    }}>Editar Plano</button>
+                    <button onClick={() => { if(confirm('Excluir este planejamento permanentemente?')) api(`/teacher/lesson-plans/${p.id}`, { method: 'DELETE' }).then(() => fetchPlans()) }} style={{ 
+                      width: '48px', height: '48px', borderRadius: '14px', border: 'none', background: '#fff0f0', color: '#ff4d4d',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s'
+                    }}><Trash2 size={20} /></button>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                   <button onClick={() => setViewingPlan(p)} className="btn btn-secondary" style={{ flex: 1, borderRadius: '14px', fontWeight: 800 }}>Ver</button>
-                   <button onClick={() => handleEdit(p)} className="btn btn-primary" style={{ flex: 1.5, borderRadius: '14px', fontWeight: 800 }}>Editar</button>
-                   <button onClick={() => { if(confirm('Excluir?')) api(`/teacher/lesson-plans/${p.id}`, { method: 'DELETE' }).then(() => fetchPlans()) }} className="btn" style={{ background: '#fff0f0', color: 'red', borderRadius: '14px' }}><Trash2 size={18} /></button>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
 
