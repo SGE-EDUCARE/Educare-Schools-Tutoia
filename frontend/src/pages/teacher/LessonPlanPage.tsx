@@ -8,12 +8,10 @@ import {
   FileText, 
   Calendar, 
   Plus, 
-  Edit3, 
   Target, 
   LayoutList, 
   CheckCircle2,
   Trash2,
-  ChevronDown,
   Book,
   Printer
 } from 'lucide-react'
@@ -87,7 +85,7 @@ const SectionCard = ({ icon, title, accent, children, isMobile }: any) => (
   </section>
 )
 
-const CustomSelect = ({ label, value, options, isOpen, setIsOpen, onChange, isMobile }: any) => (
+const CustomSelect = ({ label, value, options, isOpen, setIsOpen, onChange }: any) => (
   <div className="input" style={{ padding: '0.8rem 1.5rem', borderRadius: '18px', position: 'relative', cursor: 'pointer', background: '#fcfcfc' }} onClick={() => setIsOpen(!isOpen)}>
     <label style={{ fontSize: '0.75rem', fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>{label}</label>
     <div style={{ fontWeight: 700, marginTop: '0.2rem' }}>{options.find((o: any) => o.value === value)?.label || 'Selecione...'}</div>
@@ -131,7 +129,7 @@ const MultiCheckGroup = ({ label, options, selected, onChange }: any) => (
   </div>
 )
 
-const FormGroup = ({ label, value, onChange, isMobile }: any) => (
+const FormGroup = ({ label, value, onChange }: any) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
     <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#555' }}>{label}</label>
     <textarea className="input" value={value} onChange={e => onChange(e.target.value)} style={{ minHeight: '100px', borderRadius: '18px', padding: '1.25rem', backgroundColor: '#fcfcfc', border: '1px solid #eee' }} />
@@ -255,18 +253,6 @@ export const LessonPlanPage: React.FC = () => {
   const [openMonth, setOpenMonth] = useState(false)
 
   // ══════════ LÓGICA DE NÍVEL (MEMOIZED) ══════════
-  const isFund1 = useMemo(() => {
-    const level = activeClass?.grade?.level
-    const name = level?.name || ''
-    return String(name).includes('Fundamental I')
-  }, [activeClass])
-
-  const isFund2 = useMemo(() => {
-    const level = activeClass?.grade?.level
-    const name = level?.name || ''
-    return String(name).includes('Fundamental II') || String(name).includes('Médio')
-  }, [activeClass])
-
   const isInfantil = useMemo(() => {
     const level = activeClass?.grade?.level
     const name = level?.name || ''
@@ -518,9 +504,9 @@ export const LessonPlanPage: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <SectionCard isMobile={isMobile} icon={<Calendar />} title="Identificação" accent="linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%)">
                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1rem' }}>
-                 <CustomSelect label="Disciplina" value={currentPlan.subject} options={subjects.map(s => ({ value: s, label: s }))} isOpen={openSubject} setIsOpen={setOpenSubject} onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} isMobile={isMobile} />
-                 <CustomSelect label="Bimestre" value={currentPlan.bimester} options={bimesterOptions} isOpen={openBimester} setIsOpen={setOpenBimester} onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} isMobile={isMobile} />
-                 <CustomSelect label="Mês" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} isMobile={isMobile} />
+                 <CustomSelect label="Disciplina" value={currentPlan.subject} options={subjects.map(s => ({ value: s, label: s }))} isOpen={openSubject} setIsOpen={setOpenSubject} onChange={(v: string) => setCurrentPlan({ ...currentPlan, subject: v })} />
+                 <CustomSelect label="Bimestre" value={currentPlan.bimester} options={bimesterOptions} isOpen={openBimester} setIsOpen={setOpenBimester} onChange={(v: string) => setCurrentPlan({ ...currentPlan, bimester: v })} />
+                 <CustomSelect label="Mês" value={currentPlan.month} options={monthOptions} isOpen={openMonth} setIsOpen={setOpenMonth} onChange={(v: string) => setCurrentPlan({ ...currentPlan, month: v })} />
                </div>
             </SectionCard>
 
@@ -552,11 +538,11 @@ export const LessonPlanPage: React.FC = () => {
 
             <SectionCard isMobile={isMobile} icon={<LayoutList />} title="Desenvolvimento">
                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-                 <FormGroup label={isInfantil ? "Público Alvo / Local" : "Objeto de Conhecimento"} value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} isMobile={isMobile} />
-                 <FormGroup label="Conteúdo Programático" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} isMobile={isMobile} />
+                 <FormGroup label={isInfantil ? "Público Alvo / Local" : "Objeto de Conhecimento"} value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} />
+                 <FormGroup label="Conteúdo Programático" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} />
                  {renderMultiselect("habilidades", isInfantil ? "Objetivos de Aprendizagem (BNCC)" : "Habilidades (BNCC)", "Código...", bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects, (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]) } }, (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }, 'green', isMobile)}
-                 <FormGroup label="Metodologia / Procedimentos" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} isMobile={isMobile} />
-                 <FormGroup label="Avaliação" value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} isMobile={isMobile} />
+                 <FormGroup label="Metodologia / Procedimentos" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} />
+                 <FormGroup label="Avaliação" value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} />
                </div>
             </SectionCard>
 
