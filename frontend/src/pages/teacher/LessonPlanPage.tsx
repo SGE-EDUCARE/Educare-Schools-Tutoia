@@ -135,6 +135,79 @@ const FormGroup = ({ label, value, onChange }: any) => (
   </div>
 )
 
+const MultiSelectField = ({ 
+  label, placeholder, search, setSearch, results, searching, selected, onAdd, onRemove, 
+  variantColor, isMobile, isOpen, onToggle, onClose 
+}: any) => {
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isOpen, onClose])
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative' }}>
+      <FormGroup 
+        label={label} 
+        placeholder={placeholder} 
+        value={search} 
+        onChange={(v: string) => { setSearch(v); if(!isOpen) onToggle() }} 
+        onFocus={onToggle}
+      />
+      {isOpen && (
+        <div style={{ 
+          position: 'absolute', top: '100%', left: 0, right: 0, 
+          backgroundColor: 'white', border: '1px solid #eee', borderRadius: '16px', 
+          boxShadow: '0 10px 25px rgba(0,0,0,0.1)', zIndex: 100, marginTop: '0.5rem',
+          maxHeight: '300px', overflowY: 'auto'
+        }}>
+          {searching ? (
+            <div style={{ padding: '1.5rem', textAlign: 'center' }}><Loader2 className="animate-spin" size={24} color={variantColor} /></div>
+          ) : results.length > 0 ? (
+            results.map((item: any) => (
+              <div 
+                key={item.id} 
+                className="dropdown-item"
+                onClick={() => { onAdd(item); onClose() }}
+                style={{ padding: '1rem', borderBottom: '1px solid #f5f5f5', cursor: 'pointer' }}
+              >
+                <span style={{ fontWeight: 900, color: variantColor, fontSize: '0.7rem' }}>{item.code || item.number}</span>
+                <p style={{ fontSize: '0.85rem', color: '#333', marginTop: '0.2rem' }}>{item.description}</p>
+              </div>
+            ))
+          ) : (
+            <div style={{ padding: '1.5rem', textAlign: 'center', color: '#999' }}>{search.length < 2 ? 'Digite para buscar...' : 'Nenhum resultado'}</div>
+          )}
+        </div>
+      )}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+        {selected.map((item: any) => (
+          <div key={item.id} style={{ 
+            backgroundColor: 'white', padding: '1rem', borderRadius: '16px', 
+            border: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{ flex: 1 }}>
+              <span style={{ fontWeight: 900, color: variantColor, fontSize: '0.7rem' }}>{item.code || item.number}</span>
+              <p style={{ fontSize: '0.85rem' }}>{item.description}</p>
+            </div>
+            <button onClick={() => onRemove(item.id)} style={{ color: '#ff4d4d', padding: '0.5rem' }}><Trash2 size={16} /></button>
+          </div>
+        ))}
+        {selected.length === 0 && <EmptyText />}
+      </div>
+    </div>
+  )
+}
+
 const ViewSection = ({ label, icon, children }: any) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'hsl(var(--primary))' }}>
@@ -418,7 +491,7 @@ export const LessonPlanPage: React.FC = () => {
         if (requestId === bnccRequestId.current) setBnccResults(filtered)
       } catch (e) { if (requestId === bnccRequestId.current) console.error(e) }
       finally { if (requestId === bnccRequestId.current) setSearchingBNCC(false) }
-    }, isActive && queryTerm === '' ? 0 : 400)
+    }, isActive && queryTerm === '' ? 0 : 300)
     return () => clearTimeout(timer)
   }, [bnccSearch, currentPlan?.subject, activeDropdown, isInfantil])
 
@@ -435,7 +508,7 @@ export const LessonPlanPage: React.FC = () => {
         if (requestId === genRequestId.current) setGenCompResults(results)
       } catch (e) { if (requestId === genRequestId.current) console.error(e) }
       finally { if (requestId === genRequestId.current) setSearchingGen(false) }
-    }, isActive && queryTerm === '' ? 0 : 400)
+    }, isActive && queryTerm === '' ? 0 : 300)
     return () => clearTimeout(timer)
   }, [genCompSearch, activeDropdown])
 
@@ -452,7 +525,7 @@ export const LessonPlanPage: React.FC = () => {
         if (requestId === specRequestId.current) setSpecCompResults(results)
       } catch (e) { if (requestId === specRequestId.current) console.error(e) }
       finally { if (requestId === specRequestId.current) setSearchingSpec(false) }
-    }, isActive && queryTerm === '' ? 0 : 400)
+    }, isActive && queryTerm === '' ? 0 : 300)
     return () => clearTimeout(timer)
   }, [specCompSearch, activeDropdown])
 
@@ -631,11 +704,11 @@ export const LessonPlanPage: React.FC = () => {
               <SectionCard isMobile={isMobile} icon={<Target />} title="Base BNCC" accent="linear-gradient(135deg, #fffcf0 0%, #fff9e0 100%)">
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                     {renderMultiselect("gerais", "Competências Gerais", "Buscar...", genCompSearch, setGenCompSearch, genCompResults, searchingGen, selectedGenObjects, (it) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]) } }, (id) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }, 'orange', isMobile)}
+                     <MultiSelectField isOpen={activeDropdown === 'gerais'} onToggle={() => setActiveDropdown('gerais')} onClose={() => setActiveDropdown(null)} label="Competências Gerais" placeholder="Buscar..." search={genCompSearch} setSearch={setGenCompSearch} results={genCompResults} searching={searchingGen} selected={selectedGenObjects} onAdd={(it: any) => { if(!selectedGenIds.includes(it.id)) { setSelectedGenIds([...selectedGenIds, it.id]); setSelectedGenObjects([...selectedGenObjects, it]) } }} onRemove={(id: string) => { setSelectedGenIds(selectedGenIds.filter(i => i !== id)); setSelectedGenObjects(selectedGenObjects.filter(o => o.id !== id)) }} variantColor="orange" isMobile={isMobile} />
                      <FormGroup label="Anotações de Competências Gerais" placeholder="Complemente as competências..." value={currentPlan.custom_general_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_general_comp: v })} height="100px" />
                    </div>
                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                     {renderMultiselect("especificas", "Competências Específicas", "Buscar...", specCompSearch, setSpecCompSearch, specCompResults, searchingSpec, selectedSpecObjects, (it) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]) } }, (id) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }, 'blue', isMobile)}
+                     <MultiSelectField isOpen={activeDropdown === 'especificas'} onToggle={() => setActiveDropdown('especificas')} onClose={() => setActiveDropdown(null)} label="Competências Específicas" placeholder="Buscar..." search={specCompSearch} setSearch={setSpecCompSearch} results={specCompResults} searching={searchingSpec} selected={selectedSpecObjects} onAdd={(it: any) => { if(!selectedSpecIds.includes(it.id)) { setSelectedSpecIds([...selectedSpecIds, it.id]); setSelectedSpecObjects([...selectedSpecObjects, it]) } }} onRemove={(id: string) => { setSelectedSpecIds(selectedSpecIds.filter(i => i !== id)); setSelectedSpecObjects(selectedSpecObjects.filter(o => o.id !== id)) }} variantColor="blue" isMobile={isMobile} />
                      <FormGroup label="Anotações de Competências Específicas" placeholder="Observações específicas..." value={currentPlan.custom_specific_comp} onChange={(v: string) => setCurrentPlan({ ...currentPlan, custom_specific_comp: v })} height="100px" />
                    </div>
                 </div>
@@ -650,7 +723,7 @@ export const LessonPlanPage: React.FC = () => {
                         <FormGroup label="OBJETO(S) DE CONHECIMENTO (CONTEÚDO)" placeholder="O que será ensinado?" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
                         <FormGroup label="CONTEÚDOS PROGRAMÁTICOS" placeholder="Temas, capítulos e unidades..." value={currentPlan.content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, content: v })} height="120px" />
                      </div>
-                     {renderMultiselect("habilidades", "HABILIDADE(S) (BNCC)", "Código...", bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects, (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]) } }, (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }, 'green', isMobile)}
+                     <MultiSelectField isOpen={activeDropdown === 'habilidades'} onToggle={() => setActiveDropdown('habilidades')} onClose={() => setActiveDropdown(null)} label="HABILIDADE(S) (BNCC)" placeholder="Código..." search={bnccSearch} setSearch={setBnccSearch} results={bnccResults} searching={searchingBNCC} selected={selectedBnccObjects} onAdd={(it: any) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]) } }} onRemove={(id: string) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }} variantColor="green" isMobile={isMobile} />
                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
                         <FormGroup label="CRONOGRAMA DETALHADO (SEMANAS)" placeholder="Distribuição do conteúdo (Ex: Semana 1, Semana 2...)" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="120px" />
                         <FormGroup label="PROCEDIMENTOS METODOLÓGICOS" placeholder="Lúdico, laboratório, pesquisa, socioemocional..." value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="120px" />
@@ -667,7 +740,7 @@ export const LessonPlanPage: React.FC = () => {
                    <>
                      <FormGroup label="Público Alvo / Local" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} />
                      <FormGroup label="Conteúdo Programático" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} />
-                     {renderMultiselect("habilidades", "Objetivos de Aprendizagem (BNCC)", "Código...", bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects, (it) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]) } }, (id) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }, 'green', isMobile)}
+                     <MultiSelectField isOpen={activeDropdown === 'habilidades'} onToggle={() => setActiveDropdown('habilidades')} onClose={() => setActiveDropdown(null)} label="Objetivos de Aprendizagem (BNCC)" placeholder="Código..." search={bnccSearch} setSearch={setBnccSearch} results={bnccResults} searching={searchingBNCC} selected={selectedBnccObjects} onAdd={(it: any) => { if(!selectedBnccIds.includes(it.id)) { setSelectedBnccIds([...selectedBnccIds, it.id]); setSelectedBnccObjects([...selectedBnccObjects, it]) } }} onRemove={(id: string) => { setSelectedBnccIds(selectedBnccIds.filter(i => i !== id)); setSelectedBnccObjects(selectedBnccObjects.filter(o => o.id !== id)) }} variantColor="green" isMobile={isMobile} />
                      <FormGroup label="Metodologia / Procedimentos" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} />
                      <FormGroup label="Avaliação" value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} />
                    </>
