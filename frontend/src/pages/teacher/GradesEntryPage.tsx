@@ -1,3 +1,4 @@
+// v1.1.0 - Premium Modernization Fix
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../../utils/api'
