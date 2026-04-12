@@ -53,6 +53,7 @@ export const LessonPlanPage: React.FC = () => {
   const [plans, setPlans] = useState<LessonPlan[]>([])
   const [loading, setLoading] = useState(true)
   const [currentPlan, setCurrentPlan] = useState<LessonPlan | null>(null)
+  const [viewingPlan, setViewingPlan] = useState<LessonPlan | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [subjects, setSubjects] = useState<string[]>([])
@@ -655,7 +656,7 @@ export const LessonPlanPage: React.FC = () => {
 
         ) : (
           /* ══════════ LISTA DE PLANOS ══════════ */
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }} className="animate-fade-in">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '2rem' }} className="animate-fade-in">
             {plans.length === 0 ? (
               <div style={{ gridColumn: '1 / -1', padding: '6rem 2rem', textAlign: 'center' }} className="card">
                 <div style={{
@@ -675,69 +676,119 @@ export const LessonPlanPage: React.FC = () => {
                 </button>
               </div>
             ) : (
-              plans.map(plan => (
-                <div key={plan.id} className="card card-interactive" style={{
-                  borderRadius: '20px', padding: '1.5rem',
-                  border: '1px solid hsl(var(--border) / 0.3)',
-                  display: 'flex', flexDirection: 'column', gap: '1.25rem',
-                  position: 'relative', overflow: 'hidden'
-                }}
-                onClick={() => handleEdit(plan)}
-                >
-                  <div style={{
-                    position: 'absolute', top: 0, right: 0, width: '4px', height: '100%',
-                    backgroundColor: 'hsl(var(--primary))'
-                  }} />
-                  
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <span style={{
-                        background: 'hsl(var(--primary) / 0.1)', color: 'hsl(var(--primary))',
-                        padding: '0.35rem 0.75rem', borderRadius: '8px',
-                        fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.04em'
-                      }}>{plan.month}</span>
-                      <span style={{
-                        background: 'hsl(var(--success) / 0.1)', color: 'hsl(var(--success))',
-                        padding: '0.35rem 0.75rem', borderRadius: '8px',
-                        fontSize: '0.7rem', fontWeight: 900
-                      }}>{plan.bimester}º Bim</span>
+              plans.map(plan => {
+                // Cálculo de preenchimento (versão simples)
+                const fields = [
+                  plan.knowledge_objects, plan.programmatic_content, plan.methodology, 
+                  plan.evaluation, plan.resources, plan.references
+                ]
+                const filled = fields.filter(f => f && f.trim().length > 10).length
+                const progress = Math.min(100, (filled / fields.length) * 100)
+                const color = progress === 100 ? 'hsl(var(--success))' : progress > 50 ? 'hsl(var(--primary))' : 'hsl(var(--warning))'
+
+                return (
+                  <div key={plan.id} className="card-interactive" style={{
+                    borderRadius: '28px', padding: '1.75rem',
+                    background: 'rgba(255, 255, 255, 0.8)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid hsl(var(--border) / 0.6)',
+                    display: 'flex', flexDirection: 'column', gap: '1.5rem',
+                    position: 'relative', overflow: 'hidden',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.05)'
+                  }}>
+                    <div style={{
+                      position: 'absolute', top: 0, right: 0, width: '6px', height: '100%',
+                      backgroundColor: color, opacity: 0.6
+                    }} />
+                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+                        <div style={{
+                          background: 'white', color: 'hsl(var(--text))',
+                          padding: '0.4rem 0.85rem', borderRadius: '12px',
+                          fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', 
+                          letterSpacing: '0.04em', border: '1px solid hsl(var(--border) / 0.4)',
+                          boxShadow: 'var(--shadow-sm)'
+                        }}>{plan.month}</div>
+                        <div style={{
+                          background: 'hsl(var(--primary) / 0.08)', color: 'hsl(var(--primary))',
+                          padding: '0.4rem 0.85rem', borderRadius: '12px',
+                          fontSize: '0.75rem', fontWeight: 900,
+                          border: '1px solid hsl(var(--primary) / 0.1)'
+                        }}>{plan.bimester}º Bimestre</div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 style={{ fontSize: '1.35rem', fontWeight: 950, color: 'hsl(var(--text))', lineHeight: 1.2, letterSpacing: '-0.03em' }}>{plan.subject}</h3>
+                      <div style={{ 
+                        marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '1rem',
+                        fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 600 
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <Calendar size={15} /> {new Date(plan.date).toLocaleDateString('pt-BR')}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <CheckCircle2 size={15} color={color} /> {progress.toFixed(0)}% preenchido
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div style={{ width: '100%', height: '6px', backgroundColor: 'hsl(var(--border) / 0.3)', borderRadius: '10px', overflow: 'hidden' }}>
+                      <div style={{ width: `${progress}%`, height: '100%', backgroundColor: color, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }} />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                      <button 
+                        onClick={() => setViewingPlan(plan)} 
+                        className="btn"
+                        style={{
+                          flex: 1, background: 'white', border: '1.5px solid hsl(var(--border))',
+                          color: 'hsl(var(--text))', borderRadius: '16px',
+                          fontWeight: 850, fontSize: '0.85rem', minHeight: '52px',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem'
+                        }}
+                      >
+                        Visualizar
+                      </button>
+                      <button 
+                        onClick={() => handleEdit(plan)} 
+                        className="btn btn-primary"
+                        style={{
+                          flex: 1, borderRadius: '16px',
+                          fontWeight: 850, fontSize: '0.85rem', minHeight: '52px',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem'
+                        }}
+                      >
+                        <Edit3 size={18} /> Editar
+                      </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); if(confirm('Excluir este plano?')) api(`/teacher/lesson-plans/${plan.id}`, { method: 'DELETE' }).then(() => fetchPlans()) }} 
+                        className="btn"
+                        style={{
+                          padding: '0 1rem', background: 'hsl(var(--error) / 0.05)', border: '1.5px solid transparent',
+                          color: 'hsl(var(--error))', borderRadius: '16px', minHeight: '52px'
+                        }}
+                      >
+                        <Trash2 size={20} />
+                      </button>
                     </div>
                   </div>
-
-                  <div>
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: 'hsl(var(--text))', lineHeight: 1.25, letterSpacing: '-0.02em' }}>{plan.subject}</h3>
-                    <p style={{ fontSize: '0.85rem', color: 'hsl(var(--text-light))', fontWeight: 600, marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <Calendar size={14} /> Atualizado em {new Date(plan.date).toLocaleDateString('pt-BR')}
-                    </p>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem' }}>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handleEdit(plan) }} 
-                      className="btn"
-                      style={{
-                        flex: 1, background: 'hsl(var(--primary) / 0.05)',
-                        color: 'hsl(var(--primary))', borderRadius: '12px',
-                        fontWeight: 800, fontSize: '0.8rem', minHeight: '44px'
-                      }}
-                    >
-                      <Edit3 size={16} /> Abrir
-                    </button>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); if(confirm('Excluir este plano?')) api(`/teacher/lesson-plans/${plan.id}`, { method: 'DELETE' }).then(() => fetchPlans()) }} 
-                      className="btn"
-                      style={{
-                        padding: '0 0.85rem', background: 'hsl(var(--error) / 0.05)',
-                        color: 'hsl(var(--error))', borderRadius: '12px', minHeight: '44px'
-                      }}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))
+                )
+              })
             )}
           </div>
+        )}
+
+        {/* ══════════ VISUALIZADOR DE PLANO ══════════ */}
+        {viewingPlan && (
+          <LessonPlanVisualizer 
+            plan={viewingPlan} 
+            onClose={() => setViewingPlan(null)} 
+            isMobile={isMobile}
+          />
         )}
       </div>
     </div>
@@ -883,3 +934,164 @@ const FormGroup = ({ label, value, onChange, placeholder, height = '120px', isMo
     </div>
   )
 }
+
+/* ══════════════════════════════════════
+   VISUALIZADOR PREMIUM (MODAL DOCUMENTO)
+   ══════════════════════════════════════ */
+
+const LessonPlanVisualizer = ({ plan, onClose, isMobile }: { plan: LessonPlan; onClose: () => void; isMobile: boolean }) => {
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+      zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: isMobile ? '0' : '2rem'
+    }} onClick={onClose}>
+      
+      <div 
+        className="glass animate-scale-in"
+        style={{
+          width: '100%', maxWidth: '900px', maxHeight: isMobile ? '100%' : '90vh',
+          backgroundColor: 'white', borderRadius: isMobile ? '0' : '32px',
+          overflowY: 'auto', display: 'flex', flexDirection: 'column',
+          boxShadow: '0 30px 60px -12px rgba(0,0,0,0.25)',
+          position: 'relative'
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header Visualizer */}
+        <div style={{
+          padding: '2rem', borderBottom: '1px solid hsl(var(--border) / 0.5)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          position: 'sticky', top: 0, backgroundColor: 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(10px)', zIndex: 10
+        }}>
+          <div>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 950, color: 'hsl(var(--text))', letterSpacing: '-0.02em' }}>Plano de Aula Detalhado</h2>
+            <div style={{ fontSize: '0.9rem', color: 'hsl(var(--text-light))', fontWeight: 600, marginTop: '0.2rem' }}>
+              {plan.subject} • {plan.month} • {plan.bimester}º Bimestre
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button 
+              onClick={() => window.print()} 
+              className="btn"
+              style={{ padding: '0.75rem 1.25rem', borderRadius: '14px', background: 'hsl(var(--background))', fontWeight: 700 }}
+            >
+              Imprimir
+            </button>
+            <button 
+              onClick={onClose} 
+              className="btn btn-primary"
+              style={{ width: '44px', height: '44px', padding: 0, borderRadius: '14px' }}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Content Visualizer */}
+        <div style={{ padding: isMobile ? '1.5rem' : '3rem', flex: 1, color: '#333' }} className="print-content">
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+            
+            {/* 1. Cabeçalho do Documento */}
+            <div style={{ textAlign: 'center', borderBottom: '2px solid #eee', paddingBottom: '1.5rem' }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 950, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Planejamento de Ensino</div>
+              <div style={{ color: '#666', marginTop: '0.5rem', fontWeight: 600 }}>Censo Escolar • Unidade de Ensino</div>
+            </div>
+
+            {/* 2. Grades de Referência */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+              <ViewSection label="Competências Gerais (BNCC)" icon={<Target size={18}/>}>
+                {plan.bncc_general_comp?.length ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {plan.bncc_general_comp.map(c => <BnccTag key={c.id} code={`CG${c.number}`} description={c.description} />)}
+                  </div>
+                ) : <EmptyText />}
+                {plan.custom_general_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_general_comp}</blockquote>}
+              </ViewSection>
+
+              <ViewSection label="Competências Específicas" icon={<Target size={18}/>}>
+                {plan.bncc_specific_comp?.length ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {plan.bncc_specific_comp.map(c => <BnccTag key={c.id} code={c.code} description={c.description} />)}
+                  </div>
+                ) : <EmptyText />}
+                {plan.custom_specific_comp && <blockquote style={{ margin: '1rem 0 0', paddingLeft: '1rem', borderLeft: '3px solid #eee', color: '#555' }}>{plan.custom_specific_comp}</blockquote>}
+              </ViewSection>
+            </div>
+
+            <ViewSection label="Habilidades (BNCC)" icon={<FileText size={18}/>}>
+              {plan.bncc_skills?.length ? (
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
+                  {plan.bncc_skills.map(s => <BnccTag key={s.id} code={s.code} description={s.description} />)}
+                </div>
+              ) : <EmptyText />}
+              {plan.skills && <p style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9f9f9', borderRadius: '12px', fontSize: '0.95rem' }}>{plan.skills}</p>}
+            </ViewSection>
+
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1.5fr', gap: '2rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <ViewSection label="Objeto(s) de Conhecimento" icon={<LayoutList size={18}/>}>
+                  <p style={{ lineHeight: 1.6 }}>{plan.knowledge_objects || '---'}</p>
+                </ViewSection>
+                <ViewSection label="Metodologias e Estratégias" icon={<LayoutList size={18}/>}>
+                  <p style={{ lineHeight: 1.6 }}>{plan.methodology || '---'}</p>
+                </ViewSection>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <ViewSection label="Conteúdo Programático Detalhado" icon={<Edit3 size={18}/>}>
+                  <p style={{ lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{plan.programmatic_content || '---'}</p>
+                </ViewSection>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+              <ViewSection label="Recursos Didáticos" icon={<CheckCircle2 size={18}/>}>
+                <p>{plan.resources || '---'}</p>
+              </ViewSection>
+              <ViewSection label="Critérios de Avaliação" icon={<CheckCircle2 size={18}/>}>
+                <p>{plan.evaluation || '---'}</p>
+              </ViewSection>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Footer info */}
+        <div style={{ padding: '2rem', backgroundColor: '#fcfcfc', borderTop: '1px solid #eee', fontSize: '0.85rem', color: '#999', textAlign: 'center' }}>
+          Documento gerado digitalmente via Sistema de Gestão Educacional • {new Date().toLocaleDateString()}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const ViewSection = ({ label, icon, children }: any) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'hsl(var(--primary))' }}>
+      {icon}
+      <span style={{ fontSize: '0.9rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+    </div>
+    <div style={{ fontSize: '1rem', color: '#444' }}>
+      {children}
+    </div>
+  </div>
+)
+
+const BnccTag = ({ code, description }: any) => (
+  <div style={{ 
+    padding: '0.85rem', backgroundColor: '#f8f8f8', borderRadius: '14px', 
+    border: '1px solid #efeef5', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' 
+  }}>
+    <span style={{ 
+      backgroundColor: 'hsl(var(--primary))', color: 'white', 
+      padding: '0.2rem 0.5rem', borderRadius: '6px', 
+      fontSize: '0.7rem', fontWeight: 900, flexShrink: 0 
+    }}>{code}</span>
+    <span style={{ fontSize: '0.82rem', lineHeight: 1.5, fontWeight: 500, color: '#333' }}>{description}</span>
+  </div>
+)
+
+const EmptyText = () => <span style={{ color: '#bbb', fontSize: '0.9rem', fontStyle: 'italic' }}>Nenhum item selecionado</span>
