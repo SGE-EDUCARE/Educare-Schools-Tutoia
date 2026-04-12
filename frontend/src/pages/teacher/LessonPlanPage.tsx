@@ -301,7 +301,7 @@ const SelectionModal = ({
                       <h4 style={{ 
                         fontSize: '1rem', 
                         fontWeight: 950, 
-                        color: '#000000', 
+                        color: '#1B2559', 
                         lineHeight: '1.4' 
                       }}>
                         {item.title}
