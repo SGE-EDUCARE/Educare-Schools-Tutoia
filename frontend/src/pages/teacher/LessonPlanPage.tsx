@@ -12,7 +12,8 @@ import {
   LayoutList, 
   CheckCircle2,
   Trash2,
-  Book
+  Book,
+  BookOpen
 } from 'lucide-react'
 
 // ══════════ TIPAGENS ══════════
@@ -696,9 +697,9 @@ export const LessonPlanPage: React.FC = () => {
     const filledFields = fields.filter(f => f && f.trim().length > 0).length
     
     // Contar arrays de IDs da BNCC
-    const bnccCount = (p.habilidades_ids?.length || 0) > 0 ? 1 : 0
-    const genCount = (p.gerais_ids?.length || 0) > 0 ? 1 : 0
-    const specCount = (p.especificas_ids?.length || 0) > 0 ? 1 : 0
+    const bnccCount = (p.bncc_skills?.length || 0) > 0 ? 1 : 0
+    const genCount = (p.bncc_general_comp?.length || 0) > 0 ? 1 : 0
+    const specCount = (p.bncc_specific_comp?.length || 0) > 0 ? 1 : 0
     
     const totalPoints = fields.length + 3 // 7 textos + 3 tipos de BNCC
     const currentPoints = filledFields + bnccCount + genCount + specCount
