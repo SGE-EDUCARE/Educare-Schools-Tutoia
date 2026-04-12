@@ -603,6 +603,7 @@ export const LessonPlanPage: React.FC = () => {
               }} className="grid-mobile-1">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem' }}>
                   <FormGroup isMobile={isMobile} label="Objeto(s) de Conhecimento" placeholder="O que será ensinado?" value={currentPlan.knowledge_objects} onChange={(v: string) => setCurrentPlan({ ...currentPlan, knowledge_objects: v })} height="120px" />
+                  <FormGroup isMobile={isMobile} label="Conteúdos Programáticos" placeholder="Temas, capítulos e unidades..." value={currentPlan.content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, content: v })} height="120px" />
                   {renderMultiselect(
                     "habilidades", "Habilidades (BNCC)", "Código ou descrição...",
                     bnccSearch, setBnccSearch, bnccResults, searchingBNCC, selectedBnccObjects,
@@ -611,11 +612,11 @@ export const LessonPlanPage: React.FC = () => {
                     'hsl(210 85% 55%)',
                     isMobile
                   )}
-                  <FormGroup isMobile={isMobile} label="Habilidades Próprias" placeholder="Habilidades não previstas na BNCC..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '1.5rem' }}>
-                  <FormGroup isMobile={isMobile} label="Cronograma Detalhado" placeholder="Distribuição do conteúdo pelas semanas..." value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="120px" />
-                  <FormGroup isMobile={isMobile} label="Metodologias e Estratégias" placeholder="Como o conteúdo será trabalhado?" value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="180px" />
+                  <FormGroup isMobile={isMobile} label="Cronograma Detalhado (Semanas)" placeholder="Distribuição do conteúdo (Ex: Semana 1, Semana 2...)" value={currentPlan.programmatic_content} onChange={(v: string) => setCurrentPlan({ ...currentPlan, programmatic_content: v })} height="120px" />
+                  <FormGroup isMobile={isMobile} label="Metodologias e Estratégias" placeholder="Lúdico, laboratório, pesquisa, socioemocional..." value={currentPlan.methodology} onChange={(v: string) => setCurrentPlan({ ...currentPlan, methodology: v })} height="120px" />
+                  <FormGroup isMobile={isMobile} label="Habilidades Próprias" placeholder="Inovação, projetos e específicas..." value={currentPlan.skills} onChange={(v: string) => setCurrentPlan({ ...currentPlan, skills: v })} height="80px" />
                 </div>
               </div>
             </SectionCard>
@@ -627,11 +628,13 @@ export const LessonPlanPage: React.FC = () => {
               title="Recursos e Avaliação"
               accent="linear-gradient(135deg, hsl(160 100% 98%) 0%, hsl(160 100% 96%) 100%)"
             >
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '1rem' : '1.5rem' }} className="grid-mobile-1">
-                <FormGroup isMobile={isMobile} label="Critérios de Avaliação" placeholder="Como o aprendizado será verificado?"
-                  value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} height="120px" />
-                <FormGroup isMobile={isMobile} label="Ferramentas e Referências" placeholder="Recursos utilizados no bimestre..."
-                  value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} height="120px" />
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: isMobile ? '1rem' : '1.5rem' }} className="grid-mobile-1">
+                <FormGroup isMobile={isMobile} label="Critérios de Avaliação" placeholder="Processos avaliativos..."
+                  value={currentPlan.evaluation} onChange={(v: string) => setCurrentPlan({ ...currentPlan, evaluation: v })} height="100px" />
+                <FormGroup isMobile={isMobile} label="Recursos Didáticos" placeholder="Mapas, vídeos, livros..."
+                  value={currentPlan.resources} onChange={(v: string) => setCurrentPlan({ ...currentPlan, resources: v })} height="100px" />
+                <FormGroup isMobile={isMobile} label="Referências" placeholder="Bibliografia utilizada..."
+                  value={currentPlan.references} onChange={(v: string) => setCurrentPlan({ ...currentPlan, references: v })} height="100px" />
               </div>
             </SectionCard>
 
@@ -695,14 +698,16 @@ export const LessonPlanPage: React.FC = () => {
                 const checkArray = (a?: any[]) => a && a.length > 0
                 
                 const steps = [
-                  checkArray(plan.bncc_skills) || checkString(plan.skills),
-                  checkArray(plan.bncc_general_comp) || checkString(plan.custom_general_comp),
-                  checkArray(plan.bncc_specific_comp) || checkString(plan.custom_specific_comp),
-                  checkString(plan.knowledge_objects),
-                  checkString(plan.programmatic_content),
-                  checkString(plan.methodology),
-                  checkString(plan.evaluation),
-                  checkString(plan.resources)
+                  (plan.bncc_skills?.length > 0 || plan.skills?.trim()),
+                  (plan.bncc_general_comp?.length > 0 || plan.custom_general_comp?.trim()),
+                  (plan.bncc_specific_comp?.length > 0 || plan.custom_specific_comp?.trim()),
+                  plan.knowledge_objects?.trim(),
+                  plan.content?.trim(),
+                  plan.programmatic_content?.trim(),
+                  plan.methodology?.trim(),
+                  plan.evaluation?.trim(),
+                  plan.resources?.trim(),
+                  plan.references?.trim()
                 ]
                 
                 const filled = steps.filter(Boolean).length
@@ -1117,30 +1122,34 @@ const LessonPlanVisualizer = ({ plan, onClose, isMobile }: { plan: LessonPlan; o
               {plan.skills && <p style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9f9f9', borderRadius: '12px', fontSize: '0.95rem' }}>{plan.skills}</p>}
             </ViewSection>
 
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1.5fr', gap: '2rem' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                <ViewSection label="Objeto(s) de Conhecimento" icon={<LayoutList size={18}/>}>
-                  <p style={{ lineHeight: 1.6 }}>{plan.knowledge_objects || '---'}</p>
-                </ViewSection>
-                <ViewSection label="Metodologias e Estratégias" icon={<LayoutList size={18}/>}>
-                  <p style={{ lineHeight: 1.6 }}>{plan.methodology || '---'}</p>
-                </ViewSection>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                <ViewSection label="Conteúdo Programático Detalhado" icon={<Edit3 size={18}/>}>
-                  <p style={{ lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{plan.programmatic_content || '---'}</p>
-                </ViewSection>
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+              <ViewSection label="Objeto(s) de Conhecimento" icon={<LayoutList size={18}/>}>
+                <p style={{ lineHeight: 1.6 }}>{plan.knowledge_objects || '---'}</p>
+              </ViewSection>
+              <ViewSection label="Conteúdos Programáticos" icon={<Edit3 size={18}/>}>
+                <p style={{ lineHeight: 1.6 }}>{plan.content || '---'}</p>
+              </ViewSection>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '1.5rem' : '2rem' }}>
-              <ViewSection label="Recursos Didáticos" icon={<CheckCircle2 size={18}/>}>
+            <ViewSection label="Cronograma Detalhado (Semanas)" icon={<Edit3 size={18}/>}>
+                <p style={{ lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{plan.programmatic_content || '---'}</p>
+            </ViewSection>
+
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? '1.5rem' : '2rem' }}>
+              <ViewSection label="Metodologias" icon={<LayoutList size={18}/>}>
+                <p style={{ lineHeight: 1.6 }}>{plan.methodology || '---'}</p>
+              </ViewSection>
+              <ViewSection label="Recursos" icon={<CheckCircle2 size={18}/>}>
                 <p>{plan.resources || '---'}</p>
               </ViewSection>
-              <ViewSection label="Critérios de Avaliação" icon={<CheckCircle2 size={18}/>}>
-                <p>{plan.evaluation || '---'}</p>
+              <ViewSection label="Referências" icon={<CheckCircle2 size={18}/>}>
+                <p>{plan.references || '---'}</p>
               </ViewSection>
             </div>
+
+            <ViewSection label="Processos Avaliativos" icon={<CheckCircle2 size={18}/>}>
+              <p>{plan.evaluation || '---'}</p>
+            </ViewSection>
 
           </div>
         </div>
